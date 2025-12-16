@@ -6,7 +6,8 @@
     "type": "module",
     "scripts": {
         "dev": "nodemon --quiet index.js",
-        "prisma:migrate": "pnpm prisma migrate dev --name"
+        "prisma:migrate": "pnpm prisma migrate dev --name",
+        "seed": "node src/scripts/seed.js"
     },
     "keywords": [],
     "author": "",
