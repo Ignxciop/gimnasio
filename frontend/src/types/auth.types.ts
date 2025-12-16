@@ -3,6 +3,23 @@ export interface LoginCredentials {
     password: string;
 }
 
+export interface RegisterData {
+    name: string;
+    lastname: string;
+    email: string;
+    username: string;
+    password: string;
+}
+
+export interface RegisterResponse {
+    success: boolean;
+    message: string;
+    data: {
+        user: User;
+        token: string;
+    };
+}
+
 export interface User {
     id: string;
     name: string;
