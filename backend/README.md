@@ -4,7 +4,7 @@ Para correcta inicialización del backend tener esto instalado en el entorno de 
 
 -   NodeJS versión 24.12.0
 -   PostgreSQL 4
--   Pnpm versión 10.15.0
+-   Pnpm versión 10.25.0
 
 Tener creado .env en la raiz del proyecto backend siguiendo como estructura .env.example
 
