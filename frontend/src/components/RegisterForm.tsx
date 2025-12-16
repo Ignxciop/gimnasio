@@ -1,0 +1,203 @@
+import React, { useState } from "react";
+import { Input } from "./ui/Input";
+import { Button } from "./ui/Button";
+import { validators } from "../utils/validators";
+import { authService } from "../services/authService";
+import { ApiError } from "../services/api";
+import "../styles/form.css";
+
+interface RegisterFormProps {
+    onSuccess?: () => void;
+}
+
+export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
+    const [name, setName] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [errors, setErrors] = useState<{
+        name?: string;
+        lastname?: string;
+        email?: string;
+        username?: string;
+        password?: string;
+        confirmPassword?: string;
+    }>({});
+    const [generalError, setGeneralError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const validateForm = (): boolean => {
+        const newErrors: {
+            name?: string;
+            lastname?: string;
+            email?: string;
+            username?: string;
+            password?: string;
+            confirmPassword?: string;
+        } = {};
+
+        if (!name.trim()) newErrors.name = "El nombre es requerido";
+        if (!lastname.trim()) newErrors.lastname = "El apellido es requerido";
+        if (!username.trim())
+            newErrors.username = "El nombre de usuario es requerido";
+
+        const emailError = validators.email(email);
+        if (emailError) newErrors.email = emailError;
+
+        const passwordError = validators.password(password);
+        if (passwordError) newErrors.password = passwordError;
+
+        if (password !== confirmPassword) {
+            newErrors.confirmPassword = "Las contraseñas no coinciden";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setGeneralError("");
+
+        if (!validateForm()) return;
+
+        setIsLoading(true);
+
+        try {
+            const response = await authService.register({
+                name,
+                lastname,
+                email,
+                username,
+                password,
+            });
+            authService.saveToken(response.data.token);
+
+            onSuccess?.();
+        } catch (error) {
+            if (error instanceof ApiError) {
+                if (error.errors) {
+                    const backendErrors: {
+                        name?: string;
+                        lastname?: string;
+                        email?: string;
+                        username?: string;
+                        password?: string;
+                    } = {};
+                    error.errors.forEach((err) => {
+                        const field = err.field as keyof typeof backendErrors;
+                        if (field in backendErrors) {
+                            backendErrors[field] = err.message;
+                        }
+                    });
+                    setErrors(backendErrors);
+                } else {
+                    setGeneralError(error.message);
+                }
+            } else {
+                setGeneralError("Error de conexión. Intenta nuevamente.");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="form">
+            <div className="form__header">
+                <h1 className="form__title">Crear Cuenta</h1>
+                <p className="form__subtitle">
+                    Completa el formulario para registrarte
+                </p>
+            </div>
+
+            {generalError && <div className="form__error">{generalError}</div>}
+
+            <div className="form__field">
+                <Input
+                    type="text"
+                    label="Nombre"
+                    placeholder="Juan"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    error={errors.name}
+                    disabled={isLoading}
+                    autoComplete="given-name"
+                />
+            </div>
+
+            <div className="form__field">
+                <Input
+                    type="text"
+                    label="Apellido"
+                    placeholder="Pérez"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    error={errors.lastname}
+                    disabled={isLoading}
+                    autoComplete="family-name"
+                />
+            </div>
+
+            <div className="form__field">
+                <Input
+                    type="email"
+                    label="Email"
+                    placeholder="correo@ejemplo.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    error={errors.email}
+                    disabled={isLoading}
+                    autoComplete="email"
+                />
+            </div>
+
+            <div className="form__field">
+                <Input
+                    type="text"
+                    label="Nombre de Usuario"
+                    placeholder="juanperez"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    error={errors.username}
+                    disabled={isLoading}
+                    autoComplete="username"
+                />
+            </div>
+
+            <div className="form__field">
+                <Input
+                    type="password"
+                    label="Contraseña"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    error={errors.password}
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                />
+            </div>
+
+            <div className="form__field">
+                <Input
+                    type="password"
+                    label="Confirmar Contraseña"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    error={errors.confirmPassword}
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                />
+            </div>
+
+            <div className="form__footer">
+                <Button type="submit" fullWidth isLoading={isLoading}>
+                    Registrarse
+                </Button>
+            </div>
+        </form>
+    );
+};
