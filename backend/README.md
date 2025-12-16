@@ -14,6 +14,7 @@ Para poder ejecutar el proyecto primero ejecutar:
 -   pnpm prisma init
 -   pnpm prisma generate
 -   pnpm prisma:migrate init
+-   pnpm seed # Datos listos para poblar algunas tablas
 
 Para ejecutar el backend:
 
