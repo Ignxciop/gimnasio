@@ -1,20 +1,19 @@
 import { prisma } from "../config/prisma.js";
 
 async function main() {
-    console.log("Iniciando seed de roles ...");
+    console.log("Iniciando seed de roles »");
 
     const roles = ["administrador", "manager", "usuario"];
 
-    for (const roleName of roles) {
+    for (const roleData of roles) {
         const role = await prisma.role.upsert({
-            where: { role: roleName },
+            where: { role: roleData.role },
             update: {},
-            create: {
-                role: roleName,
-            },
+            create: roleData,
         });
-        console.log("Rol creado/verificado:", role.role);
+        console.log(`Rol creado/verificado: ${role.role} (ID: ${role.id})`);
     }
+
     console.log("Seed completado exitosamente");
 }
 
