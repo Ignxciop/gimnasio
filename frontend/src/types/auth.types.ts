@@ -1,0 +1,35 @@
+export interface LoginCredentials {
+    email: string;
+    password: string;
+}
+
+export interface User {
+    id: string;
+    name: string;
+    lastname: string;
+    username: string;
+    email: string;
+    is_active: boolean;
+    role: {
+        id: number;
+        role: string;
+    };
+}
+
+export interface LoginResponse {
+    success: boolean;
+    message: string;
+    data: {
+        user: User;
+        token: string;
+    };
+}
+
+export interface AuthError {
+    success: false;
+    error: string;
+    errors?: Array<{
+        field: string;
+        message: string;
+    }>;
+}
