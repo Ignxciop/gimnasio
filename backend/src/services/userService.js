@@ -1,0 +1,64 @@
+import bcryptjs from "bcryptjs";
+import { prisma } from "../config/prisma.js";
+
+export class UserService {
+    async createUser({ name, lastname, username, email, password, roleId }) {
+        const existingEmail = await prisma.user.findUnique({
+            where: { email },
+        });
+        if (existingEmail) {
+            const error = new Error("El email ya está registrado");
+            error.statusCode = 409;
+            throw error;
+        }
+
+        const existingUsername = await prisma.user.findUnique({
+            where: { username },
+        });
+        if (existingUsername) {
+            const error = new Error("El nombre de usuario ya está en uso");
+            error.statusCode = 409;
+            throw error;
+        }
+
+        const roleExists = await prisma.role.findUnique({
+            where: { roleId },
+        });
+        if (!roleExists) {
+            const error = new Error("El rol especificado no existe");
+            error.statusCode = 409;
+            throw error;
+        }
+
+        const hashedPassword = await bcryptjs.hash(password, 10);
+
+        const user = await prisma.user.create({
+            data: {
+                name,
+                lastname,
+                username,
+                email,
+                password: hashedPassword,
+                roleId,
+                is_active: true,
+            },
+            select: {
+                id: true,
+                name: true,
+                lastname: true,
+                username: true,
+                email: true,
+                createdAt: true,
+                is_active: true,
+                role: {
+                    select: {
+                        id: true,
+                        role: true,
+                    },
+                },
+            },
+        });
+
+        return user;
+    }
+}
