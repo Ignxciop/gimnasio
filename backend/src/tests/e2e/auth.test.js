@@ -1,3 +1,4 @@
+import { jest, describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 import request from "supertest";
 import express from "express";
 import authRoutes from "../../routes/authRoutes.js";
@@ -10,18 +11,29 @@ app.use("/api/auth", authRoutes);
 app.use(errorHandler);
 
 describe("POST /api/auth/register", () => {
+    const testUserIds = [];
+    let testRoleId;
+
     beforeAll(async () => {
-        await prisma.role.upsert({
+        const role = await prisma.role.upsert({
             where: { role: "usuario" },
             update: {},
             create: { role: "usuario" },
         });
+        testRoleId = role.id;
     });
 
     afterAll(async () => {
-        await prisma.user.deleteMany({
-            where: { email: { contains: "test" } },
-        });
+        if (testUserIds.length > 0) {
+            await prisma.user.deleteMany({
+                where: {
+                    id: {
+                        in: testUserIds,
+                    },
+                },
+            });
+            console.log(`✓ Limpiados ${testUserIds.length} usuarios de prueba`);
+        }
         await prisma.$disconnect();
     });
 
@@ -35,7 +47,7 @@ describe("POST /api/auth/register", () => {
             username: uniqueUsername,
             email: uniqueEmail,
             password: "Test1234",
-            roleId: 1,
+            roleId: testRoleId,
         });
 
         expect(response.status).toBe(201);
@@ -43,6 +55,10 @@ describe("POST /api/auth/register", () => {
         expect(response.body.data).toHaveProperty("id");
         expect(response.body.data.email).toBe(uniqueEmail);
         expect(response.body.data).not.toHaveProperty("password");
+
+        if (response.body.data?.id) {
+            testUserIds.push(response.body.data.id);
+        }
     });
 
     it("debería rechazar datos inválidos", async () => {
@@ -65,14 +81,20 @@ describe("POST /api/auth/register", () => {
         const username1 = `user1${Date.now()}`;
         const username2 = `user2${Date.now()}`;
 
-        await request(app).post("/api/auth/register").send({
-            name: "User",
-            lastname: "One",
-            username: username1,
-            email: uniqueEmail,
-            password: "Test1234",
-            roleId: 1,
-        });
+        const firstResponse = await request(app)
+            .post("/api/auth/register")
+            .send({
+                name: "User",
+                lastname: "One",
+                username: username1,
+                email: uniqueEmail,
+                password: "Test1234",
+                roleId: testRoleId,
+            });
+
+        if (firstResponse.body.data?.id) {
+            testUserIds.push(firstResponse.body.data.id);
+        }
 
         const response = await request(app).post("/api/auth/register").send({
             name: "User",
@@ -80,7 +102,7 @@ describe("POST /api/auth/register", () => {
             username: username2,
             email: uniqueEmail,
             password: "Test1234",
-            roleId: 1,
+            roleId: testRoleId,
         });
 
         expect(response.status).toBe(409);
@@ -92,14 +114,20 @@ describe("POST /api/auth/register", () => {
         const email1 = `user1${Date.now()}@example.com`;
         const email2 = `user2${Date.now()}@example.com`;
 
-        await request(app).post("/api/auth/register").send({
-            name: "User",
-            lastname: "One",
-            username: uniqueUsername,
-            email: email1,
-            password: "Test1234",
-            roleId: 1,
-        });
+        const firstResponse = await request(app)
+            .post("/api/auth/register")
+            .send({
+                name: "User",
+                lastname: "One",
+                username: uniqueUsername,
+                email: email1,
+                password: "Test1234",
+                roleId: testRoleId,
+            });
+
+        if (firstResponse.body.data?.id) {
+            testUserIds.push(firstResponse.body.data.id);
+        }
 
         const response = await request(app).post("/api/auth/register").send({
             name: "User",
@@ -107,7 +135,7 @@ describe("POST /api/auth/register", () => {
             username: uniqueUsername,
             email: email2,
             password: "Test1234",
-            roleId: 1,
+            roleId: testRoleId,
         });
 
         expect(response.status).toBe(409);
