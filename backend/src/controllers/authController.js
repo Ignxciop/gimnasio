@@ -1,4 +1,5 @@
 import userService from "../services/userService.js";
+import authService from "../services/authService.js";
 
 class AuthController {
     async register(req, res, next) {
@@ -19,6 +20,22 @@ class AuthController {
                 success: true,
                 message: "Usuario registrado exitosamente",
                 data: user,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async login(req, res, next) {
+        try {
+            const { email, password } = req.body;
+
+            const result = await authService.login({ email, password });
+
+            res.status(200).json({
+                success: true,
+                message: "Inicio de sesión exitoso",
+                data: result,
             });
         } catch (error) {
             next(error);
