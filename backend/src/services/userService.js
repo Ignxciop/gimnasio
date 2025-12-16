@@ -22,7 +22,7 @@ class UserService {
         }
 
         const roleExists = await prisma.role.findUnique({
-            where: { roleId },
+            where: { id: roleId },
         });
         if (!roleExists) {
             const error = new Error("El rol especificado no existe");
