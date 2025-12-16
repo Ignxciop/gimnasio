@@ -1,6 +1,6 @@
 import userService from "../services/userService.js";
 
-export class AuthController {
+class AuthController {
     async register(req, res, next) {
         try {
             const { name, lastname, username, email, password, roleId } =
@@ -25,3 +25,5 @@ export class AuthController {
         }
     }
 }
+
+export default new AuthController();

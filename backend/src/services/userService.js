@@ -1,7 +1,7 @@
 import bcryptjs from "bcryptjs";
 import { prisma } from "../config/prisma.js";
 
-export class UserService {
+class UserService {
     async createUser({ name, lastname, username, email, password, roleId }) {
         const existingEmail = await prisma.user.findUnique({
             where: { email },
@@ -62,3 +62,5 @@ export class UserService {
         return user;
     }
 }
+
+export default new UserService();
