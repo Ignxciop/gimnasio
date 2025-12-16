@@ -1,9 +1,18 @@
 import { api } from "./api";
-import type { LoginCredentials, LoginResponse } from "../types/auth.types";
+import type {
+    LoginCredentials,
+    LoginResponse,
+    RegisterData,
+    RegisterResponse,
+} from "../types/auth.types";
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
         return api.post<LoginResponse>("/api/auth/login", credentials);
+    },
+
+    async register(data: RegisterData): Promise<RegisterResponse> {
+        return api.post<RegisterResponse>("/api/auth/register", data);
     },
 
     saveToken(token: string): void {
