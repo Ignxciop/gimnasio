@@ -40,3 +40,20 @@
     font-size: var(--font-size-sm);
     text-align: center;
 }
+
+.form__link {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.form__link-text {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+}
+
+.form__link-text:hover {
+    text-decoration: underline;
+}
