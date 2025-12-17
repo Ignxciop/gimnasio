@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Home, User, Dumbbell, Shield } from "lucide-react";
+import { Home, User, Dumbbell, Shield, Settings } from "lucide-react";
 import { getUserFromToken } from "../../utils/getUserFromToken";
 import "./bottomnav.css";
 
 export const BottomNav: React.FC = () => {
     const user = getUserFromToken();
     const isAdmin = user?.roleId === 1;
+    const canManage = user?.roleId === 1 || user?.roleId === 2;
 
     return (
         <nav className="bottomnav">
@@ -42,6 +43,19 @@ export const BottomNav: React.FC = () => {
                 >
                     <Shield className="bottomnav__icon" size={22} />
                     <span className="bottomnav__label">Admin</span>
+                </NavLink>
+            )}
+
+            {canManage && (
+                <NavLink
+                    to="/gestion"
+                    className={({ isActive }) =>
+                        "bottomnav__link" +
+                        (isActive ? " bottomnav__link--active" : "")
+                    }
+                >
+                    <Settings className="bottomnav__icon" size={22} />
+                    <span className="bottomnav__label">Gestión</span>
                 </NavLink>
             )}
 

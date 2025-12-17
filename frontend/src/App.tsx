@@ -5,6 +5,7 @@ import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
 import { Admin } from "./pages/Admin";
+import { Gestion } from "./pages/Gestion";
 import { authService } from "./services/authService";
 
 function App() {
@@ -79,6 +80,17 @@ function App() {
                     element={
                         isAuthenticated ? (
                             <Admin />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+
+                <Route
+                    path="/gestion"
+                    element={
+                        isAuthenticated ? (
+                            <Gestion />
                         ) : (
                             <Navigate to="/login" replace />
                         )

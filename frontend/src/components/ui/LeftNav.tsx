@@ -6,6 +6,7 @@ import "./leftnav.css";
 export const LeftNav: React.FC = () => {
     const user = getUserFromToken();
     const isAdmin = user?.roleId === 1;
+    const canManage = user?.roleId === 1 || user?.roleId === 2;
 
     return (
         <nav className="leftnav">
@@ -46,6 +47,19 @@ export const LeftNav: React.FC = () => {
                             }
                         >
                             Administración
+                        </NavLink>
+                    </li>
+                )}
+                {canManage && (
+                    <li>
+                        <NavLink
+                            to="/gestion"
+                            className={({ isActive }) =>
+                                "leftnav__link" +
+                                (isActive ? " leftnav__link--active" : "")
+                            }
+                        >
+                            Gestión
                         </NavLink>
                     </li>
                 )}
