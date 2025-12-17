@@ -50,8 +50,12 @@ export const EquipmentModal: React.FC<EquipmentModalProps> = ({
             await onSubmit(name.trim());
             setName("");
             onClose();
-        } catch (err: any) {
-            setError(err.message || "Error al guardar el equipamiento");
+        } catch (err: unknown) {
+            const errorMessage =
+                err instanceof Error
+                    ? err.message
+                    : "Error al guardar el equipamiento";
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
