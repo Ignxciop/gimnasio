@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "./ui/Modal";
+import { validators } from "../utils/validators";
 import type { Equipment } from "../services/equipmentService";
 import "./equipmentModal.css";
 
@@ -35,13 +36,9 @@ export const EquipmentModal: React.FC<EquipmentModalProps> = ({
         e.preventDefault();
         setError("");
 
-        if (name.trim().length < 2) {
-            setError("El nombre debe tener al menos 2 caracteres");
-            return;
-        }
-
-        if (name.trim().length > 100) {
-            setError("El nombre no puede exceder 100 caracteres");
+        const validationError = validators.name(name);
+        if (validationError) {
+            setError(validationError);
             return;
         }
 

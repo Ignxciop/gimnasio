@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "./ui/Modal";
+import { validators } from "../utils/validators";
 import type { Exercise } from "../services/exerciseService";
 import type { Equipment } from "../services/equipmentService";
 import type { MuscleGroup } from "../services/muscleGroupService";
@@ -51,23 +52,27 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
         e.preventDefault();
         setError("");
 
-        if (name.trim().length < 2) {
-            setError("El nombre debe tener al menos 2 caracteres");
+        const nameError = validators.name(name);
+        if (nameError) {
+            setError(nameError);
             return;
         }
 
-        if (name.trim().length > 100) {
-            setError("El nombre no puede exceder 100 caracteres");
+        const equipmentError = validators.select(
+            equipmentId,
+            "un equipamiento"
+        );
+        if (equipmentError) {
+            setError(equipmentError);
             return;
         }
 
-        if (equipmentId === 0) {
-            setError("Debes seleccionar un equipamiento");
-            return;
-        }
-
-        if (muscleGroupId === 0) {
-            setError("Debes seleccionar un grupo muscular");
+        const muscleGroupError = validators.select(
+            muscleGroupId,
+            "un grupo muscular"
+        );
+        if (muscleGroupError) {
+            setError(muscleGroupError);
             return;
         }
 
