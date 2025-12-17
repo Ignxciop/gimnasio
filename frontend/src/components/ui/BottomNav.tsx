@@ -12,7 +12,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ onLogout }) => {
             <NavLink
                 to="/home"
                 className={({ isActive }) =>
-                    "bottomnav__link" + (isActive ? " bottomnav__link--active" : "")
+                    "bottomnav__link" +
+                    (isActive ? " bottomnav__link--active" : "")
                 }
             >
                 <span className="bottomnav__icon">🏠</span>
