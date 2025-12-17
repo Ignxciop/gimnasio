@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MainLayout } from "../layouts/MainLayout";
 import { ProfileCard } from "../components/ProfileCard";
 import { getUserFromToken } from "../utils/getUserFromToken";
 import { useNavigate } from "react-router-dom";
+import type { User } from "../types/auth.types";
 
 interface ProfileProps {
     onLogout?: () => void;
@@ -10,10 +11,18 @@ interface ProfileProps {
 
 export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     const navigate = useNavigate();
-    const user = getUserFromToken();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const userData = getUserFromToken();
+        if (!userData) {
+            navigate("/login", { replace: true });
+        } else {
+            setUser(userData);
+        }
+    }, [navigate]);
 
     if (!user) {
-        navigate("/login", { replace: true });
         return null;
     }
 
