@@ -1,5 +1,6 @@
 import React from "react";
-import { User, Mail, Shield } from "lucide-react";
+import { User, Mail, Shield, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { User as UserType } from "../types/auth.types";
 import "./profileCard.css";
 
@@ -8,6 +9,12 @@ interface ProfileCardProps {
 }
 
 export const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
     return (
         <div className="profile-card">
             <div className="profile-card__header">
@@ -47,6 +54,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
                     </span>
                 </div>
             </div>
+
+            <button className="profile-card__logout" onClick={handleLogout}>
+                <LogOut size={20} />
+                Cerrar sesión
+            </button>
         </div>
     );
 };

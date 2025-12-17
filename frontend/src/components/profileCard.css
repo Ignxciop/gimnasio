@@ -81,6 +81,28 @@
     font-weight: var(--font-weight-medium);
 }
 
+.profile-card__logout {
+    margin: 0 var(--spacing-2xl) var(--spacing-2xl);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--gradient-accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.profile-card__logout:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
 @media (max-width: 768px) {
     .profile-card {
         max-width: 100%;
@@ -92,5 +114,9 @@
 
     .profile-card__info {
         padding: var(--spacing-lg);
+    }
+
+    .profile-card__logout {
+        margin: 0 var(--spacing-lg) var(--spacing-lg);
     }
 }
