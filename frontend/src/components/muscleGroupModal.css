@@ -1,0 +1,152 @@
+.muscle-group-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.muscle-group-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.muscle-group-modal__content {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.muscle-group-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.muscle-group-modal__title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.muscle-group-modal__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+
+.muscle-group-modal__close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-text-primary);
+}
+
+.muscle-group-modal__form {
+    padding: var(--spacing-xl);
+}
+
+.muscle-group-modal__field {
+    margin-bottom: var(--spacing-lg);
+}
+
+.muscle-group-modal__label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.muscle-group-modal__input {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    transition: border-color 0.2s;
+}
+
+.muscle-group-modal__input:focus {
+    outline: none;
+    border-color: var(--accent-mid);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.muscle-group-modal__input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.muscle-group-modal__error {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--accent-mid);
+    margin-top: var(--spacing-xs);
+}
+
+.muscle-group-modal__actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+.muscle-group-modal__button {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.muscle-group-modal__button--cancel {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.muscle-group-modal__button--cancel:hover:not(:disabled) {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.muscle-group-modal__button--submit {
+    background: var(--gradient-accent);
+    color: white;
+}
+
+.muscle-group-modal__button--submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.muscle-group-modal__button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
