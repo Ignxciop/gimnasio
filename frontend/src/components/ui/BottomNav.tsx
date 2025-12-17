@@ -1,13 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Home, User, Dumbbell, LogOut } from "lucide-react";
+import { Home, User, Dumbbell } from "lucide-react";
 import "./bottomnav.css";
 
-interface BottomNavProps {
-    onLogout?: () => void;
-}
-
-export const BottomNav: React.FC<BottomNavProps> = ({ onLogout }) => {
+export const BottomNav: React.FC = () => {
     return (
         <nav className="bottomnav">
             <NavLink
@@ -36,11 +32,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({ onLogout }) => {
                 <Dumbbell className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Rutinas</span>
             </NavLink>
-
-            <button className="bottomnav__link" onClick={onLogout}>
-                <LogOut className="bottomnav__icon" size={22} />
-                <span className="bottomnav__label">Salir</span>
-            </button>
         </nav>
     );
 };

@@ -2,11 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import "./leftnav.css";
 
-interface LeftNavProps {
-    onLogout?: () => void;
-}
-
-export const LeftNav: React.FC<LeftNavProps> = ({ onLogout }) => {
+export const LeftNav: React.FC = () => {
     return (
         <nav className="leftnav">
             <div className="leftnav__brand">
@@ -42,12 +38,6 @@ export const LeftNav: React.FC<LeftNavProps> = ({ onLogout }) => {
                     </NavLink>
                 </li>
             </ul>
-
-            <div className="leftnav__footer">
-                <button className="leftnav__logout" onClick={onLogout}>
-                    Cerrar sesión
-                </button>
-            </div>
         </nav>
     );
 };
