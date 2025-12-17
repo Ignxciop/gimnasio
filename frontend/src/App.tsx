@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
+import { Home } from "./pages/Home";
 import { authService } from "./services/authService";
 
 function App() {
@@ -22,36 +23,67 @@ function App() {
         setIsAuthenticated(false);
     };
 
-    if (!isAuthenticated) {
-        return (
-            <BrowserRouter>
-                <Routes>
-                    <Route
-                        path="/login"
-                        element={<Login onLoginSuccess={handleLoginSuccess} />}
-                    />
-                    <Route
-                        path="/register"
-                        element={
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route
+                    path="/login"
+                    element={
+                        isAuthenticated ? (
+                            <Navigate to="/home" replace />
+                        ) : (
+                            <Login onLoginSuccess={handleLoginSuccess} />
+                        )
+                    }
+                />
+
+                <Route
+                    path="/register"
+                    element={
+                        isAuthenticated ? (
+                            <Navigate to="/home" replace />
+                        ) : (
                             <Register
                                 onRegisterSuccess={handleRegisterSuccess}
                             />
-                        }
-                    />
-                    <Route
-                        path="*"
-                        element={<Navigate to="/login" replace />}
-                    />
-                </Routes>
-            </BrowserRouter>
-        );
-    }
+                        )
+                    }
+                />
 
-    return (
-        <div>
-            <h1>Bienvenido!</h1>
-            <button onClick={handleLogout}>Cerrar Sesión</button>
-        </div>
+                <Route
+                    path="/home"
+                    element={
+                        isAuthenticated ? (
+                            <Home onLogout={handleLogout} />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+
+                <Route
+                    path="/"
+                    element={
+                        isAuthenticated ? (
+                            <Navigate to="/home" replace />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+
+                <Route
+                    path="*"
+                    element={
+                        isAuthenticated ? (
+                            <Navigate to="/home" replace />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+            </Routes>
+        </BrowserRouter>
     );
 }
 
