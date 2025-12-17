@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { Modal } from "./ui/Modal";
 import type { Equipment } from "../services/equipmentService";
 import "./equipmentModal.css";
 
@@ -61,63 +61,46 @@ export const EquipmentModal: React.FC<EquipmentModalProps> = ({
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="equipment-modal">
-            <div className="equipment-modal__overlay" onClick={onClose} />
-            <div className="equipment-modal__content">
-                <div className="equipment-modal__header">
-                    <h2 className="equipment-modal__title">{title}</h2>
-                    <button
-                        onClick={onClose}
-                        className="equipment-modal__close"
-                        type="button"
-                    >
-                        <X size={24} />
-                    </button>
+        <Modal isOpen={isOpen} onClose={onClose} title={title}>
+            <form onSubmit={handleSubmit} className="equipment-modal__form">
+                <div className="equipment-modal__field">
+                    <label className="equipment-modal__label">
+                        Nombre del equipamiento
+                    </label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Ej: Mancuernas, Barra olímpica..."
+                        className="equipment-modal__input"
+                        disabled={loading}
+                        autoFocus
+                    />
                 </div>
 
-                <form onSubmit={handleSubmit} className="equipment-modal__form">
-                    <div className="equipment-modal__field">
-                        <label className="equipment-modal__label">
-                            Nombre del equipamiento
-                        </label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Ej: Máquina, Barra, Polea..."
-                            className="equipment-modal__input"
-                            disabled={loading}
-                            autoFocus
-                        />
-                        {error && (
-                            <span className="equipment-modal__error">
-                                {error}
-                            </span>
-                        )}
-                    </div>
+                {error && (
+                    <span className="equipment-modal__error">{error}</span>
+                )}
 
-                    <div className="equipment-modal__actions">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="equipment-modal__button equipment-modal__button--cancel"
-                            disabled={loading}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="equipment-modal__button equipment-modal__button--submit"
-                            disabled={loading}
-                        >
-                            {loading ? "Guardando..." : "Guardar"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="equipment-modal__actions">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="equipment-modal__button equipment-modal__button--cancel"
+                        disabled={loading}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="equipment-modal__button equipment-modal__button--submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Guardando..." : "Guardar"}
+                    </button>
+                </div>
+            </form>
+        </Modal>
     );
 };
