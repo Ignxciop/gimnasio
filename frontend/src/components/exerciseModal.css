@@ -49,10 +49,11 @@
     padding: 0.5rem;
 }
 
-.exercise-modal__select option:checked,
-.exercise-modal__select option:hover {
+.exercise-modal__select option:checked {
     background: linear-gradient(135deg, var(--accent-start), var(--accent-mid));
     color: white;
+    font-weight: 600;
+}
 }
 
 .exercise-modal__input:disabled,
