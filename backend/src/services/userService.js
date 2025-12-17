@@ -21,13 +21,15 @@ class UserService {
             throw error;
         }
 
-        const roleExists = await prisma.role.findUnique({
-            where: { id: roleId },
-        });
-        if (!roleExists) {
-            const error = new Error("El rol especificado no existe");
-            error.statusCode = 409;
-            throw error;
+        if (roleId) {
+            const roleExists = await prisma.role.findUnique({
+                where: { id: roleId },
+            });
+            if (!roleExists) {
+                const error = new Error("El rol especificado no existe");
+                error.statusCode = 409;
+                throw error;
+            }
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10);
