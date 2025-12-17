@@ -5,6 +5,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
 import equipmentRoutes from "./src/routes/equipmentRoutes.js";
+import muscleGroupRoutes from "./src/routes/muscleGroupRoutes.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const port = config.port;
@@ -24,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/equipment", equipmentRoutes);
+app.use("/api/muscle-groups", muscleGroupRoutes);
 
 app.use(errorHandler);
 
