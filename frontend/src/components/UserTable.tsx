@@ -130,6 +130,73 @@ export const UserTable: React.FC<UserTableProps> = ({
                         ))}
                     </tbody>
                 </table>
+
+                <div className="user-table__cards">
+                    {users.map((user) => (
+                        <div key={user.id} className="user-card">
+                            <div className="user-card__header">
+                                <div className="user-card__user-info">
+                                    <h3 className="user-card__name">
+                                        {user.name} {user.lastname}
+                                    </h3>
+                                    <p className="user-card__username">
+                                        @{user.username}
+                                    </p>
+                                    <p className="user-card__email">
+                                        {user.email}
+                                    </p>
+                                </div>
+                                <span
+                                    className={`user-card__status-badge ${
+                                        user.is_active
+                                            ? "user-card__status-badge--active"
+                                            : "user-card__status-badge--inactive"
+                                    }`}
+                                >
+                                    {user.is_active ? (
+                                        <>
+                                            <Check size={14} /> Activo
+                                        </>
+                                    ) : (
+                                        <>
+                                            <X size={14} /> Inactivo
+                                        </>
+                                    )}
+                                </span>
+                            </div>
+
+                            <div className="user-card__role">
+                                <label className="user-card__label">Rol</label>
+                                <select
+                                    value={user.roleId}
+                                    onChange={(e) =>
+                                        handleRoleChange(
+                                            user.id,
+                                            parseInt(e.target.value)
+                                        )
+                                    }
+                                    disabled={loading === user.id}
+                                    className="user-card__select"
+                                >
+                                    <option value={1}>Administrador</option>
+                                    <option value={2}>Manager</option>
+                                    <option value={3}>Usuario</option>
+                                </select>
+                            </div>
+
+                            <button
+                                onClick={() =>
+                                    handleStatusToggle(user.id, user.is_active)
+                                }
+                                disabled={loading === user.id}
+                                className="user-card__button"
+                            >
+                                <Shield size={16} />
+                                {user.is_active ? "Desactivar" : "Activar"}
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
