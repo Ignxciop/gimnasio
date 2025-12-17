@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { RegisterForm } from "../components/RegisterForm";
 
@@ -8,9 +8,16 @@ interface RegisterProps {
 }
 
 export const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
+    const navigate = useNavigate();
+
+    const handleSuccess = () => {
+        onRegisterSuccess?.();
+        navigate("/home", { replace: true });
+    };
+
     return (
         <AuthLayout>
-            <RegisterForm onSuccess={onRegisterSuccess} />
+            <RegisterForm onSuccess={handleSuccess} />
             <div className="form__link">
                 <p>
                     ¿Ya tienes cuenta?{" "}

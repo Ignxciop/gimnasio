@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../layouts/AuthLayout";
 import { LoginForm } from "../components/LoginForm";
 
@@ -8,9 +8,16 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+    const navigate = useNavigate();
+
+    const handleSuccess = () => {
+        onLoginSuccess?.();
+        navigate("/home", { replace: true });
+    };
+
     return (
         <AuthLayout>
-            <LoginForm onSuccess={onLoginSuccess} />
+            <LoginForm onSuccess={handleSuccess} />
             <div className="form__link">
                 <p>
                     ¿No tienes cuenta?{" "}
