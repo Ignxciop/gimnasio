@@ -1,0 +1,205 @@
+.exercise-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.exercise-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+}
+
+.exercise-modal__content {
+    position: relative;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.exercise-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.exercise-modal__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(
+        135deg,
+        var(--accent-start) 0%,
+        var(--accent-mid) 50%,
+        var(--accent-end) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.exercise-modal__close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.exercise-modal__close:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.exercise-modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.exercise-modal__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.exercise-modal__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.exercise-modal__input,
+.exercise-modal__select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.exercise-modal__input:focus,
+.exercise-modal__select:focus {
+    outline: none;
+    border-color: var(--accent-mid);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.exercise-modal__input::placeholder {
+    color: var(--text-muted);
+}
+
+.exercise-modal__select {
+    cursor: pointer;
+}
+
+.exercise-modal__select option {
+    background: var(--background-primary);
+    color: var(--text-primary);
+}
+
+.exercise-modal__input:disabled,
+.exercise-modal__select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.exercise-modal__error {
+    font-size: 0.875rem;
+    color: var(--accent-start);
+    padding: 0.75rem;
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    border-radius: 8px;
+}
+
+.exercise-modal__actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.exercise-modal__button {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.exercise-modal__button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.exercise-modal__button--cancel {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.exercise-modal__button--cancel:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.exercise-modal__button--submit {
+    background: linear-gradient(
+        135deg,
+        var(--accent-start) 0%,
+        var(--accent-mid) 50%,
+        var(--accent-end) 100%
+    );
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.exercise-modal__button--submit:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .exercise-modal__content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .exercise-modal__title {
+        font-size: 1.25rem;
+    }
+
+    .exercise-modal__actions {
+        flex-direction: column;
+    }
+
+    .exercise-modal__button {
+        width: 100%;
+    }
+}
