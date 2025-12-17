@@ -5,18 +5,14 @@ import "../styles/mainLayout.css";
 
 interface MainLayoutProps {
     children: React.ReactNode;
-    onLogout?: () => void;
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({
-    children,
-    onLogout,
-}) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     return (
         <div className="main-layout">
-            <LeftNav onLogout={onLogout} />
+            <LeftNav />
             <main className="main-layout__content">{children}</main>
-            <BottomNav onLogout={onLogout} />
+            <BottomNav />
         </div>
     );
 };

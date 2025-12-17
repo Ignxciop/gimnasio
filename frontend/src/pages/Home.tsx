@@ -1,13 +1,9 @@
 import React from "react";
 import { MainLayout } from "../layouts/MainLayout";
 
-interface HomeProps {
-    onLogout?: () => void;
-}
-
-export const Home: React.FC<HomeProps> = ({ onLogout }) => {
+export const Home: React.FC = () => {
     return (
-        <MainLayout onLogout={onLogout}>
+        <MainLayout>
             <section>
                 <h1 style={{ color: "var(--color-text-primary)" }}>Inicio</h1>
                 <p style={{ color: "var(--color-text-secondary)" }}>
