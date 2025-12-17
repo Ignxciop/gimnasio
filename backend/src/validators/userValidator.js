@@ -45,8 +45,7 @@ export const registerValidation = [
         ),
 
     body("roleId")
-        .notEmpty()
-        .withMessage("El rol es requerido")
+        .optional()
         .isInt({ min: 1 })
         .withMessage("El rol debe ser un número válido"),
 ];
