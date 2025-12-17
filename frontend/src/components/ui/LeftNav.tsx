@@ -1,8 +1,12 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { getUserFromToken } from "../../utils/getUserFromToken";
 import "./leftnav.css";
 
 export const LeftNav: React.FC = () => {
+    const user = getUserFromToken();
+    const isAdmin = user?.roleId === 1;
+
     return (
         <nav className="leftnav">
             <div className="leftnav__brand">
@@ -32,6 +36,19 @@ export const LeftNav: React.FC = () => {
                         Perfil
                     </NavLink>
                 </li>
+                {isAdmin && (
+                    <li>
+                        <NavLink
+                            to="/admin"
+                            className={({ isActive }) =>
+                                "leftnav__link" +
+                                (isActive ? " leftnav__link--active" : "")
+                            }
+                        >
+                            Administración
+                        </NavLink>
+                    </li>
+                )}
                 <li>
                     <NavLink to="#" className="leftnav__link">
                         Rutinas
