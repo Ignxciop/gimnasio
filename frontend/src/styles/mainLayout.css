@@ -9,3 +9,18 @@
     padding: var(--spacing-2xl);
     background-color: var(--color-bg-primary);
 }
+
+@media (max-width: 768px) {
+    .main-layout {
+        flex-direction: column;
+    }
+
+    .main-layout .leftnav {
+        display: none;
+    }
+
+    .main-layout__content {
+        padding: var(--spacing-lg);
+        padding-bottom: 5rem;
+    }
+}

@@ -60,3 +60,9 @@
 .leftnav__logout:hover {
     color: white;
 }
+
+@media (max-width: 768px) {
+    .leftnav {
+        display: none;
+    }
+}
