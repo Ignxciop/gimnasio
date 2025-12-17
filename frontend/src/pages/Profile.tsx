@@ -1,35 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { MainLayout } from "../layouts/MainLayout";
 import { ProfileCard } from "../components/ProfileCard";
 import { profileService } from "../services/profileService";
-import { useNavigate } from "react-router-dom";
+import { useFetch } from "../hooks/useFetch";
 import type { User } from "../types/auth.types";
 
 interface ProfileProps {
-    onLogout?: () => void;
+    onLogout: () => void;
 }
 
 export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
-    const navigate = useNavigate();
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const userFetch = useFetch<User>({
+        fetchFn: profileService.getProfile,
+    });
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const userData = await profileService.getProfile();
-                setUser(userData);
-            } catch (error) {
-                navigate("/login", { replace: true });
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        userFetch.execute();
+    }, []);
 
-        fetchProfile();
-    }, [navigate]);
-
-    if (isLoading) {
+    if (userFetch.loading) {
         return (
             <MainLayout>
                 <div>Cargando perfil...</div>
@@ -37,7 +26,7 @@ export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
         );
     }
 
-    if (!user) {
+    if (!userFetch.data) {
         return null;
     }
 
@@ -52,7 +41,7 @@ export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
                 >
                     Mi Perfil
                 </h1>
-                <ProfileCard user={user} onLogout={onLogout} />
+                <ProfileCard user={userFetch.data} onLogout={onLogout} />
             </section>
         </MainLayout>
     );
