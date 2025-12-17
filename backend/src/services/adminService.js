@@ -10,17 +10,17 @@ class AdminService {
                 username: true,
                 email: true,
                 is_active: true,
-                role_id: true,
+                roleId: true,
                 role: {
                     select: {
                         id: true,
                         role: true,
                     },
                 },
-                created_at: true,
+                createdAt: true,
             },
             orderBy: {
-                created_at: "desc",
+                createdAt: "desc",
             },
         });
 
@@ -50,7 +50,7 @@ class AdminService {
 
         const updatedUser = await prisma.user.update({
             where: { id: userId },
-            data: { role_id: roleId },
+            data: { roleId: roleId },
             select: {
                 id: true,
                 name: true,
@@ -58,7 +58,7 @@ class AdminService {
                 username: true,
                 email: true,
                 is_active: true,
-                role_id: true,
+                roleId: true,
                 role: {
                     select: {
                         id: true,
@@ -92,7 +92,7 @@ class AdminService {
                 username: true,
                 email: true,
                 is_active: true,
-                role_id: true,
+                roleId: true,
                 role: {
                     select: {
                         id: true,
