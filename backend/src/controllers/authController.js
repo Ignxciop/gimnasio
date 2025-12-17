@@ -13,7 +13,7 @@ class AuthController {
                 username,
                 email,
                 password,
-                roleId: roleId ? parseInt(roleId) : 2, // Por defecto rol 2 (user)
+                roleId: roleId ? parseInt(roleId) : 3,
             });
 
             res.status(201).json({
