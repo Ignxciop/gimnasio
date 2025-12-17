@@ -6,11 +6,14 @@ import { EquipmentList } from "../components/EquipmentList";
 import { EquipmentModal } from "../components/EquipmentModal";
 import { MuscleGroupList } from "../components/MuscleGroupList";
 import { MuscleGroupModal } from "../components/MuscleGroupModal";
+import { ExerciseList } from "../components/ExerciseList";
+import { ExerciseModal } from "../components/ExerciseModal";
 import { equipmentService, type Equipment } from "../services/equipmentService";
 import {
     muscleGroupService,
     type MuscleGroup,
 } from "../services/muscleGroupService";
+import { exerciseService, type Exercise } from "../services/exerciseService";
 import { authService } from "../services/authService";
 import "../styles/gestion.css";
 
@@ -20,6 +23,7 @@ export const Gestion: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>("equipamiento");
     const [equipment, setEquipment] = useState<Equipment[]>([]);
     const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
+    const [exercises, setExercises] = useState<Exercise[]>([]);
     const [loading, setLoading] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(
@@ -27,6 +31,9 @@ export const Gestion: React.FC = () => {
     );
     const [editingMuscleGroup, setEditingMuscleGroup] =
         useState<MuscleGroup | null>(null);
+    const [editingExercise, setEditingExercise] = useState<Exercise | null>(
+        null
+    );
     const [fetchLoading, setFetchLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -66,11 +73,33 @@ export const Gestion: React.FC = () => {
         }
     };
 
+    const fetchExercises = async () => {
+        const token = authService.getToken();
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            setFetchLoading(true);
+            const data = await exerciseService.getAll(token);
+            setExercises(data);
+        } catch (error) {
+            console.error("Error al cargar ejercicios:", error);
+        } finally {
+            setFetchLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (activeTab === "equipamiento") {
             fetchEquipment();
         } else if (activeTab === "grupos") {
             fetchMuscleGroups();
+        } else if (activeTab === "ejercicios") {
+            fetchExercises();
+            if (equipment.length === 0) fetchEquipment();
+            if (muscleGroups.length === 0) fetchMuscleGroups();
         }
     }, [activeTab]);
 
@@ -149,6 +178,61 @@ export const Gestion: React.FC = () => {
             await fetchMuscleGroups();
         } catch (error) {
             console.error("Error al eliminar grupo muscular:", error);
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    const handleAddExercise = () => {
+        setEditingExercise(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEditExercise = (exercise: Exercise) => {
+        setEditingExercise(exercise);
+        setIsModalOpen(true);
+    };
+
+    const handleSubmitExercise = async (
+        name: string,
+        equipmentId: number,
+        muscleGroupId: number
+    ) => {
+        const token = authService.getToken();
+        if (!token) return;
+
+        if (editingExercise) {
+            await exerciseService.update(
+                editingExercise.id,
+                name,
+                equipmentId,
+                muscleGroupId,
+                token
+            );
+        } else {
+            await exerciseService.create(
+                name,
+                equipmentId,
+                muscleGroupId,
+                token
+            );
+        }
+
+        await fetchExercises();
+    };
+
+    const handleDeleteExercise = async (id: number) => {
+        if (!confirm("¿Estás seguro de eliminar este ejercicio?")) return;
+
+        const token = authService.getToken();
+        if (!token) return;
+
+        try {
+            setLoading(id);
+            await exerciseService.delete(id, token);
+            await fetchExercises();
+        } catch (error) {
+            console.error("Error al eliminar ejercicio:", error);
         } finally {
             setLoading(null);
         }
@@ -268,14 +352,25 @@ export const Gestion: React.FC = () => {
                                 <h2 className="gestion__section-title">
                                     Ejercicios
                                 </h2>
-                                <button className="gestion__add-button">
+                                <button
+                                    className="gestion__add-button"
+                                    onClick={handleAddExercise}
+                                >
                                     Agregar Ejercicio
                                 </button>
                             </div>
-                            <div className="gestion__placeholder">
-                                <Target size={48} />
-                                <p>Gestión de ejercicios próximamente</p>
-                            </div>
+                            {fetchLoading ? (
+                                <div className="gestion__placeholder">
+                                    <p>Cargando ejercicios...</p>
+                                </div>
+                            ) : (
+                                <ExerciseList
+                                    exercises={exercises}
+                                    onEdit={handleEditExercise}
+                                    onDelete={handleDeleteExercise}
+                                    loading={loading}
+                                />
+                            )}
                         </div>
                     )}
                 </div>
@@ -304,6 +399,22 @@ export const Gestion: React.FC = () => {
                             editingMuscleGroup
                                 ? "Editar Grupo Muscular"
                                 : "Agregar Grupo Muscular"
+                        }
+                    />
+                )}
+
+                {activeTab === "ejercicios" && (
+                    <ExerciseModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSubmit={handleSubmitExercise}
+                        exercise={editingExercise}
+                        equipment={equipment}
+                        muscleGroups={muscleGroups}
+                        title={
+                            editingExercise
+                                ? "Editar Ejercicio"
+                                : "Agregar Ejercicio"
                         }
                     />
                 )}
