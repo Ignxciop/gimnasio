@@ -1,6 +1,6 @@
 import React from "react";
 import { User, Mail, Shield } from "lucide-react";
-import type { User as UserType } from "../../types/auth.types";
+import type { User as UserType } from "../types/auth.types";
 import "./profileCard.css";
 
 interface ProfileCardProps {
