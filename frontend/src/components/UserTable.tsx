@@ -1,27 +1,25 @@
 import React, { useState } from "react";
 import { Shield, Check, X } from "lucide-react";
 import type { User } from "../types/auth.types";
-import { adminService } from "../services/adminService";
-import { authService } from "../services/authService";
 import "./userTable.css";
 
 interface UserTableProps {
     users: User[];
-    onUserUpdated: () => void;
+    onRoleChange: (userId: number, newRoleId: number) => Promise<void>;
+    onStatusToggle: (userId: number, currentStatus: boolean) => Promise<void>;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({
     users,
-    onUserUpdated,
+    onRoleChange,
+    onStatusToggle,
 }) => {
     const [loading, setLoading] = useState<number | null>(null);
-    const token = authService.getToken() || "";
 
     const handleRoleChange = async (userId: number, newRoleId: number) => {
         try {
             setLoading(userId);
-            await adminService.updateUserRole(userId, newRoleId, token);
-            onUserUpdated();
+            await onRoleChange(userId, newRoleId);
         } catch (error) {
             console.error("Error al actualizar rol:", error);
         } finally {
@@ -35,8 +33,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     ) => {
         try {
             setLoading(userId);
-            await adminService.updateUserStatus(userId, !currentStatus, token);
-            onUserUpdated();
+            await onStatusToggle(userId, currentStatus);
         } catch (error) {
             console.error("Error al actualizar estado:", error);
         } finally {
