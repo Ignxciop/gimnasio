@@ -1,44 +1,39 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { MainLayout } from "../layouts/MainLayout";
 import { UserTable } from "../components/UserTable";
 import { adminService } from "../services/adminService";
 import { authService } from "../services/authService";
+import { useFetch } from "../hooks/useFetch";
 import type { User } from "../types/auth.types";
 import "../styles/admin.css";
 
 export const Admin: React.FC = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState<number | "all">("all");
     const [statusFilter, setStatusFilter] = useState<boolean | "all">("all");
-    const navigate = useNavigate();
 
-    const fetchUsers = async () => {
-        const token = authService.getToken();
-
-        if (!token) {
-            navigate("/login");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const usersData = await adminService.getUsers(token);
-            setUsers(usersData);
-        } catch (error) {
-            console.error("Error al cargar usuarios:", error);
-            navigate("/home");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const usersFetch = useFetch<User[]>({
+        fetchFn: adminService.getUsers,
+    });
 
     useEffect(() => {
-        fetchUsers();
+        usersFetch.execute();
     }, []);
+
+    const handleRoleChange = async (userId: number, newRoleId: number) => {
+        const token = authService.getToken();
+        if (!token) return;
+        await adminService.updateUserRole(userId, newRoleId, token);
+        await usersFetch.execute();
+    };
+
+    const handleStatusToggle = async (userId: number, currentStatus: boolean) => {
+        const token = authService.getToken();
+        if (!token) return;
+        await adminService.updateUserStatus(userId, !currentStatus, token);
+        await usersFetch.execute();
+    };
 
     const filteredUsers = useMemo(() => {
         return users.filter((user) => {
@@ -46,6 +41,7 @@ export const Admin: React.FC = () => {
                 searchTerm === "" ||
                 user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 user.lastname
+        const users = usersFetch.data || [];
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
                 user.username.toLowerCase().includes(searchTerm.toLowerCase());
@@ -57,7 +53,7 @@ export const Admin: React.FC = () => {
                 statusFilter === "all" || user.is_active === statusFilter;
 
             return matchesSearch && matchesRole && matchesStatus;
-        });
+        });Fetch.data
     }, [users, searchTerm, roleFilter, statusFilter]);
 
     if (loading) {
@@ -134,12 +130,20 @@ export const Admin: React.FC = () => {
                     </div>
 
                     <div className="admin__results">
-                        Mostrando {filteredUsers.length} de {users.length}{" "}
-                        usuarios
+                        Mostrando {filteredUsers.length} de{" "}
+                        {usersFetch.data?.length || 0} usuarios
                     </div>
                 </div>
 
-                <UserTable users={filteredUsers} onUserUpdated={fetchUsers} />
+                {usersFetch.loading ? (
+                    <div className="admin__loading">Cargando usuarios...</div>
+                ) : (
+                    <UserTable
+                        users={filteredUsers}
+                        onRoleChange={handleRoleChange}
+                        onStatusToggle={handleStatusToggle}
+                    />
+                )}
             </section>
         </MainLayout>
     );
