@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { Modal } from "./ui/Modal";
 import type { MuscleGroup } from "../services/muscleGroupService";
 import "./muscleGroupModal.css";
 
@@ -61,66 +61,46 @@ export const MuscleGroupModal: React.FC<MuscleGroupModalProps> = ({
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="muscle-group-modal">
-            <div className="muscle-group-modal__overlay" onClick={onClose} />
-            <div className="muscle-group-modal__content">
-                <div className="muscle-group-modal__header">
-                    <h2 className="muscle-group-modal__title">{title}</h2>
-                    <button
-                        onClick={onClose}
-                        className="muscle-group-modal__close"
-                        type="button"
-                    >
-                        <X size={24} />
-                    </button>
+        <Modal isOpen={isOpen} onClose={onClose} title={title}>
+            <form onSubmit={handleSubmit} className="muscle-group-modal__form">
+                <div className="muscle-group-modal__field">
+                    <label className="muscle-group-modal__label">
+                        Nombre del grupo muscular
+                    </label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Ej: Espalda, Bíceps, Tríceps..."
+                        className="muscle-group-modal__input"
+                        disabled={loading}
+                        autoFocus
+                    />
                 </div>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="muscle-group-modal__form"
-                >
-                    <div className="muscle-group-modal__field">
-                        <label className="muscle-group-modal__label">
-                            Nombre del grupo muscular
-                        </label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Ej: Espalda, Bíceps, Tríceps..."
-                            className="muscle-group-modal__input"
-                            disabled={loading}
-                            autoFocus
-                        />
-                        {error && (
-                            <span className="muscle-group-modal__error">
-                                {error}
-                            </span>
-                        )}
-                    </div>
+                {error && (
+                    <span className="muscle-group-modal__error">{error}</span>
+                )}
 
-                    <div className="muscle-group-modal__actions">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="muscle-group-modal__button muscle-group-modal__button--cancel"
-                            disabled={loading}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="muscle-group-modal__button muscle-group-modal__button--submit"
-                            disabled={loading}
-                        >
-                            {loading ? "Guardando..." : "Guardar"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="muscle-group-modal__actions">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="muscle-group-modal__button muscle-group-modal__button--cancel"
+                        disabled={loading}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="muscle-group-modal__button muscle-group-modal__button--submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Guardando..." : "Guardar"}
+                    </button>
+                </div>
+            </form>
+        </Modal>
     );
 };
