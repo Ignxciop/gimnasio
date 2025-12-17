@@ -17,8 +17,8 @@
 }
 
 .equipment-modal__input {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     color: var(--text-primary);
@@ -29,8 +29,8 @@
 .equipment-modal__input:focus {
     outline: none;
     border-color: var(--accent-mid);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 .equipment-modal__input::placeholder {
