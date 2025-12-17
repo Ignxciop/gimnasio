@@ -6,13 +6,18 @@ import "./profileCard.css";
 
 interface ProfileCardProps {
     user: UserType;
+    onLogout?: () => void;
 }
 
-export const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
+export const ProfileCard: React.FC<ProfileCardProps> = ({ user, onLogout }) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        if (onLogout) {
+            onLogout();
+        } else {
+            localStorage.removeItem("token");
+        }
         navigate("/login");
     };
     return (
