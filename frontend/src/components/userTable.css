@@ -4,7 +4,8 @@
 }
 
 .user-table__container {
-    background: white;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     overflow-x: auto;
@@ -30,7 +31,7 @@
 }
 
 .user-table__tbody {
-    background: white;
+    background: var(--color-bg-card);
 }
 
 .user-table__row {
@@ -39,7 +40,7 @@
 }
 
 .user-table__row:hover {
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgba(255, 255, 255, 0.03);
 }
 
 .user-table__row:last-child {
@@ -75,23 +76,25 @@
 
 .user-table__select {
     padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
     color: var(--color-text-primary);
-    background: white;
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .user-table__select:hover {
-    border-color: var(--accent-mid);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-border-hover);
 }
 
 .user-table__select:focus {
     outline: none;
+    background: rgba(255, 255, 255, 0.08);
     border-color: var(--accent-mid);
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 .user-table__select:disabled {
@@ -131,14 +134,15 @@
     border: none;
     border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
 }
 
 .user-table__button:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
 .user-table__button:disabled {
@@ -151,16 +155,17 @@
 }
 
 .user-card {
-    background: white;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
-    border: 1px solid var(--color-border);
-    transition: box-shadow 0.2s;
+    transition: all 0.3s ease;
 }
 
 .user-card:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md), var(--shadow-glow);
+    border-color: var(--color-border-hover);
 }
 
 .user-card:last-child {

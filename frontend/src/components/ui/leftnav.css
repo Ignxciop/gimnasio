@@ -1,23 +1,26 @@
 .leftnav {
     width: 220px;
-    background: linear-gradient(
-        180deg,
-        rgba(11, 11, 11, 1),
-        rgba(20, 20, 20, 0.95)
-    );
+    background: linear-gradient(180deg, #0b0b0b 0%, #141414 100%);
     color: white;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     padding: var(--spacing-lg);
     gap: var(--spacing-lg);
+    border-right: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
 }
 
 .leftnav__brand h2 {
     margin: 0;
-    font-size: 1.25rem;
-    letter-spacing: 1px;
-    color: var(--accent-mid);
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 1.5px;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
 }
 
 .leftnav__list {
@@ -31,16 +34,47 @@
 
 .leftnav__link {
     display: block;
-    color: var(--color-text-light);
-    padding: 0.5rem 0.25rem;
+    color: var(--color-text-secondary);
+    padding: 0.75rem 1rem;
     text-decoration: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-medium);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.leftnav__link::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: var(--gradient-accent);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.leftnav__link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-primary);
+    transform: translateX(4px);
+}
+
+.leftnav__link:hover::before {
+    transform: scaleY(1);
 }
 
 .leftnav__link--active {
     color: white;
     background: var(--gradient-accent);
-    box-shadow: 0 6px 20px rgba(127, 29, 29, 0.2);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35), var(--shadow-glow);
+    transform: translateX(0);
+}
+
+.leftnav__link--active::before {
+    transform: scaleY(1);
 }
 
 .leftnav__footer {
@@ -49,20 +83,88 @@
 
 .leftnav__logout {
     width: 100%;
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
     border-radius: var(--radius-md);
-    border: none;
-    background: transparent;
-    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--color-text-secondary);
     cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: var(--font-weight-medium);
 }
 
 .leftnav__logout:hover {
-    color: white;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--accent-mid);
+    color: var(--accent-mid);
+    transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
     .leftnav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: var(--spacing-sm);
+        background: linear-gradient(0deg, #0b0b0b 0%, #141414 100%);
+        border-right: none;
+        border-top: 1px solid var(--color-border);
+        z-index: 999;
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .leftnav__brand,
+    .leftnav__footer {
         display: none;
+    }
+
+    .leftnav__list {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-around;
+        gap: 0;
+    }
+
+    .leftnav__link {
+        padding: var(--spacing-sm);
+        text-align: center;
+        font-size: var(--font-size-xs);
+    }
+
+    .leftnav__link::before {
+        width: 100%;
+        height: 3px;
+        top: auto;
+        bottom: 0;
+        transform: scaleX(0);
+    }
+
+    .leftnav__link:hover::before,
+    .leftnav__link--active::before {
+        transform: scaleX(1);
+    }
+
+    .leftnav__link:hover {
+        transform: translateX(0) translateY(-2px);
+    }
+
+    .leftnav__link--active {
+        transform: translateY(-2px);
     }
 }

@@ -15,16 +15,18 @@
 }
 
 .equipment-card {
-    background: white;
+    background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--spacing-lg);
-    transition: all 0.2s;
+    transition: all 0.3s ease;
 }
 
 .equipment-card:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md), var(--shadow-glow);
     border-color: var(--accent-mid);
+    transform: translateY(-2px);
+    background: var(--color-bg-card);
 }
 
 .equipment-card__content {
@@ -56,25 +58,29 @@
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
 }
 
 .equipment-card__button--edit {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
 }
 
 .equipment-card__button--edit:hover:not(:disabled) {
-    background: rgba(59, 130, 246, 0.2);
+    background: rgba(59, 130, 246, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
 }
 
 .equipment-card__button--delete {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--accent-mid);
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
 }
 
 .equipment-card__button--delete:hover:not(:disabled) {
-    background: rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
 }
 
 .equipment-card__button:disabled {
