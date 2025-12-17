@@ -2,6 +2,7 @@ import express from "express";
 import { config } from "./src/config/config.js";
 import cors from "cors";
 import authRoutes from "./src/routes/authRoutes.js";
+import profileRoutes from "./src/routes/profileRoutes.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const port = config.port;
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.use(errorHandler);
 
