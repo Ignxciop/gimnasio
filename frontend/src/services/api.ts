@@ -65,21 +65,4 @@ export const api = {
 
         return json;
     },
-
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method: "GET",
-            headers,
-        });
-
-        const json = await response.json();
-
-        if (!response.ok) {
-            throw new ApiError(
-                json.error || "Error en la petición",
-                response.status
-            );
-        }
-
-        return json;
-    },
 };
