@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Shield, Check, X } from "lucide-react";
 import type { User } from "../types/auth.types";
 import { adminService } from "../services/adminService";
+import { authService } from "../services/authService";
 import "./userTable.css";
 
 interface UserTableProps {
@@ -14,7 +15,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     onUserUpdated,
 }) => {
     const [loading, setLoading] = useState<number | null>(null);
-    const token = localStorage.getItem("token") || "";
+    const token = authService.getToken() || "";
 
     const handleRoleChange = async (userId: number, newRoleId: number) => {
         try {

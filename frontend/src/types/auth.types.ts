@@ -21,12 +21,13 @@ export interface RegisterResponse {
 }
 
 export interface User {
-    id: string;
+    id: number;
     name: string;
     lastname: string;
     username: string;
     email: string;
     is_active: boolean;
+    roleId: number;
     role: {
         id: number;
         role: string;
