@@ -1,0 +1,11 @@
+.main-layout {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0b0b0b 0%, #0f0f0f 100%);
+}
+
+.main-layout__content {
+    flex: 1;
+    padding: var(--spacing-2xl);
+    background-color: var(--color-bg-primary);
+}
