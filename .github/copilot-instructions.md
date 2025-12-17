@@ -11,6 +11,7 @@ gimnasio/
 │   │   ├── components/   # Componentes reutilizables
 │   │   ├── pages/        # Vistas/pantallas
 │   │   ├── layouts/      # Layouts (AuthLayout, MainLayout)
+│   │   ├── hooks/        # Custom hooks de React
 │   │   ├── services/     # Llamadas API y lógica de servicios
 │   │   ├── styles/       # CSS global y variables
 │   │   ├── types/        # TypeScript types/interfaces
@@ -36,14 +37,16 @@ gimnasio/
 
 -   **Páginas (pages/)**: Solo ensamblan componentes, NO contienen lógica de negocio ni inputs directamente
 -   **Componentes (components/)**: Componentes específicos de funcionalidad (LoginForm, RegisterForm)
--   **UI (components/ui/)**: Componentes reutilizables genéricos (Button, Input, LeftNav)
+-   **UI (components/ui/)**: Componentes reutilizables genéricos (Button, Input, Modal)
 -   **Layouts (layouts/)**: Envolturas para diferentes secciones (AuthLayout, MainLayout)
+-   **Hooks (hooks/)**: Custom hooks para lógica reutilizable (useFetch, useAuth, useModal)
 
 ### Responsabilidades Claras
 
 -   Las páginas NO manejan redirecciones directamente
 -   Los formularios manejan su propio estado y validaciones
 -   Los servicios manejan llamadas API
+-   **Custom hooks** extraen lógica reutilizable (fetch, estado modal, autenticación)
 -   Reutilizar componentes UI, NO duplicar lógica
 -   Validaciones en el cliente usando `utils/validators.ts`
 
@@ -141,10 +144,11 @@ gimnasio/
 
 ### Frontend
 
--   ✅ Formularios separados con responsabilidades claras
--   ✅ Componentes pequeños y reutilizables
+-   ✅ Custom hooks para lógica compartida (fetch, modales, autenticación)
 -   ✅ Services para manejar API
 -   ✅ Usar variables CSS para colores y espaciado
+-   ✅ Aplicar gradiente acento en botones principales
+-   ✅ **SIEMPRE diseñar responsive** - Todo debe verse bien en desktop y móviles (usar media queries)
 -   ✅ Aplicar gradiente acento en botones principales
 -   ✅ **SIEMPRE diseñar responsive** - Todo debe verse bien en desktop y móviles (usar media queries)
 
