@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MainLayout } from "../layouts/MainLayout";
 import { ProfileCard } from "../components/ProfileCard";
-import { getUserFromToken } from "../utils/getUserFromToken";
+import { profileService } from "../services/profileService";
 import { useNavigate } from "react-router-dom";
 import type { User } from "../types/auth.types";
 
@@ -12,15 +12,30 @@ interface ProfileProps {
 export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const userData = getUserFromToken();
-        if (!userData) {
-            navigate("/login", { replace: true });
-        } else {
-            setUser(userData);
-        }
+        const fetchProfile = async () => {
+            try {
+                const userData = await profileService.getProfile();
+                setUser(userData);
+            } catch (error) {
+                navigate("/login", { replace: true });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProfile();
     }, [navigate]);
+
+    if (isLoading) {
+        return (
+            <MainLayout onLogout={onLogout}>
+                <div>Cargando perfil...</div>
+            </MainLayout>
+        );
+    }
 
     if (!user) {
         return null;
