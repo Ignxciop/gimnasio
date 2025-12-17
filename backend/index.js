@@ -21,4 +21,7 @@ app.use("/api/auth", authRoutes);
 
 app.use(errorHandler);
 
-app.listen(port, console.log("Servidor iniciado » Escuchando en puerto", port));
+app.listen(port, "0.0.0.0", () => {
+    console.log("Servidor iniciado » Escuchando en puerto", port);
+    console.log("Accesible desde red local en http://192.168.1.85:" + port);
+});
