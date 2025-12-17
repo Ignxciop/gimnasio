@@ -38,8 +38,12 @@
     box-shadow: 0 4px 12px rgba(127, 29, 29, 0.25);
 }
 
+.bottomnav__link--active .bottomnav__icon {
+    stroke-width: 2.5;
+}
+
 .bottomnav__icon {
-    font-size: 1.5rem;
+    stroke-width: 2;
 }
 
 .bottomnav__label {

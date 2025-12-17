@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { Home, User, Dumbbell, LogOut } from "lucide-react";
 import "./bottomnav.css";
 
 interface BottomNavProps {
@@ -16,22 +17,22 @@ export const BottomNav: React.FC<BottomNavProps> = ({ onLogout }) => {
                     (isActive ? " bottomnav__link--active" : "")
                 }
             >
-                <span className="bottomnav__icon">🏠</span>
+                <Home className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Inicio</span>
             </NavLink>
 
             <NavLink to="#" className="bottomnav__link">
-                <span className="bottomnav__icon">👤</span>
+                <User className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Perfil</span>
             </NavLink>
 
             <NavLink to="#" className="bottomnav__link">
-                <span className="bottomnav__icon">💪</span>
+                <Dumbbell className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Rutinas</span>
             </NavLink>
 
             <button className="bottomnav__link" onClick={onLogout}>
-                <span className="bottomnav__icon">🚪</span>
+                <LogOut className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Salir</span>
             </button>
         </nav>
