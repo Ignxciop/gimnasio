@@ -68,6 +68,7 @@ export const Gestion: React.FC = () => {
             if (!equipmentFetch.data) equipmentFetch.execute();
             if (!muscleGroupsFetch.data) muscleGroupsFetch.execute();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
 
     const handleSubmitEquipment = async (name: string) => {
