@@ -26,3 +26,10 @@ model User{
   roleId Int
   role Role @relation(fields: [roleId], references: [id])
 }
+
+model Equipment{
+  id Int @id @default(autoincrement())
+  name String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

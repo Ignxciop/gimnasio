@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./src/routes/authRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
+import equipmentRoutes from "./src/routes/equipmentRoutes.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const port = config.port;
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/equipment", equipmentRoutes);
 
 app.use(errorHandler);
 
