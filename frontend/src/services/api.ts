@@ -97,4 +97,31 @@ export const api = {
 
         return json;
     },
+
+    async delete<T>(endpoint: string, token?: string): Promise<T> {
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+        };
+
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "DELETE",
+            headers,
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            throw new ApiError(
+                json.error || "Error en la petición",
+                response.status,
+                json.errors
+            );
+        }
+
+        return json;
+    },
 };
