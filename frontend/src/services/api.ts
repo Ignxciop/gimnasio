@@ -65,4 +65,36 @@ export const api = {
 
         return json;
     },
+
+    async put<T, D = unknown>(
+        endpoint: string,
+        data: D,
+        token?: string
+    ): Promise<T> {
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+        };
+
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify(data),
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            throw new ApiError(
+                json.error || "Error en la petición",
+                response.status,
+                json.errors
+            );
+        }
+
+        return json;
+    },
 };
