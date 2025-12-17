@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { MainLayout } from "../layouts/MainLayout";
 import { UserTable } from "../components/UserTable";
 import { adminService } from "../services/adminService";
+import { authService } from "../services/authService";
 import type { User } from "../types/auth.types";
 
 export const Admin: React.FC = () => {
@@ -11,19 +12,28 @@ export const Admin: React.FC = () => {
     const navigate = useNavigate();
 
     const fetchUsers = async () => {
-        const token = localStorage.getItem("token");
+        const token = authService.getToken();
+
+        console.log("Admin - fetchUsers iniciado");
+        console.log("Admin - token:", token);
 
         if (!token) {
+            console.log("Admin - No hay token, redirigiendo a login");
             navigate("/login");
             return;
         }
 
         try {
+            console.log("Admin - Llamando a adminService.getUsers");
             setLoading(true);
             const usersData = await adminService.getUsers(token);
+            console.log("Admin - Usuarios recibidos:", usersData);
             setUsers(usersData);
         } catch (error) {
             console.error("Error al cargar usuarios:", error);
+            console.error("Error completo:", JSON.stringify(error, null, 2));
+            console.error("Error.message:", error.message);
+            console.error("Error.statusCode:", error.statusCode);
             navigate("/home");
         } finally {
             setLoading(false);
