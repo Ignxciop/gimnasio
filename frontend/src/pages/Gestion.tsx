@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Dumbbell, Users, Target } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { MainLayout } from "../layouts/MainLayout";
 import { EquipmentList } from "../components/EquipmentList";
 import { EquipmentModal } from "../components/EquipmentModal";
@@ -15,182 +14,98 @@ import {
 } from "../services/muscleGroupService";
 import { exerciseService, type Exercise } from "../services/exerciseService";
 import { authService } from "../services/authService";
+import { useModal } from "../hooks/useModal";
+import { useDelete } from "../hooks/useDelete";
+import { useFetch } from "../hooks/useFetch";
 import "../styles/gestion.css";
 
 type TabType = "equipamiento" | "grupos" | "ejercicios";
 
 export const Gestion: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>("equipamiento");
-    const [equipment, setEquipment] = useState<Equipment[]>([]);
-    const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
-    const [exercises, setExercises] = useState<Exercise[]>([]);
-    const [loading, setLoading] = useState<number | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(
-        null
-    );
-    const [editingMuscleGroup, setEditingMuscleGroup] =
-        useState<MuscleGroup | null>(null);
-    const [editingExercise, setEditingExercise] = useState<Exercise | null>(
-        null
-    );
-    const [fetchLoading, setFetchLoading] = useState(false);
-    const navigate = useNavigate();
 
-    const fetchEquipment = async () => {
-        const token = authService.getToken();
-        if (!token) {
-            navigate("/login");
-            return;
-        }
+    const equipmentFetch = useFetch<Equipment[]>({
+        fetchFn: equipmentService.getAll,
+    });
 
-        try {
-            setFetchLoading(true);
-            const data = await equipmentService.getAll(token);
-            setEquipment(data);
-        } catch (error) {
-            console.error("Error al cargar equipamiento:", error);
-        } finally {
-            setFetchLoading(false);
-        }
-    };
+    const muscleGroupsFetch = useFetch<MuscleGroup[]>({
+        fetchFn: muscleGroupService.getAll,
+    });
 
-    const fetchMuscleGroups = async () => {
-        const token = authService.getToken();
-        if (!token) {
-            navigate("/login");
-            return;
-        }
+    const exercisesFetch = useFetch<Exercise[]>({
+        fetchFn: exerciseService.getAll,
+    });
 
-        try {
-            setFetchLoading(true);
-            const data = await muscleGroupService.getAll(token);
-            setMuscleGroups(data);
-        } catch (error) {
-            console.error("Error al cargar grupos musculares:", error);
-        } finally {
-            setFetchLoading(false);
-        }
-    };
+    const equipmentModal = useModal<Equipment>();
+    const muscleGroupModal = useModal<MuscleGroup>();
+    const exerciseModal = useModal<Exercise>();
 
-    const fetchExercises = async () => {
-        const token = authService.getToken();
-        if (!token) {
-            navigate("/login");
-            return;
-        }
+    const equipmentDelete = useDelete({
+        deleteFn: equipmentService.delete,
+        onSuccess: equipmentFetch.execute,
+        confirmMessage: "¿Estás seguro de eliminar este equipamiento?",
+    });
 
-        try {
-            setFetchLoading(true);
-            const data = await exerciseService.getAll(token);
-            setExercises(data);
-        } catch (error) {
-            console.error("Error al cargar ejercicios:", error);
-        } finally {
-            setFetchLoading(false);
-        }
-    };
+    const muscleGroupDelete = useDelete({
+        deleteFn: muscleGroupService.delete,
+        onSuccess: muscleGroupsFetch.execute,
+        confirmMessage: "¿Estás seguro de eliminar este grupo muscular?",
+    });
+
+    const exerciseDelete = useDelete({
+        deleteFn: exerciseService.delete,
+        onSuccess: exercisesFetch.execute,
+        confirmMessage: "¿Estás seguro de eliminar este ejercicio?",
+    });
+
+    const exerciseDelete = useDelete({
+        deleteFn: exerciseService.delete,
+        onSuccess: exercisesFetch.execute,
+        confirmMessage: "¿Estás seguro de eliminar este ejercicio?",
+    });
 
     useEffect(() => {
         if (activeTab === "equipamiento") {
-            fetchEquipment();
+            equipmentFetch.execute();
         } else if (activeTab === "grupos") {
-            fetchMuscleGroups();
+            muscleGroupsFetch.execute();
         } else if (activeTab === "ejercicios") {
-            fetchExercises();
-            if (equipment.length === 0) fetchEquipment();
-            if (muscleGroups.length === 0) fetchMuscleGroups();
+            exercisesFetch.execute();
+            if (!equipmentFetch.data) equipmentFetch.execute();
+            if (!muscleGroupsFetch.data) muscleGroupsFetch.execute();
         }
     }, [activeTab]);
-
-    const handleAddEquipment = () => {
-        setEditingEquipment(null);
-        setIsModalOpen(true);
-    };
-
-    const handleEditEquipment = (equipment: Equipment) => {
-        setEditingEquipment(equipment);
-        setIsModalOpen(true);
-    };
 
     const handleSubmitEquipment = async (name: string) => {
         const token = authService.getToken();
         if (!token) return;
 
-        if (editingEquipment) {
-            await equipmentService.update(editingEquipment.id, name, token);
+        if (equipmentModal.editingItem) {
+            await equipmentService.update(
+                equipmentModal.editingItem.id,
+                name,
+                token
+            );
         } else {
             await equipmentService.create(name, token);
         }
-
-        await fetchEquipment();
-    };
-
-    const handleDeleteEquipment = async (id: number) => {
-        if (!confirm("¿Estás seguro de eliminar este equipamiento?")) return;
-
-        const token = authService.getToken();
-        if (!token) return;
-
-        try {
-            setLoading(id);
-            await equipmentService.delete(id, token);
-            await fetchEquipment();
-        } catch (error) {
-            console.error("Error al eliminar equipamiento:", error);
-        } finally {
-            setLoading(null);
-        }
-    };
-
-    const handleAddMuscleGroup = () => {
-        setEditingMuscleGroup(null);
-        setIsModalOpen(true);
-    };
-
-    const handleEditMuscleGroup = (muscleGroup: MuscleGroup) => {
-        setEditingMuscleGroup(muscleGroup);
-        setIsModalOpen(true);
+        await equipmentFetch.execute();
     };
 
     const handleSubmitMuscleGroup = async (name: string) => {
         const token = authService.getToken();
         if (!token) return;
 
-        if (editingMuscleGroup) {
-            await muscleGroupService.update(editingMuscleGroup.id, name, token);
+        if (muscleGroupModal.editingItem) {
+            await muscleGroupService.update(
+                muscleGroupModal.editingItem.id,
+                name,
+                token
+            );
         } else {
             await muscleGroupService.create(name, token);
         }
-
-        await fetchMuscleGroups();
-    };
-
-    const handleDeleteMuscleGroup = async (id: number) => {
-        if (!confirm("¿Estás seguro de eliminar este grupo muscular?")) return;
-
-        const token = authService.getToken();
-        if (!token) return;
-
-        try {
-            setLoading(id);
-            await muscleGroupService.delete(id, token);
-            await fetchMuscleGroups();
-        } catch (error) {
-            console.error("Error al eliminar grupo muscular:", error);
-        } finally {
-            setLoading(null);
-        }
-    };
-
-    const handleAddExercise = () => {
-        setEditingExercise(null);
-        setIsModalOpen(true);
-    };
-
-    const handleEditExercise = (exercise: Exercise) => {
-        setEditingExercise(exercise);
-        setIsModalOpen(true);
+        await muscleGroupsFetch.execute();
     };
 
     const handleSubmitExercise = async (
@@ -201,9 +116,9 @@ export const Gestion: React.FC = () => {
         const token = authService.getToken();
         if (!token) return;
 
-        if (editingExercise) {
+        if (exerciseModal.editingItem) {
             await exerciseService.update(
-                editingExercise.id,
+                exerciseModal.editingItem.id,
                 name,
                 equipmentId,
                 muscleGroupId,
@@ -217,25 +132,7 @@ export const Gestion: React.FC = () => {
                 token
             );
         }
-
-        await fetchExercises();
-    };
-
-    const handleDeleteExercise = async (id: number) => {
-        if (!confirm("¿Estás seguro de eliminar este ejercicio?")) return;
-
-        const token = authService.getToken();
-        if (!token) return;
-
-        try {
-            setLoading(id);
-            await exerciseService.delete(id, token);
-            await fetchExercises();
-        } catch (error) {
-            console.error("Error al eliminar ejercicio:", error);
-        } finally {
-            setLoading(null);
-        }
+        await exercisesFetch.execute();
     };
 
     return (
@@ -298,21 +195,21 @@ export const Gestion: React.FC = () => {
                                 </h2>
                                 <button
                                     className="gestion__add-button"
-                                    onClick={handleAddEquipment}
+                                    onClick={equipmentModal.openModal}
                                 >
                                     Agregar Equipamiento
                                 </button>
                             </div>
-                            {fetchLoading ? (
+                            {equipmentFetch.loading ? (
                                 <div className="gestion__placeholder">
                                     <p>Cargando equipamiento...</p>
                                 </div>
                             ) : (
                                 <EquipmentList
-                                    equipment={equipment}
-                                    onEdit={handleEditEquipment}
-                                    onDelete={handleDeleteEquipment}
-                                    loading={loading}
+                                    equipment={equipmentFetch.data || []}
+                                    onEdit={equipmentModal.openEditModal}
+                                    onDelete={equipmentDelete.deleteItem}
+                                    loading={equipmentDelete.deletingId}
                                 />
                             )}
                         </div>
@@ -326,21 +223,21 @@ export const Gestion: React.FC = () => {
                                 </h2>
                                 <button
                                     className="gestion__add-button"
-                                    onClick={handleAddMuscleGroup}
+                                    onClick={muscleGroupModal.openModal}
                                 >
                                     Agregar Grupo Muscular
                                 </button>
                             </div>
-                            {fetchLoading ? (
+                            {muscleGroupsFetch.loading ? (
                                 <div className="gestion__placeholder">
                                     <p>Cargando grupos musculares...</p>
                                 </div>
                             ) : (
                                 <MuscleGroupList
-                                    muscleGroups={muscleGroups}
-                                    onEdit={handleEditMuscleGroup}
-                                    onDelete={handleDeleteMuscleGroup}
-                                    loading={loading}
+                                    muscleGroups={muscleGroupsFetch.data || []}
+                                    onEdit={muscleGroupModal.openEditModal}
+                                    onDelete={muscleGroupDelete.deleteItem}
+                                    loading={muscleGroupDelete.deletingId}
                                 />
                             )}
                         </div>
@@ -354,21 +251,21 @@ export const Gestion: React.FC = () => {
                                 </h2>
                                 <button
                                     className="gestion__add-button"
-                                    onClick={handleAddExercise}
+                                    onClick={exerciseModal.openModal}
                                 >
                                     Agregar Ejercicio
                                 </button>
                             </div>
-                            {fetchLoading ? (
+                            {exercisesFetch.loading ? (
                                 <div className="gestion__placeholder">
                                     <p>Cargando ejercicios...</p>
                                 </div>
                             ) : (
                                 <ExerciseList
-                                    exercises={exercises}
-                                    onEdit={handleEditExercise}
-                                    onDelete={handleDeleteExercise}
-                                    loading={loading}
+                                    exercises={exercisesFetch.data || []}
+                                    onEdit={exerciseModal.openEditModal}
+                                    onDelete={exerciseDelete.deleteItem}
+                                    loading={exerciseDelete.deletingId}
                                 />
                             )}
                         </div>
@@ -377,12 +274,12 @@ export const Gestion: React.FC = () => {
 
                 {activeTab === "equipamiento" && (
                     <EquipmentModal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
+                        isOpen={equipmentModal.isOpen}
+                        onClose={equipmentModal.closeModal}
                         onSubmit={handleSubmitEquipment}
-                        equipment={editingEquipment}
+                        equipment={equipmentModal.editingItem}
                         title={
-                            editingEquipment
+                            equipmentModal.editingItem
                                 ? "Editar Equipamiento"
                                 : "Agregar Equipamiento"
                         }
@@ -391,12 +288,12 @@ export const Gestion: React.FC = () => {
 
                 {activeTab === "grupos" && (
                     <MuscleGroupModal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
+                        isOpen={muscleGroupModal.isOpen}
+                        onClose={muscleGroupModal.closeModal}
                         onSubmit={handleSubmitMuscleGroup}
-                        muscleGroup={editingMuscleGroup}
+                        muscleGroup={muscleGroupModal.editingItem}
                         title={
-                            editingMuscleGroup
+                            muscleGroupModal.editingItem
                                 ? "Editar Grupo Muscular"
                                 : "Agregar Grupo Muscular"
                         }
@@ -405,14 +302,14 @@ export const Gestion: React.FC = () => {
 
                 {activeTab === "ejercicios" && (
                     <ExerciseModal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
+                        isOpen={exerciseModal.isOpen}
+                        onClose={exerciseModal.closeModal}
                         onSubmit={handleSubmitExercise}
-                        exercise={editingExercise}
-                        equipment={equipment}
-                        muscleGroups={muscleGroups}
+                        exercise={exerciseModal.editingItem}
+                        equipment={equipmentFetch.data || []}
+                        muscleGroups={muscleGroupsFetch.data || []}
                         title={
-                            editingExercise
+                            exerciseModal.editingItem
                                 ? "Editar Ejercicio"
                                 : "Agregar Ejercicio"
                         }
