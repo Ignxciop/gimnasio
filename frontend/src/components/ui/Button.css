@@ -15,21 +15,24 @@
 }
 
 .button:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--accent-mid);
     outline-offset: 2px;
 }
 
 .button--primary {
-    background-color: var(--color-primary);
+    background-image: var(--gradient-accent);
     color: white;
+    background-size: 200% 200%;
+    box-shadow: 0 6px 18px rgba(127, 29, 29, 0.18);
 }
 
 .button--primary:hover:not(:disabled) {
-    background-color: var(--color-primary-hover);
+    filter: brightness(1.03);
+    transform: translateY(-1px);
 }
 
 .button--primary:active:not(:disabled) {
-    background-color: var(--color-primary-focus);
+    transform: translateY(0);
 }
 
 .button--secondary {

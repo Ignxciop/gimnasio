@@ -23,8 +23,8 @@
 }
 
 .input:focus {
-    border-color: var(--color-border-focus);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-mid);
+    box-shadow: 0 6px 24px rgba(239, 68, 68, 0.08);
 }
 
 .input:disabled {
