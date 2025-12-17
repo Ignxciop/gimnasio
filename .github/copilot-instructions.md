@@ -125,6 +125,8 @@ gimnasio/
 -   ❌ Manejar redirecciones en componentes de formulario
 -   ❌ Usar colores azules (paleta vieja)
 -   ❌ **NUNCA colocar comentarios en el código** - El código debe ser autoexplicativo con nombres descriptivos
+-   ❌ **NUNCA usar emojis** - Usar lucide-react icons en su lugar
+-   ❌ **NUNCA usar emojis en logs** - Los logs deben ser claros y limpios
 
 ### Backend
 
@@ -133,6 +135,7 @@ gimnasio/
 -   ❌ Devolver passwords en responses
 -   ❌ Validaciones en servicios (van en validators/)
 -   ❌ **NUNCA colocar comentarios en el código** - El código debe ser autoexplicativo con nombres descriptivos
+-   ❌ **NUNCA usar emojis en logs** - Los logs deben ser claros y limpios
 
 ## SÍ Hacer
 
@@ -183,7 +186,7 @@ npx prisma studio
 
 ## Stack Tecnológico
 
-**Frontend**: React 19, TypeScript, Vite, React Router
+**Frontend**: React 19, TypeScript, Vite, React Router, lucide-react (iconos)
 **Backend**: Node.js, Express, Prisma, PostgreSQL
 **Auth**: JWT, bcryptjs
 **Validación**: express-validator (backend), custom validators (frontend)
