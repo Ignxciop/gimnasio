@@ -26,14 +26,14 @@ const validateRequest = (req, res, next) => {
 router.get(
     "/users",
     authenticate,
-    authorize("admin"),
+    authorize("administrador"),
     adminController.getUsers
 );
 
 router.put(
     "/users/:id/role",
     authenticate,
-    authorize("admin"),
+    authorize("administrador"),
     updateRoleValidation,
     validateRequest,
     adminController.updateUserRole
@@ -42,7 +42,7 @@ router.put(
 router.put(
     "/users/:id/status",
     authenticate,
-    authorize("admin"),
+    authorize("administrador"),
     updateStatusValidation,
     validateRequest,
     adminController.updateUserStatus
