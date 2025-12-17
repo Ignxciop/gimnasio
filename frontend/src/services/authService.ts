@@ -8,11 +8,11 @@ import type {
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
-        return api.post<LoginResponse>("/api/auth/login", credentials);
+        return api.post<LoginResponse>("/auth/login", credentials);
     },
 
     async register(data: RegisterData): Promise<RegisterResponse> {
-        return api.post<RegisterResponse>("/api/auth/register", data);
+        return api.post<RegisterResponse>("/auth/register", data);
     },
 
     saveToken(token: string): void {

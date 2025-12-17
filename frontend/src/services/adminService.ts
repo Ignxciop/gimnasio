@@ -12,7 +12,7 @@ interface UpdateStatusRequest {
 export const adminService = {
     async getUsers(token: string): Promise<User[]> {
         const response = await api.get<{ success: boolean; data: User[] }>(
-            "/api/admin/users",
+            "/admin/users",
             token
         );
         return response.data;
@@ -26,7 +26,7 @@ export const adminService = {
         const response = await api.put<
             { success: boolean; data: User },
             UpdateRoleRequest
-        >(`/api/admin/users/${userId}/role`, { roleId }, token);
+        >(`/admin/users/${userId}/role`, { roleId }, token);
         return response.data;
     },
 
@@ -38,7 +38,7 @@ export const adminService = {
         const response = await api.put<
             { success: boolean; data: User },
             UpdateStatusRequest
-        >(`/api/admin/users/${userId}/status`, { isActive }, token);
+        >(`/admin/users/${userId}/status`, { isActive }, token);
         return response.data;
     },
 };

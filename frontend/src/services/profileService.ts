@@ -15,10 +15,7 @@ export const profileService = {
             throw new Error("No hay token de autenticación");
         }
 
-        const response = await api.get<ProfileResponse>(
-            "/api/profile/me",
-            token
-        );
+        const response = await api.get<ProfileResponse>("/profile/me", token);
         return response.data;
     },
 };
