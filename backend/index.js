@@ -7,7 +7,13 @@ import { errorHandler } from "./src/middlewares/errorHandler.js";
 const port = config.port;
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+    origin: ["http://localhost:5173", "http://192.168.1.85:5173"],
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
