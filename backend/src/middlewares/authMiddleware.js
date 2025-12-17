@@ -67,7 +67,6 @@ export const authorize = (...allowedRoles) => {
 
             next();
         } catch (error) {
-            console.error("authorize - error:", error);
             return res.status(403).json({
                 success: false,
                 error: "Error al verificar permisos",

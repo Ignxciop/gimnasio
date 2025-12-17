@@ -7,9 +7,6 @@ export const LeftNav: React.FC = () => {
     const user = getUserFromToken();
     const isAdmin = user?.roleId === 1;
 
-    console.log("LeftNav - user:", user);
-    console.log("LeftNav - isAdmin:", isAdmin);
-
     return (
         <nav className="leftnav">
             <div className="leftnav__brand">

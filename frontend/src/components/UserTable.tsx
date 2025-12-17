@@ -74,7 +74,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 </td>
                                 <td className="user-table__role">
                                     <select
-                                        value={user.role_id}
+                                        value={user.roleId}
                                         onChange={(e) =>
                                             handleRoleChange(
                                                 user.id,
@@ -84,8 +84,8 @@ export const UserTable: React.FC<UserTableProps> = ({
                                         disabled={loading === user.id}
                                         className="user-table__select"
                                     >
-                                        <option value={1}>Admin</option>
-                                        <option value={2}>Entrenador</option>
+                                        <option value={1}>Administrador</option>
+                                        <option value={2}>Manager</option>
                                         <option value={3}>Usuario</option>
                                     </select>
                                 </td>

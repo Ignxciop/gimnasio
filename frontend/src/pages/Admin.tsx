@@ -14,26 +14,17 @@ export const Admin: React.FC = () => {
     const fetchUsers = async () => {
         const token = authService.getToken();
 
-        console.log("Admin - fetchUsers iniciado");
-        console.log("Admin - token:", token);
-
         if (!token) {
-            console.log("Admin - No hay token, redirigiendo a login");
             navigate("/login");
             return;
         }
 
         try {
-            console.log("Admin - Llamando a adminService.getUsers");
             setLoading(true);
             const usersData = await adminService.getUsers(token);
-            console.log("Admin - Usuarios recibidos:", usersData);
             setUsers(usersData);
         } catch (error) {
             console.error("Error al cargar usuarios:", error);
-            console.error("Error completo:", JSON.stringify(error, null, 2));
-            console.error("Error.message:", error.message);
-            console.error("Error.statusCode:", error.statusCode);
             navigate("/home");
         } finally {
             setLoading(false);

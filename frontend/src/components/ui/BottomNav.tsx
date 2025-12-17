@@ -8,9 +8,6 @@ export const BottomNav: React.FC = () => {
     const user = getUserFromToken();
     const isAdmin = user?.roleId === 1;
 
-    console.log("BottomNav - user:", user);
-    console.log("BottomNav - isAdmin:", isAdmin);
-
     return (
         <nav className="bottomnav">
             <NavLink
