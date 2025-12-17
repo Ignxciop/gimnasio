@@ -19,6 +19,7 @@ export const Admin: React.FC = () => {
 
     useEffect(() => {
         usersFetch.execute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleRoleChange = async (userId: number, newRoleId: number) => {
@@ -38,9 +39,8 @@ export const Admin: React.FC = () => {
         await usersFetch.execute();
     };
 
-    const users = usersFetch.data || [];
-
     const filteredUsers = useMemo(() => {
+        const users = usersFetch.data || [];
         return users.filter((user) => {
             const matchesSearch =
                 searchTerm === "" ||
@@ -58,7 +58,7 @@ export const Admin: React.FC = () => {
 
             return matchesSearch && matchesRole && matchesStatus;
         });
-    }, [users, searchTerm, roleFilter, statusFilter]);
+    }, [usersFetch.data, searchTerm, roleFilter, statusFilter]);
 
     return (
         <MainLayout>
