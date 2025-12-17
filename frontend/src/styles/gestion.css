@@ -6,8 +6,9 @@
 
 .gestion__header {
     padding: var(--spacing-xl);
-    background: white;
+    background: var(--color-bg-tertiary);
     border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
 }
 
 .gestion__title-section {
@@ -39,20 +40,22 @@
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-lg);
-    background: transparent;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-secondary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     white-space: nowrap;
 }
 
 .gestion__tab:hover {
     border-color: var(--accent-mid);
+    background: rgba(255, 255, 255, 0.08);
     color: var(--color-text-primary);
+    box-shadow: var(--shadow-glow);
 }
 
 .gestion__tab--active {
@@ -70,7 +73,8 @@
 }
 
 .gestion__section {
-    background: white;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     overflow: hidden;
@@ -102,15 +106,16 @@
     border: none;
     border-radius: var(--radius-md);
     font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     width: 100%;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
 }
 
 .gestion__add-button:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
 }
 
 .gestion__placeholder {

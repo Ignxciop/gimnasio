@@ -10,8 +10,9 @@ body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     color: var(--color-text-primary);
-    background-color: var(--color-bg-secondary);
-    line-height: 1.5;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
 }
