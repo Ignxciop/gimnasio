@@ -146,6 +146,7 @@ gimnasio/
 -   ✅ Services para manejar API
 -   ✅ Usar variables CSS para colores y espaciado
 -   ✅ Aplicar gradiente acento en botones principales
+-   ✅ **SIEMPRE diseñar responsive** - Todo debe verse bien en desktop y móviles (usar media queries)
 
 ### Backend
 
@@ -153,7 +154,7 @@ gimnasio/
 -   ✅ Validar datos con express-validator
 -   ✅ Manejar errores de forma centralizada
 -   ✅ Usar transacciones cuando sea necesario
--   ✅ Tests para endpoints críticos
+-   ✅ **SIEMPRE crear tests** - Nuevas funcionalidades requieren tests unitarios y e2e. La funcionalidad está completa cuando todos los tests pasan
 
 ## Flujo de Autenticación
 
