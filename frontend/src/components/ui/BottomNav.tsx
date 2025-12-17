@@ -21,7 +21,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({ onLogout }) => {
                 <span className="bottomnav__label">Inicio</span>
             </NavLink>
 
-            <NavLink to="#" className="bottomnav__link">
+            <NavLink
+                to="/perfil"
+                className={({ isActive }) =>
+                    "bottomnav__link" +
+                    (isActive ? " bottomnav__link--active" : "")
+                }
+            >
                 <User className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Perfil</span>
             </NavLink>

@@ -26,7 +26,13 @@ export const LeftNav: React.FC<LeftNavProps> = ({ onLogout }) => {
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to="#" className="leftnav__link">
+                    <NavLink
+                        to="/perfil"
+                        className={({ isActive }) =>
+                            "leftnav__link" +
+                            (isActive ? " leftnav__link--active" : "")
+                        }
+                    >
                         Perfil
                     </NavLink>
                 </li>
