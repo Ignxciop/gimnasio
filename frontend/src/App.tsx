@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
+import { Profile } from "./pages/Profile";
 import { authService } from "./services/authService";
 
 function App() {
@@ -55,6 +56,17 @@ function App() {
                     element={
                         isAuthenticated ? (
                             <Home onLogout={handleLogout} />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+
+                <Route
+                    path="/perfil"
+                    element={
+                        isAuthenticated ? (
+                            <Profile onLogout={handleLogout} />
                         ) : (
                             <Navigate to="/login" replace />
                         )
