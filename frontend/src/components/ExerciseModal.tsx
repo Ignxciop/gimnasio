@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { Modal } from "./ui/Modal";
 import type { Exercise } from "../services/exerciseService";
 import type { Equipment } from "../services/equipmentService";
 import type { MuscleGroup } from "../services/muscleGroupService";
@@ -89,108 +89,88 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="exercise-modal">
-            <div className="exercise-modal__overlay" onClick={onClose} />
-            <div className="exercise-modal__content">
-                <div className="exercise-modal__header">
-                    <h2 className="exercise-modal__title">{title}</h2>
-                    <button
-                        onClick={onClose}
-                        className="exercise-modal__close"
-                        type="button"
-                    >
-                        <X size={24} />
-                    </button>
+        <Modal isOpen={isOpen} onClose={onClose} title={title}>
+            <form onSubmit={handleSubmit} className="exercise-modal__form">
+                <div className="exercise-modal__field">
+                    <label className="exercise-modal__label">
+                        Nombre del ejercicio
+                    </label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Ej: Press de banca, Curl de bíceps..."
+                        className="exercise-modal__input"
+                        disabled={loading}
+                        autoFocus
+                    />
                 </div>
 
-                <form onSubmit={handleSubmit} className="exercise-modal__form">
-                    <div className="exercise-modal__field">
-                        <label className="exercise-modal__label">
-                            Nombre del ejercicio
-                        </label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Ej: Press de banca, Curl de bíceps..."
-                            className="exercise-modal__input"
-                            disabled={loading}
-                            autoFocus
-                        />
-                    </div>
-
-                    <div className="exercise-modal__field">
-                        <label className="exercise-modal__label">
-                            Equipamiento
-                        </label>
-                        <select
-                            value={equipmentId}
-                            onChange={(e) =>
-                                setEquipmentId(parseInt(e.target.value))
-                            }
-                            className="exercise-modal__select"
-                            disabled={loading}
-                        >
-                            <option value={0}>
-                                Selecciona un equipamiento
+                <div className="exercise-modal__field">
+                    <label className="exercise-modal__label">
+                        Equipamiento
+                    </label>
+                    <select
+                        value={equipmentId}
+                        onChange={(e) =>
+                            setEquipmentId(parseInt(e.target.value))
+                        }
+                        className="exercise-modal__select"
+                        disabled={loading}
+                    >
+                        <option value={0}>Selecciona un equipamiento</option>
+                        {equipment.map((item) => (
+                            <option key={item.id} value={item.id}>
+                                {item.name}
                             </option>
-                            {equipment.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                        ))}
+                    </select>
+                </div>
 
-                    <div className="exercise-modal__field">
-                        <label className="exercise-modal__label">
-                            Grupo muscular
-                        </label>
-                        <select
-                            value={muscleGroupId}
-                            onChange={(e) =>
-                                setMuscleGroupId(parseInt(e.target.value))
-                            }
-                            className="exercise-modal__select"
-                            disabled={loading}
-                        >
-                            <option value={0}>
-                                Selecciona un grupo muscular
+                <div className="exercise-modal__field">
+                    <label className="exercise-modal__label">
+                        Grupo muscular
+                    </label>
+                    <select
+                        value={muscleGroupId}
+                        onChange={(e) =>
+                            setMuscleGroupId(parseInt(e.target.value))
+                        }
+                        className="exercise-modal__select"
+                        disabled={loading}
+                    >
+                        <option value={0}>Selecciona un grupo muscular</option>
+                        {muscleGroups.map((item) => (
+                            <option key={item.id} value={item.id}>
+                                {item.name}
                             </option>
-                            {muscleGroups.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                    {item.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                        ))}
+                    </select>
+                </div>
 
-                    {error && (
-                        <span className="exercise-modal__error">{error}</span>
-                    )}
+                {error && (
+                    <span className="exercise-modal__error">{error}</span>
+                )}
 
-                    <div className="exercise-modal__actions">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="exercise-modal__button exercise-modal__button--cancel"
-                            disabled={loading}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="exercise-modal__button exercise-modal__button--submit"
-                            disabled={loading}
-                        >
-                            {loading ? "Guardando..." : "Guardar"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="exercise-modal__actions">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="exercise-modal__button exercise-modal__button--cancel"
+                        disabled={loading}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="exercise-modal__button exercise-modal__button--submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Guardando..." : "Guardar"}
+                    </button>
+                </div>
+            </form>
+        </Modal>
     );
 };
