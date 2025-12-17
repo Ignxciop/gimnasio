@@ -28,12 +28,17 @@ export const Admin: React.FC = () => {
         await usersFetch.execute();
     };
 
-    const handleStatusToggle = async (userId: number, currentStatus: boolean) => {
+    const handleStatusToggle = async (
+        userId: number,
+        currentStatus: boolean
+    ) => {
         const token = authService.getToken();
         if (!token) return;
         await adminService.updateUserStatus(userId, !currentStatus, token);
         await usersFetch.execute();
     };
+
+    const users = usersFetch.data || [];
 
     const filteredUsers = useMemo(() => {
         return users.filter((user) => {
@@ -41,7 +46,6 @@ export const Admin: React.FC = () => {
                 searchTerm === "" ||
                 user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 user.lastname
-        const users = usersFetch.data || [];
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
                 user.username.toLowerCase().includes(searchTerm.toLowerCase());
@@ -53,20 +57,8 @@ export const Admin: React.FC = () => {
                 statusFilter === "all" || user.is_active === statusFilter;
 
             return matchesSearch && matchesRole && matchesStatus;
-        });Fetch.data
+        });
     }, [users, searchTerm, roleFilter, statusFilter]);
-
-    if (loading) {
-        return (
-            <MainLayout>
-                <div style={{ padding: "var(--spacing-2xl)" }}>
-                    <p style={{ color: "var(--color-text-secondary)" }}>
-                        Cargando usuarios...
-                    </p>
-                </div>
-            </MainLayout>
-        );
-    }
 
     return (
         <MainLayout>

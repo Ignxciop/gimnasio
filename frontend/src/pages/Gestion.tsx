@@ -58,12 +58,6 @@ export const Gestion: React.FC = () => {
         confirmMessage: "¿Estás seguro de eliminar este ejercicio?",
     });
 
-    const exerciseDelete = useDelete({
-        deleteFn: exerciseService.delete,
-        onSuccess: exercisesFetch.execute,
-        confirmMessage: "¿Estás seguro de eliminar este ejercicio?",
-    });
-
     useEffect(() => {
         if (activeTab === "equipamiento") {
             equipmentFetch.execute();
