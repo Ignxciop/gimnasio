@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Search } from "lucide-react";
 import { MainLayout } from "../layouts/MainLayout";
 import { UserTable } from "../components/UserTable";
+import { Select } from "../components/ui/Select";
+import { SearchInput } from "../components/ui/SearchInput";
 import { adminService } from "../services/adminService";
 import { authService } from "../services/authService";
 import { useFetch } from "../hooks/useFetch";
@@ -74,50 +75,47 @@ export const Admin: React.FC = () => {
                     </div>
 
                     <div className="admin__filters">
-                        <div className="admin__search">
-                            <Search className="admin__search-icon" size={20} />
-                            <input
-                                type="text"
-                                placeholder="Buscar por nombre o usuario..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="admin__search-input"
-                            />
-                        </div>
+                        <SearchInput
+                            value={searchTerm}
+                            onChange={setSearchTerm}
+                            placeholder="Buscar por nombre o usuario..."
+                            className="admin__search"
+                        />
 
                         <div className="admin__filter-group">
-                            <select
-                                value={roleFilter}
-                                onChange={(e) =>
+                            <Select
+                                value={roleFilter.toString()}
+                                onChange={(val) =>
                                     setRoleFilter(
-                                        e.target.value === "all"
-                                            ? "all"
-                                            : parseInt(e.target.value)
+                                        val === "all" ? "all" : parseInt(val)
                                     )
                                 }
+                                options={[
+                                    { value: "all", label: "Todos los roles" },
+                                    { value: 1, label: "Administrador" },
+                                    { value: 2, label: "Manager" },
+                                    { value: 3, label: "Usuario" },
+                                ]}
                                 className="admin__select"
-                            >
-                                <option value="all">Todos los roles</option>
-                                <option value={1}>Administrador</option>
-                                <option value={2}>Manager</option>
-                                <option value={3}>Usuario</option>
-                            </select>
+                            />
 
-                            <select
+                            <Select
                                 value={statusFilter.toString()}
-                                onChange={(e) =>
+                                onChange={(val) =>
                                     setStatusFilter(
-                                        e.target.value === "all"
-                                            ? "all"
-                                            : e.target.value === "true"
+                                        val === "all" ? "all" : val === "true"
                                     )
                                 }
+                                options={[
+                                    {
+                                        value: "all",
+                                        label: "Todos los estados",
+                                    },
+                                    { value: "true", label: "Activos" },
+                                    { value: "false", label: "Inactivos" },
+                                ]}
                                 className="admin__select"
-                            >
-                                <option value="all">Todos los estados</option>
-                                <option value="true">Activos</option>
-                                <option value="false">Inactivos</option>
-                            </select>
+                            />
                         </div>
                     </div>
 

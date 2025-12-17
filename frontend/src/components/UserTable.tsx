@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Shield, Check, X } from "lucide-react";
+import { Select } from "./ui/Select";
 import type { User } from "../types/auth.types";
 import "./userTable.css";
 
@@ -71,21 +72,25 @@ export const UserTable: React.FC<UserTableProps> = ({
                                     {user.email}
                                 </td>
                                 <td className="user-table__role">
-                                    <select
-                                        value={user.roleId}
-                                        onChange={(e) =>
+                                    <Select
+                                        value={user.roleId.toString()}
+                                        onChange={(val) =>
                                             handleRoleChange(
                                                 user.id,
-                                                parseInt(e.target.value)
+                                                parseInt(val)
                                             )
                                         }
+                                        options={[
+                                            {
+                                                value: 1,
+                                                label: "Administrador",
+                                            },
+                                            { value: 2, label: "Manager" },
+                                            { value: 3, label: "Usuario" },
+                                        ]}
                                         disabled={loading === user.id}
                                         className="user-table__select"
-                                    >
-                                        <option value={1}>Administrador</option>
-                                        <option value={2}>Manager</option>
-                                        <option value={3}>Usuario</option>
-                                    </select>
+                                    />
                                 </td>
                                 <td className="user-table__status">
                                     <span
@@ -164,21 +169,19 @@ export const UserTable: React.FC<UserTableProps> = ({
 
                             <div className="user-card__role">
                                 <label className="user-card__label">Rol</label>
-                                <select
-                                    value={user.roleId}
-                                    onChange={(e) =>
-                                        handleRoleChange(
-                                            user.id,
-                                            parseInt(e.target.value)
-                                        )
+                                <Select
+                                    value={user.roleId.toString()}
+                                    onChange={(val) =>
+                                        handleRoleChange(user.id, parseInt(val))
                                     }
+                                    options={[
+                                        { value: 1, label: "Administrador" },
+                                        { value: 2, label: "Manager" },
+                                        { value: 3, label: "Usuario" },
+                                    ]}
                                     disabled={loading === user.id}
                                     className="user-card__select"
-                                >
-                                    <option value={1}>Administrador</option>
-                                    <option value={2}>Manager</option>
-                                    <option value={3}>Usuario</option>
-                                </select>
+                                />
                             </div>
 
                             <button

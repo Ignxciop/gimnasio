@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "./ui/Modal";
+import { Select } from "./ui/Select";
 import { validators } from "../utils/validators";
 import type { Exercise } from "../services/exerciseService";
 import type { Equipment } from "../services/equipmentService";
@@ -116,38 +117,35 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
                     <label className="exercise-modal__label">
                         Equipamiento
                     </label>
-                    <select
-                        value={equipmentId}
-                        onChange={(e) =>
-                            setEquipmentId(parseInt(e.target.value))
-                        }
-                        className="exercise-modal__select"
+                    <Select
+                        value={equipmentId.toString()}
+                        onChange={(val) => setEquipmentId(parseInt(val))}
+                        options={equipment.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                        }))}
+                        placeholder="Selecciona un equipamiento"
                         disabled={loading}
-                    >
-                        <option value={0}>Selecciona un equipamiento</option>
-                        {equipment.map((item) => (
-                            <option key={item.id} value={item.id}>
-                                {item.name}
-                            </option>
-                        ))}
-                    </select>
+                        className="exercise-modal__select"
+                    />
                 </div>
 
                 <div className="exercise-modal__field">
                     <label className="exercise-modal__label">
                         Grupo muscular
                     </label>
-                    <select
-                        value={muscleGroupId}
-                        onChange={(e) =>
-                            setMuscleGroupId(parseInt(e.target.value))
-                        }
-                        className="exercise-modal__select"
+                    <Select
+                        value={muscleGroupId.toString()}
+                        onChange={(val) => setMuscleGroupId(parseInt(val))}
+                        options={muscleGroups.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                        }))}
+                        placeholder="Selecciona un grupo muscular"
                         disabled={loading}
-                    >
-                        <option value={0}>Selecciona un grupo muscular</option>
-                        {muscleGroups.map((item) => (
-                            <option key={item.id} value={item.id}>
+                        className="exercise-modal__select"
+                    />
+                </div>
                                 {item.name}
                             </option>
                         ))}
