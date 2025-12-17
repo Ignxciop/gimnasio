@@ -4,7 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { MainLayout } from "../layouts/MainLayout";
 import { EquipmentList } from "../components/EquipmentList";
 import { EquipmentModal } from "../components/EquipmentModal";
+import { MuscleGroupList } from "../components/MuscleGroupList";
+import { MuscleGroupModal } from "../components/MuscleGroupModal";
 import { equipmentService, type Equipment } from "../services/equipmentService";
+import {
+    muscleGroupService,
+    type MuscleGroup,
+} from "../services/muscleGroupService";
 import { authService } from "../services/authService";
 import "../styles/gestion.css";
 
@@ -13,11 +19,14 @@ type TabType = "equipamiento" | "grupos" | "ejercicios";
 export const Gestion: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>("equipamiento");
     const [equipment, setEquipment] = useState<Equipment[]>([]);
+    const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
     const [loading, setLoading] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(
         null
     );
+    const [editingMuscleGroup, setEditingMuscleGroup] =
+        useState<MuscleGroup | null>(null);
     const [fetchLoading, setFetchLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -39,9 +48,29 @@ export const Gestion: React.FC = () => {
         }
     };
 
+    const fetchMuscleGroups = async () => {
+        const token = authService.getToken();
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            setFetchLoading(true);
+            const data = await muscleGroupService.getAll(token);
+            setMuscleGroups(data);
+        } catch (error) {
+            console.error("Error al cargar grupos musculares:", error);
+        } finally {
+            setFetchLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (activeTab === "equipamiento") {
             fetchEquipment();
+        } else if (activeTab === "grupos") {
+            fetchMuscleGroups();
         }
     }, [activeTab]);
 
@@ -80,6 +109,46 @@ export const Gestion: React.FC = () => {
             await fetchEquipment();
         } catch (error) {
             console.error("Error al eliminar equipamiento:", error);
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    const handleAddMuscleGroup = () => {
+        setEditingMuscleGroup(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEditMuscleGroup = (muscleGroup: MuscleGroup) => {
+        setEditingMuscleGroup(muscleGroup);
+        setIsModalOpen(true);
+    };
+
+    const handleSubmitMuscleGroup = async (name: string) => {
+        const token = authService.getToken();
+        if (!token) return;
+
+        if (editingMuscleGroup) {
+            await muscleGroupService.update(editingMuscleGroup.id, name, token);
+        } else {
+            await muscleGroupService.create(name, token);
+        }
+
+        await fetchMuscleGroups();
+    };
+
+    const handleDeleteMuscleGroup = async (id: number) => {
+        if (!confirm("¿Estás seguro de eliminar este grupo muscular?")) return;
+
+        const token = authService.getToken();
+        if (!token) return;
+
+        try {
+            setLoading(id);
+            await muscleGroupService.delete(id, token);
+            await fetchMuscleGroups();
+        } catch (error) {
+            console.error("Error al eliminar grupo muscular:", error);
         } finally {
             setLoading(null);
         }
@@ -171,14 +240,25 @@ export const Gestion: React.FC = () => {
                                 <h2 className="gestion__section-title">
                                     Grupos Musculares
                                 </h2>
-                                <button className="gestion__add-button">
+                                <button
+                                    className="gestion__add-button"
+                                    onClick={handleAddMuscleGroup}
+                                >
                                     Agregar Grupo Muscular
                                 </button>
                             </div>
-                            <div className="gestion__placeholder">
-                                <Users size={48} />
-                                <p>Gestión de grupos musculares próximamente</p>
-                            </div>
+                            {fetchLoading ? (
+                                <div className="gestion__placeholder">
+                                    <p>Cargando grupos musculares...</p>
+                                </div>
+                            ) : (
+                                <MuscleGroupList
+                                    muscleGroups={muscleGroups}
+                                    onEdit={handleEditMuscleGroup}
+                                    onDelete={handleDeleteMuscleGroup}
+                                    loading={loading}
+                                />
+                            )}
                         </div>
                     )}
 
@@ -200,17 +280,33 @@ export const Gestion: React.FC = () => {
                     )}
                 </div>
 
-                <EquipmentModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onSubmit={handleSubmitEquipment}
-                    equipment={editingEquipment}
-                    title={
-                        editingEquipment
-                            ? "Editar Equipamiento"
-                            : "Agregar Equipamiento"
-                    }
-                />
+                {activeTab === "equipamiento" && (
+                    <EquipmentModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSubmit={handleSubmitEquipment}
+                        equipment={editingEquipment}
+                        title={
+                            editingEquipment
+                                ? "Editar Equipamiento"
+                                : "Agregar Equipamiento"
+                        }
+                    />
+                )}
+
+                {activeTab === "grupos" && (
+                    <MuscleGroupModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSubmit={handleSubmitMuscleGroup}
+                        muscleGroup={editingMuscleGroup}
+                        title={
+                            editingMuscleGroup
+                                ? "Editar Grupo Muscular"
+                                : "Agregar Grupo Muscular"
+                        }
+                    />
+                )}
             </section>
         </MainLayout>
     );
