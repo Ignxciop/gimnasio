@@ -31,7 +31,7 @@ export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
 
     if (isLoading) {
         return (
-            <MainLayout onLogout={onLogout}>
+            <MainLayout>
                 <div>Cargando perfil...</div>
             </MainLayout>
         );
@@ -42,7 +42,7 @@ export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     }
 
     return (
-        <MainLayout onLogout={onLogout}>
+        <MainLayout>
             <section>
                 <h1
                     style={{
@@ -52,7 +52,7 @@ export const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
                 >
                     Mi Perfil
                 </h1>
-                <ProfileCard user={user} />
+                <ProfileCard user={user} onLogout={onLogout} />
             </section>
         </MainLayout>
     );
