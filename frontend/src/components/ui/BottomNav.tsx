@@ -22,7 +22,13 @@ export const BottomNav: React.FC = () => {
                 <span className="bottomnav__label">Inicio</span>
             </NavLink>
 
-            <NavLink to="#" className="bottomnav__link">
+            <NavLink
+                to="/rutinas"
+                className={({ isActive }) =>
+                    "bottomnav__link" +
+                    (isActive ? " bottomnav__link--active" : "")
+                }
+            >
                 <Dumbbell className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Rutinas</span>
             </NavLink>
