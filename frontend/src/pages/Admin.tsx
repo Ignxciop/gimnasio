@@ -6,6 +6,7 @@ import { SearchInput } from "../components/ui/SearchInput";
 import { adminService } from "../services/adminService";
 import { authService } from "../services/authService";
 import { useFetch } from "../hooks/useFetch";
+import { useToast } from "../hooks/useToast";
 import type { User } from "../types/auth.types";
 import "../styles/admin.css";
 
@@ -13,6 +14,8 @@ export const Admin: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState<number | "all">("all");
     const [statusFilter, setStatusFilter] = useState<boolean | "all">("all");
+
+    const { showToast } = useToast();
 
     const usersFetch = useFetch<User[]>({
         fetchFn: adminService.getUsers,
@@ -26,8 +29,14 @@ export const Admin: React.FC = () => {
     const handleRoleChange = async (userId: number, newRoleId: number) => {
         const token = authService.getToken();
         if (!token) return;
-        await adminService.updateUserRole(userId, newRoleId, token);
-        await usersFetch.execute();
+
+        try {
+            await adminService.updateUserRole(userId, newRoleId, token);
+            await usersFetch.execute();
+            showToast("success", "Rol de usuario actualizado correctamente");
+        } catch (error) {
+            showToast("error", "Error al actualizar el rol del usuario");
+        }
     };
 
     const handleStatusToggle = async (
@@ -36,8 +45,19 @@ export const Admin: React.FC = () => {
     ) => {
         const token = authService.getToken();
         if (!token) return;
-        await adminService.updateUserStatus(userId, !currentStatus, token);
-        await usersFetch.execute();
+
+        try {
+            await adminService.updateUserStatus(userId, !currentStatus, token);
+            await usersFetch.execute();
+            showToast(
+                "success",
+                `Usuario ${
+                    !currentStatus ? "activado" : "desactivado"
+                } correctamente`
+            );
+        } catch (error) {
+            showToast("error", "Error al actualizar el estado del usuario");
+        }
     };
 
     const filteredUsers = useMemo(() => {
