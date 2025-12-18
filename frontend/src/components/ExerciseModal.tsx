@@ -14,7 +14,8 @@ interface ExerciseModalProps {
         name: string,
         equipmentId: number,
         muscleGroupId: number,
-        secondaryMuscleGroupIds: number[]
+        secondaryMuscleGroupIds: number[],
+        videoFile?: File | null
     ) => Promise<void>;
     exercise?: Exercise | null;
     equipment: Equipment[];
@@ -37,6 +38,7 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
     const [secondaryMuscleGroupIds, setSecondaryMuscleGroupIds] = useState<
         number[]
     >([]);
+    const [videoFile, setVideoFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -55,6 +57,7 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
             setEquipmentId(0);
             setMuscleGroupId(0);
             setSecondaryMuscleGroupIds([]);
+            setVideoFile(null);
         }
         setError("");
     }, [exercise, isOpen]);
@@ -93,12 +96,14 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
                 name.trim(),
                 equipmentId,
                 muscleGroupId,
-                secondaryMuscleGroupIds
+                secondaryMuscleGroupIds,
+                videoFile
             );
             setName("");
             setEquipmentId(0);
             setMuscleGroupId(0);
             setSecondaryMuscleGroupIds([]);
+            setVideoFile(null);
             onClose();
         } catch (err: unknown) {
             const errorMessage =
@@ -108,6 +113,24 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
             setError(errorMessage);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.type !== "video/mp4") {
+                setError("Solo se permiten archivos .mp4");
+                e.target.value = "";
+                return;
+            }
+            if (file.size > 50 * 1024 * 1024) {
+                setError("El archivo no puede superar los 50MB");
+                e.target.value = "";
+                return;
+            }
+            setVideoFile(file);
+            setError("");
         }
     };
 
@@ -135,7 +158,9 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
                     </label>
                     <Select
                         value={equipmentId.toString()}
-                        onChange={(val) => setEquipmentId(parseInt(val))}
+                        onChange={(val) =>
+                            setEquipmentId(parseInt(val as string))
+                        }
                         options={equipment.map((item) => ({
                             value: item.id,
                             label: item.name,
@@ -188,6 +213,24 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
                         searchable={true}
                         multiple={true}
                     />
+                </div>
+
+                <div className="exercise-modal__field">
+                    <label className="exercise-modal__label">
+                        Video de ejemplo (opcional)
+                    </label>
+                    <input
+                        type="file"
+                        accept="video/mp4"
+                        onChange={handleVideoChange}
+                        className="exercise-modal__input"
+                        disabled={loading}
+                    />
+                    {videoFile && (
+                        <span className="exercise-modal__file-name">
+                            {videoFile.name}
+                        </span>
+                    )}
                 </div>
 
                 {error && (
