@@ -1,0 +1,261 @@
+.rutinas-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.rutinas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.rutinas-header h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 2rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-create-folder,
+.btn-create-routine {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-create-folder {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-create-folder:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.btn-create-routine {
+    background: linear-gradient(
+        135deg,
+        var(--accent-start),
+        var(--accent-mid),
+        var(--accent-end)
+    );
+    color: white;
+}
+
+.btn-create-routine:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+.rutinas-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.folders-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.folder-card {
+    background: linear-gradient(
+        145deg,
+        rgba(20, 20, 20, 0.95),
+        rgba(15, 15, 15, 0.95)
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 1.5rem;
+}
+
+.folder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.folder-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.folder-info svg {
+    color: var(--accent-mid);
+}
+
+.folder-info h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.folder-description {
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    padding-left: 2.25rem;
+}
+
+.folder-actions,
+.routine-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.folder-actions button,
+.routine-actions button {
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.folder-actions button:hover,
+.routine-actions button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.routines-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.routine-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    transition: all 0.2s ease;
+}
+
+.routine-card:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.routine-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-primary);
+}
+
+.routine-info svg {
+    color: var(--text-secondary);
+}
+
+.no-folder-section {
+    background: linear-gradient(
+        145deg,
+        rgba(20, 20, 20, 0.95),
+        rgba(15, 15, 15, 0.95)
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 1.5rem;
+}
+
+.no-folder-section h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.empty-state p {
+    margin: 0.5rem 0;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .rutinas-container {
+        padding: 1rem;
+    }
+
+    .rutinas-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .rutinas-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-create-folder,
+    .btn-create-routine {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .folder-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .folder-actions,
+    .routine-actions {
+        width: 100%;
+    }
+
+    .folder-actions button,
+    .routine-actions button {
+        flex: 1;
+    }
+
+    .routine-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .routine-actions {
+        width: 100%;
+    }
+}
