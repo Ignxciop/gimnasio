@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Search } from "lucide-react";
 import "./select.css";
 
 interface SelectOption {
@@ -14,6 +14,7 @@ interface SelectProps {
     placeholder?: string;
     disabled?: boolean;
     className?: string;
+    searchable?: boolean;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -23,8 +24,10 @@ export const Select: React.FC<SelectProps> = ({
     placeholder = "Selecciona una opción",
     disabled = false,
     className = "",
+    searchable = false,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
     const [dropdownPosition, setDropdownPosition] = useState({
         top: 0,
         left: 0,
@@ -32,10 +35,18 @@ export const Select: React.FC<SelectProps> = ({
     });
     const selectRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const selectedOption = options.find(
         (opt) => opt.value.toString() === value.toString()
     );
+
+    const filteredOptions =
+        searchable && searchTerm
+            ? options.filter((option) =>
+                  option.label.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+            : options;
 
     useEffect(() => {
         const updatePosition = () => {
@@ -53,13 +64,19 @@ export const Select: React.FC<SelectProps> = ({
             updatePosition();
             window.addEventListener("scroll", updatePosition, true);
             window.addEventListener("resize", updatePosition);
+
+            if (searchable && searchInputRef.current) {
+                searchInputRef.current.focus();
+            }
+        } else {
+            setSearchTerm("");
         }
 
         return () => {
             window.removeEventListener("scroll", updatePosition, true);
             window.removeEventListener("resize", updatePosition);
         };
-    }, [isOpen]);
+    }, [isOpen, searchable]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -120,29 +137,56 @@ export const Select: React.FC<SelectProps> = ({
                         width: `${dropdownPosition.width}px`,
                     }}
                 >
-                    {options.map((option) => {
-                        const isSelected =
-                            option.value.toString() === value.toString();
-                        return (
-                            <div
-                                key={option.value}
-                                className={`select-option ${
-                                    isSelected ? "select-option--selected" : ""
-                                }`}
-                                onClick={() => handleSelect(option.value)}
-                            >
-                                <span className="select-option__label">
-                                    {option.label}
-                                </span>
-                                {isSelected && (
-                                    <Check
-                                        size={18}
-                                        className="select-option__check"
-                                    />
-                                )}
+                    {searchable && (
+                        <div className="select-search">
+                            <Search size={16} className="select-search__icon" />
+                            <input
+                                ref={searchInputRef}
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Buscar..."
+                                className="select-search__input"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        </div>
+                    )}
+                    <div className="select-options">
+                        {filteredOptions.length === 0 ? (
+                            <div className="select-option select-option--empty">
+                                No se encontraron resultados
                             </div>
-                        );
-                    })}
+                        ) : (
+                            filteredOptions.map((option) => {
+                                const isSelected =
+                                    option.value.toString() ===
+                                    value.toString();
+                                return (
+                                    <div
+                                        key={option.value}
+                                        className={`select-option ${
+                                            isSelected
+                                                ? "select-option--selected"
+                                                : ""
+                                        }`}
+                                        onClick={() =>
+                                            handleSelect(option.value)
+                                        }
+                                    >
+                                        <span className="select-option__label">
+                                            {option.label}
+                                        </span>
+                                        {isSelected && (
+                                            <Check
+                                                size={18}
+                                                className="select-option__check"
+                                            />
+                                        )}
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
                 </div>
             )}
         </div>

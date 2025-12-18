@@ -127,6 +127,7 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
                         placeholder="Selecciona un equipamiento"
                         disabled={loading}
                         className="exercise-modal__select"
+                        searchable={true}
                     />
                 </div>
 
@@ -144,6 +145,7 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
                         placeholder="Selecciona un grupo muscular"
                         disabled={loading}
                         className="exercise-modal__select"
+                        searchable={true}
                     />
                 </div>
 
