@@ -1,5 +1,5 @@
 import React from "react";
-import { Dumbbell, Users } from "lucide-react";
+import { Dumbbell, Users, Target } from "lucide-react";
 import { Card, CardList } from "./ui/Card";
 import type { Exercise } from "../services/exerciseService";
 
@@ -35,8 +35,22 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({
                     </div>
                     <div className="card__detail">
                         <Users size={16} />
-                        <span>{item.muscleGroup.name}</span>
+                        <span>
+                            <strong>Principal:</strong> {item.muscleGroup.name}
+                        </span>
                     </div>
+                    {item.secondaryMuscleGroups &&
+                        item.secondaryMuscleGroups.length > 0 && (
+                            <div className="card__detail">
+                                <Target size={16} />
+                                <span>
+                                    <strong>Secundarios:</strong>{" "}
+                                    {item.secondaryMuscleGroups
+                                        .map((smg) => smg.muscleGroup.name)
+                                        .join(", ")}
+                                </span>
+                            </div>
+                        )}
                 </Card>
             ))}
         </CardList>
