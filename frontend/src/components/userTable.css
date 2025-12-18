@@ -151,6 +151,8 @@
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: visible;
 }
 
 .user-card:hover {
@@ -219,6 +221,9 @@
 
 .user-card__role {
     margin-bottom: var(--spacing-md);
+    position: relative;
+    z-index: 10;
+    overflow: visible;
 }
 
 .user-card__label {
@@ -241,6 +246,8 @@
     background: white;
     cursor: pointer;
     transition: border-color 0.2s;
+    position: relative;
+    z-index: 10;
 }
 
 .user-card__select:hover {
