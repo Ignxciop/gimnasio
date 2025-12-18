@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FolderPlus, Plus, Folder as FolderIcon, FileText } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import FolderModal from "../components/FolderModal";
@@ -18,90 +18,75 @@ import "../styles/rutinas.css";
 
 export default function Rutinas() {
     const { showToast } = useToast();
-    const {
-        isOpen: isFolderModalOpen,
-        open: openFolderModal,
-        close: closeFolderModal,
-    } = useModal();
-    const {
-        isOpen: isRoutineModalOpen,
-        open: openRoutineModal,
-        close: closeRoutineModal,
-    } = useModal();
-    const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
-    const [selectedRoutine, setSelectedRoutine] = useState<Routine | null>(
-        null
-    );
+    const folderModal = useModal<Folder>();
+    const routineModal = useModal<Routine>();
 
-    const {
-        data: folders,
-        loading: loadingFolders,
-        refetch: refetchFolders,
-    } = useFetch<Folder[]>(folderService.getAll);
-    const {
-        data: routines,
-        loading: loadingRoutines,
-        refetch: refetchRoutines,
-    } = useFetch<Routine[]>(routineService.getAll);
+    const foldersFetch = useFetch<Folder[]>({
+        fetchFn: folderService.getAll,
+    });
+    const routinesFetch = useFetch<Routine[]>({
+        fetchFn: routineService.getAll,
+    });
+
+    useEffect(() => {
+        foldersFetch.execute();
+        routinesFetch.execute();
+    }, []);
 
     const handleCreateFolder = () => {
-        setSelectedFolder(null);
-        openFolderModal();
+        folderModal.openModal();
     };
 
     const handleEditFolder = (folder: Folder) => {
-        setSelectedFolder(folder);
-        openFolderModal();
+        folderModal.openEditModal(folder);
     };
 
     const handleCreateRoutine = () => {
-        setSelectedRoutine(null);
-        openRoutineModal();
+        routineModal.openModal();
     };
 
     const handleEditRoutine = (routine: Routine) => {
-        setSelectedRoutine(routine);
-        openRoutineModal();
+        routineModal.openEditModal(routine);
     };
 
     const handleFolderSubmit = async (data: FolderFormData) => {
         try {
-            if (selectedFolder) {
-                await folderService.update(selectedFolder.id, data);
-                showToast("Carpeta actualizada exitosamente", "success");
+            if (folderModal.editingItem) {
+                await folderService.update(folderModal.editingItem.id, data);
+                showToast("success", "Carpeta actualizada exitosamente");
             } else {
                 await folderService.create(data);
-                showToast("Carpeta creada exitosamente", "success");
+                showToast("success", "Carpeta creada exitosamente");
             }
-            refetchFolders();
-            closeFolderModal();
+            foldersFetch.execute();
+            folderModal.closeModal();
         } catch (error) {
             showToast(
+                "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al guardar carpeta",
-                "error"
+                    : "Error al guardar carpeta"
             );
         }
     };
 
     const handleRoutineSubmit = async (data: RoutineFormData) => {
         try {
-            if (selectedRoutine) {
-                await routineService.update(selectedRoutine.id, data);
-                showToast("Rutina actualizada exitosamente", "success");
+            if (routineModal.editingItem) {
+                await routineService.update(routineModal.editingItem.id, data);
+                showToast("success", "Rutina actualizada exitosamente");
             } else {
                 await routineService.create(data);
-                showToast("Rutina creada exitosamente", "success");
+                showToast("success", "Rutina creada exitosamente");
             }
-            refetchRoutines();
-            closeRoutineModal();
+            routinesFetch.execute();
+            routineModal.closeModal();
         } catch (error) {
             showToast(
+                "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al guardar rutina",
-                "error"
+                    : "Error al guardar rutina"
             );
         }
     };
@@ -116,15 +101,15 @@ export default function Rutinas() {
 
         try {
             await folderService.delete(id);
-            showToast("Carpeta eliminada exitosamente", "success");
-            refetchFolders();
-            refetchRoutines();
+            showToast("success", "Carpeta eliminada exitosamente");
+            foldersFetch.execute();
+            routinesFetch.execute();
         } catch (error) {
             showToast(
+                "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al eliminar carpeta",
-                "error"
+                    : "Error al eliminar carpeta"
             );
         }
     };
@@ -134,25 +119,27 @@ export default function Rutinas() {
 
         try {
             await routineService.delete(id);
-            showToast("Rutina eliminada exitosamente", "success");
-            refetchRoutines();
+            showToast("success", "Rutina eliminada exitosamente");
+            routinesFetch.execute();
         } catch (error) {
             showToast(
+                "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al eliminar rutina",
-                "error"
+                    : "Error al eliminar rutina"
             );
         }
     };
 
     const getRoutinesByFolder = (folderId: number | null) => {
         return (
-            routines?.filter((routine) => routine.folderId === folderId) || []
+            routinesFetch.data?.filter(
+                (routine) => routine.folderId === folderId
+            ) || []
         );
     };
 
-    if (loadingFolders || loadingRoutines) {
+    if (foldersFetch.loading || routinesFetch.loading) {
         return (
             <MainLayout>
                 <div className="loading">Cargando...</div>
@@ -185,9 +172,9 @@ export default function Rutinas() {
 
                 <div className="rutinas-content">
                     <div className="folders-section">
-                        {folders && folders.length > 0 && (
+                        {foldersFetch.data && foldersFetch.data.length > 0 && (
                             <>
-                                {folders.map((folder) => (
+                                {foldersFetch.data.map((folder) => (
                                     <div
                                         key={folder.id}
                                         className="folder-card"
@@ -303,8 +290,9 @@ export default function Rutinas() {
                         </div>
                     )}
 
-                    {(!folders || folders.length === 0) &&
-                        (!routines || routines.length === 0) && (
+                    {(!foldersFetch.data || foldersFetch.data.length === 0) &&
+                        (!routinesFetch.data ||
+                            routinesFetch.data.length === 0) && (
                             <div className="empty-state">
                                 <p>No tienes carpetas ni rutinas aún</p>
                                 <p>Comienza creando una carpeta o una rutina</p>
@@ -314,18 +302,18 @@ export default function Rutinas() {
             </div>
 
             <FolderModal
-                isOpen={isFolderModalOpen}
-                onClose={closeFolderModal}
+                isOpen={folderModal.isOpen}
+                onClose={folderModal.closeModal}
                 onSubmit={handleFolderSubmit}
-                folder={selectedFolder}
+                folder={folderModal.editingItem}
             />
 
             <RoutineModal
-                isOpen={isRoutineModalOpen}
-                onClose={closeRoutineModal}
+                isOpen={routineModal.isOpen}
+                onClose={routineModal.closeModal}
                 onSubmit={handleRoutineSubmit}
-                routine={selectedRoutine}
-                folders={folders || []}
+                routine={routineModal.editingItem}
+                folders={foldersFetch.data || []}
             />
         </MainLayout>
     );
