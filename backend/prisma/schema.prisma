@@ -49,6 +49,7 @@ model Exercise{
   name String @unique
   equipmentId Int
   muscleGroupId Int
+  videoPath String?
   equipment Equipment @relation(fields: [equipmentId], references: [id])
   muscleGroup MuscleGroup @relation("PrimaryMuscleGroup", fields: [muscleGroupId], references: [id])
   secondaryMuscleGroups ExerciseSecondaryMuscleGroup[]
