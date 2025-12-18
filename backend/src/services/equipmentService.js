@@ -85,11 +85,22 @@ class EquipmentService {
             throw error;
         }
 
-        await prisma.equipment.delete({
-            where: { id },
-        });
+        try {
+            await prisma.equipment.delete({
+                where: { id },
+            });
 
-        return { message: "Equipamiento eliminado exitosamente" };
+            return { message: "Equipamiento eliminado exitosamente" };
+        } catch (error) {
+            if (error.code === "P2003") {
+                const constraintError = new Error(
+                    "No se puede eliminar este equipamiento porque está siendo usado en ejercicios"
+                );
+                constraintError.statusCode = 409;
+                throw constraintError;
+            }
+            throw error;
+        }
     }
 }
 

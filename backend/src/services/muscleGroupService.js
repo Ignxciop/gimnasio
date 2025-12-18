@@ -89,11 +89,22 @@ class MuscleGroupService {
             throw error;
         }
 
-        await prisma.muscleGroup.delete({
-            where: { id },
-        });
+        try {
+            await prisma.muscleGroup.delete({
+                where: { id },
+            });
 
-        return { message: "Grupo muscular eliminado exitosamente" };
+            return { message: "Grupo muscular eliminado exitosamente" };
+        } catch (error) {
+            if (error.code === "P2003") {
+                const constraintError = new Error(
+                    "No se puede eliminar este grupo muscular porque está siendo usado en ejercicios"
+                );
+                constraintError.statusCode = 409;
+                throw constraintError;
+            }
+            throw error;
+        }
     }
 }
 
