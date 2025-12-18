@@ -30,11 +30,17 @@ class ExerciseController {
 
     async create(req, res, next) {
         try {
-            const { name, equipmentId, muscleGroupId } = req.body;
+            const {
+                name,
+                equipmentId,
+                muscleGroupId,
+                secondaryMuscleGroupIds = [],
+            } = req.body;
             const exercise = await exerciseService.create(
                 name,
                 equipmentId,
-                muscleGroupId
+                muscleGroupId,
+                secondaryMuscleGroupIds
             );
 
             res.status(201).json({
@@ -50,12 +56,18 @@ class ExerciseController {
     async update(req, res, next) {
         try {
             const id = parseInt(req.params.id);
-            const { name, equipmentId, muscleGroupId } = req.body;
+            const {
+                name,
+                equipmentId,
+                muscleGroupId,
+                secondaryMuscleGroupIds = [],
+            } = req.body;
             const exercise = await exerciseService.update(
                 id,
                 name,
                 equipmentId,
-                muscleGroupId
+                muscleGroupId,
+                secondaryMuscleGroupIds
             );
 
             res.status(200).json({

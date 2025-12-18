@@ -6,6 +6,11 @@ class ExerciseService {
             include: {
                 equipment: true,
                 muscleGroup: true,
+                secondaryMuscleGroups: {
+                    include: {
+                        muscleGroup: true,
+                    },
+                },
             },
             orderBy: {
                 createdAt: "desc",
@@ -20,6 +25,11 @@ class ExerciseService {
             include: {
                 equipment: true,
                 muscleGroup: true,
+                secondaryMuscleGroups: {
+                    include: {
+                        muscleGroup: true,
+                    },
+                },
             },
         });
 
@@ -32,7 +42,12 @@ class ExerciseService {
         return exercise;
     }
 
-    async create(name, equipmentId, muscleGroupId) {
+    async create(
+        name,
+        equipmentId,
+        muscleGroupId,
+        secondaryMuscleGroupIds = []
+    ) {
         const existingExercise = await prisma.exercise.findUnique({
             where: { name },
         });
@@ -68,17 +83,33 @@ class ExerciseService {
                 name,
                 equipmentId,
                 muscleGroupId,
+                secondaryMuscleGroups: {
+                    create: secondaryMuscleGroupIds
+                        .filter((id) => id !== muscleGroupId)
+                        .map((muscleGroupId) => ({ muscleGroupId })),
+                },
             },
             include: {
                 equipment: true,
                 muscleGroup: true,
+                secondaryMuscleGroups: {
+                    include: {
+                        muscleGroup: true,
+                    },
+                },
             },
         });
 
         return exercise;
     }
 
-    async update(id, name, equipmentId, muscleGroupId) {
+    async update(
+        id,
+        name,
+        equipmentId,
+        muscleGroupId,
+        secondaryMuscleGroupIds = []
+    ) {
         const existingExercise = await prisma.exercise.findUnique({
             where: { id },
         });
@@ -128,10 +159,21 @@ class ExerciseService {
                 name,
                 equipmentId,
                 muscleGroupId,
+                secondaryMuscleGroups: {
+                    deleteMany: {},
+                    create: secondaryMuscleGroupIds
+                        .filter((mgId) => mgId !== muscleGroupId)
+                        .map((muscleGroupId) => ({ muscleGroupId })),
+                },
             },
             include: {
                 equipment: true,
                 muscleGroup: true,
+                secondaryMuscleGroups: {
+                    include: {
+                        muscleGroup: true,
+                    },
+                },
             },
         });
 

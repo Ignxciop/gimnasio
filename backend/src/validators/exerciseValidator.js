@@ -13,6 +13,16 @@ export const createExerciseValidation = [
     body("muscleGroupId")
         .isInt({ min: 1 })
         .withMessage("El grupo muscular es requerido"),
+    body("secondaryMuscleGroupIds")
+        .optional()
+        .isArray()
+        .withMessage("Los grupos musculares secundarios deben ser un array"),
+    body("secondaryMuscleGroupIds.*")
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage(
+            "Cada ID de grupo muscular secundario debe ser un número entero positivo"
+        ),
 ];
 
 export const updateExerciseValidation = [
@@ -31,6 +41,16 @@ export const updateExerciseValidation = [
     body("muscleGroupId")
         .isInt({ min: 1 })
         .withMessage("El grupo muscular es requerido"),
+    body("secondaryMuscleGroupIds")
+        .optional()
+        .isArray()
+        .withMessage("Los grupos musculares secundarios deben ser un array"),
+    body("secondaryMuscleGroupIds.*")
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage(
+            "Cada ID de grupo muscular secundario debe ser un número entero positivo"
+        ),
 ];
 
 export const deleteExerciseValidation = [
