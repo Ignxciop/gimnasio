@@ -3,8 +3,7 @@ import type { Routine, RoutineFormData } from "../types/routine";
 const API_URL = "http://localhost:3000/api";
 
 export const routineService = {
-    async getAll(): Promise<Routine[]> {
-        const token = localStorage.getItem("token");
+    async getAll(token: string): Promise<Routine[]> {
         const response = await fetch(`${API_URL}/routines`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -20,8 +19,7 @@ export const routineService = {
         return data.data;
     },
 
-    async getById(id: number): Promise<Routine> {
-        const token = localStorage.getItem("token");
+    async getById(id: number, token: string): Promise<Routine> {
         const response = await fetch(`${API_URL}/routines/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -37,8 +35,10 @@ export const routineService = {
         return data.data;
     },
 
-    async create(routineData: RoutineFormData): Promise<Routine> {
-        const token = localStorage.getItem("token");
+    async create(
+        routineData: RoutineFormData,
+        token: string
+    ): Promise<Routine> {
         const response = await fetch(`${API_URL}/routines`, {
             method: "POST",
             headers: {
@@ -57,8 +57,11 @@ export const routineService = {
         return data.data;
     },
 
-    async update(id: number, routineData: RoutineFormData): Promise<Routine> {
-        const token = localStorage.getItem("token");
+    async update(
+        id: number,
+        routineData: RoutineFormData,
+        token: string
+    ): Promise<Routine> {
         const response = await fetch(`${API_URL}/routines/${id}`, {
             method: "PUT",
             headers: {
@@ -77,8 +80,11 @@ export const routineService = {
         return data.data;
     },
 
-    async move(id: number, folderId: number | null): Promise<Routine> {
-        const token = localStorage.getItem("token");
+    async move(
+        id: number,
+        folderId: number | null,
+        token: string
+    ): Promise<Routine> {
         const response = await fetch(`${API_URL}/routines/${id}/move`, {
             method: "PATCH",
             headers: {
@@ -97,8 +103,7 @@ export const routineService = {
         return data.data;
     },
 
-    async delete(id: number): Promise<void> {
-        const token = localStorage.getItem("token");
+    async delete(id: number, token: string): Promise<void> {
         const response = await fetch(`${API_URL}/routines/${id}`, {
             method: "DELETE",
             headers: {

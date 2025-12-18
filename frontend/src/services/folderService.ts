@@ -3,8 +3,7 @@ import type { Folder, FolderFormData } from "../types/routine";
 const API_URL = "http://localhost:3000/api";
 
 export const folderService = {
-    async getAll(): Promise<Folder[]> {
-        const token = localStorage.getItem("token");
+    async getAll(token: string): Promise<Folder[]> {
         const response = await fetch(`${API_URL}/folders`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -20,8 +19,7 @@ export const folderService = {
         return data.data;
     },
 
-    async getById(id: number): Promise<Folder> {
-        const token = localStorage.getItem("token");
+    async getById(id: number, token: string): Promise<Folder> {
         const response = await fetch(`${API_URL}/folders/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -37,8 +35,7 @@ export const folderService = {
         return data.data;
     },
 
-    async create(folderData: FolderFormData): Promise<Folder> {
-        const token = localStorage.getItem("token");
+    async create(folderData: FolderFormData, token: string): Promise<Folder> {
         const response = await fetch(`${API_URL}/folders`, {
             method: "POST",
             headers: {
@@ -57,8 +54,11 @@ export const folderService = {
         return data.data;
     },
 
-    async update(id: number, folderData: FolderFormData): Promise<Folder> {
-        const token = localStorage.getItem("token");
+    async update(
+        id: number,
+        folderData: FolderFormData,
+        token: string
+    ): Promise<Folder> {
         const response = await fetch(`${API_URL}/folders/${id}`, {
             method: "PUT",
             headers: {
@@ -77,8 +77,7 @@ export const folderService = {
         return data.data;
     },
 
-    async delete(id: number): Promise<void> {
-        const token = localStorage.getItem("token");
+    async delete(id: number, token: string): Promise<void> {
         const response = await fetch(`${API_URL}/folders/${id}`, {
             method: "DELETE",
             headers: {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { FolderPlus, Plus, Folder as FolderIcon, FileText } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import FolderModal from "../components/FolderModal";
@@ -8,6 +8,7 @@ import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
 import { folderService } from "../services/folderService";
 import { routineService } from "../services/routineService";
+import { authService } from "../services/authService";
 import type {
     Folder,
     Routine,
@@ -51,11 +52,18 @@ export default function Rutinas() {
 
     const handleFolderSubmit = async (data: FolderFormData) => {
         try {
+            const token = authService.getToken();
+            if (!token) return;
+
             if (folderModal.editingItem) {
-                await folderService.update(folderModal.editingItem.id, data);
+                await folderService.update(
+                    folderModal.editingItem.id,
+                    data,
+                    token
+                );
                 showToast("success", "Carpeta actualizada exitosamente");
             } else {
-                await folderService.create(data);
+                await folderService.create(data, token);
                 showToast("success", "Carpeta creada exitosamente");
             }
             foldersFetch.execute();
@@ -72,11 +80,18 @@ export default function Rutinas() {
 
     const handleRoutineSubmit = async (data: RoutineFormData) => {
         try {
+            const token = authService.getToken();
+            if (!token) return;
+
             if (routineModal.editingItem) {
-                await routineService.update(routineModal.editingItem.id, data);
+                await routineService.update(
+                    routineModal.editingItem.id,
+                    data,
+                    token
+                );
                 showToast("success", "Rutina actualizada exitosamente");
             } else {
-                await routineService.create(data);
+                await routineService.create(data, token);
                 showToast("success", "Rutina creada exitosamente");
             }
             routinesFetch.execute();
@@ -100,7 +115,10 @@ export default function Rutinas() {
             return;
 
         try {
-            await folderService.delete(id);
+            const token = authService.getToken();
+            if (!token) return;
+
+            await folderService.delete(id, token);
             showToast("success", "Carpeta eliminada exitosamente");
             foldersFetch.execute();
             routinesFetch.execute();
@@ -118,7 +136,10 @@ export default function Rutinas() {
         if (!confirm("¿Estás seguro de eliminar esta rutina?")) return;
 
         try {
-            await routineService.delete(id);
+            const token = authService.getToken();
+            if (!token) return;
+
+            await routineService.delete(id, token);
             showToast("success", "Rutina eliminada exitosamente");
             routinesFetch.execute();
         } catch (error) {
