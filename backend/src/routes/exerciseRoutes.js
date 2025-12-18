@@ -1,6 +1,7 @@
 import { Router } from "express";
 import exerciseController from "../controllers/exerciseController.js";
 import { authenticate, authorize } from "../middlewares/authMiddleware.js";
+import { upload } from "../config/multer.js";
 import {
     createExerciseValidation,
     updateExerciseValidation,
@@ -10,6 +11,25 @@ import {
 import { validationResult } from "express-validator";
 
 const router = Router();
+
+const parseFormData = (req, res, next) => {
+    if (req.body.equipmentId) {
+        req.body.equipmentId = parseInt(req.body.equipmentId);
+    }
+    if (req.body.muscleGroupId) {
+        req.body.muscleGroupId = parseInt(req.body.muscleGroupId);
+    }
+    if (req.body.secondaryMuscleGroupIds) {
+        try {
+            req.body.secondaryMuscleGroupIds = JSON.parse(
+                req.body.secondaryMuscleGroupIds
+            );
+        } catch (e) {
+            req.body.secondaryMuscleGroupIds = [];
+        }
+    }
+    next();
+};
 
 const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
@@ -45,6 +65,8 @@ router.post(
     "/",
     authenticate,
     authorize("administrador", "manager"),
+    upload.single("video"),
+    parseFormData,
     createExerciseValidation,
     handleValidationErrors,
     exerciseController.create
@@ -54,6 +76,8 @@ router.put(
     "/:id",
     authenticate,
     authorize("administrador", "manager"),
+    upload.single("video"),
+    parseFormData,
     updateExerciseValidation,
     handleValidationErrors,
     exerciseController.update
