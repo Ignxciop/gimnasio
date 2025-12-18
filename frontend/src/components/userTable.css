@@ -236,35 +236,6 @@
     letter-spacing: 0.3px;
 }
 
-.user-card__select {
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-base);
-    color: var(--color-text-primary);
-    background: white;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    position: relative;
-    z-index: 10;
-}
-
-.user-card__select:hover {
-    border-color: var(--accent-mid);
-}
-
-.user-card__select:focus {
-    outline: none;
-    border-color: var(--accent-mid);
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-.user-card__select:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .user-card__button {
     width: 100%;
     display: inline-flex;
