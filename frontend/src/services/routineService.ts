@@ -2,6 +2,13 @@ import type { Routine, RoutineFormData } from "../types/routine";
 
 const API_URL = "http://localhost:3000/api";
 
+const handleError = (error: any, defaultMessage: string): never => {
+    if (error.message) {
+        throw new Error(error.message);
+    }
+    throw new Error(defaultMessage);
+};
+
 export const routineService = {
     async getAll(token: string): Promise<Routine[]> {
         const response = await fetch(`${API_URL}/routines`, {
@@ -39,22 +46,29 @@ export const routineService = {
         routineData: RoutineFormData,
         token: string
     ): Promise<Routine> {
-        const response = await fetch(`${API_URL}/routines`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(routineData),
-        });
+        try {
+            const response = await fetch(`${API_URL}/routines`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(routineData),
+            });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Error al crear rutina");
+            if (!response.ok) {
+                const error = await response.json();
+                handleError(error, "No se pudo crear la rutina");
+            }
+
+            const data = await response.json();
+            return data.data;
+        } catch (error: any) {
+            if (error.message) {
+                throw error;
+            }
+            throw new Error("No se pudo crear la rutina. Intenta nuevamente");
         }
-
-        const data = await response.json();
-        return data.data;
     },
 
     async update(

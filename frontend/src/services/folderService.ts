@@ -2,6 +2,13 @@ import type { Folder, FolderFormData } from "../types/routine";
 
 const API_URL = "http://localhost:3000/api";
 
+const handleError = (error: any, defaultMessage: string): never => {
+    if (error.message) {
+        throw new Error(error.message);
+    }
+    throw new Error(defaultMessage);
+};
+
 export const folderService = {
     async getAll(token: string): Promise<Folder[]> {
         const response = await fetch(`${API_URL}/folders`, {
@@ -36,22 +43,29 @@ export const folderService = {
     },
 
     async create(folderData: FolderFormData, token: string): Promise<Folder> {
-        const response = await fetch(`${API_URL}/folders`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(folderData),
-        });
+        try {
+            const response = await fetch(`${API_URL}/folders`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(folderData),
+            });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Error al crear carpeta");
+            if (!response.ok) {
+                const error = await response.json();
+                handleError(error, "No se pudo crear la carpeta");
+            }
+
+            const data = await response.json();
+            return data.data;
+        } catch (error: any) {
+            if (error.message) {
+                throw error;
+            }
+            throw new Error("No se pudo crear la carpeta. Intenta nuevamente");
         }
-
-        const data = await response.json();
-        return data.data;
     },
 
     async update(
@@ -59,35 +73,53 @@ export const folderService = {
         folderData: FolderFormData,
         token: string
     ): Promise<Folder> {
-        const response = await fetch(`${API_URL}/folders/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(folderData),
-        });
+        try {
+            const response = await fetch(`${API_URL}/folders/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(folderData),
+            });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Error al actualizar carpeta");
+            if (!response.ok) {
+                const error = await response.json();
+                handleError(error, "No se pudo actualizar la carpeta");
+            }
+
+            const data = await response.json();
+            return data.data;
+        } catch (error: any) {
+            if (error.message) {
+                throw error;
+            }
+            throw new Error(
+                "No se pudo actualizar la carpeta. Intenta nuevamente"
+            );
         }
-
-        const data = await response.json();
-        return data.data;
     },
 
     async delete(id: number, token: string): Promise<void> {
-        const response = await fetch(`${API_URL}/folders/${id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/folders/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Error al eliminar carpeta");
+            if (!response.ok) {
+                const error = await response.json();
+                handleError(error, "No se pudo eliminar la carpeta");
+            }
+        } catch (error: any) {
+            if (error.message) {
+                throw error;
+            }
+            throw new Error(
+                "No se pudo eliminar la carpeta. Intenta nuevamente"
+            );
         }
     },
 };
