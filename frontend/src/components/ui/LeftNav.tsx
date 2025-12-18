@@ -27,6 +27,11 @@ export const LeftNav: React.FC = () => {
                     </NavLink>
                 </li>
                 <li>
+                    <NavLink to="#" className="leftnav__link">
+                        Rutinas
+                    </NavLink>
+                </li>
+                <li>
                     <NavLink
                         to="/perfil"
                         className={({ isActive }) =>
@@ -63,11 +68,6 @@ export const LeftNav: React.FC = () => {
                         </NavLink>
                     </li>
                 )}
-                <li>
-                    <NavLink to="#" className="leftnav__link">
-                        Rutinas
-                    </NavLink>
-                </li>
             </ul>
         </nav>
     );
