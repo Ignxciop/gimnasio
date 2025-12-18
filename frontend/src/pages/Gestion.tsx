@@ -161,7 +161,8 @@ export const Gestion: React.FC = () => {
         name: string,
         equipmentId: number,
         muscleGroupId: number,
-        secondaryMuscleGroupIds: number[]
+        secondaryMuscleGroupIds: number[],
+        videoFile?: File | null
     ) => {
         const token = authService.getToken();
         if (!token) return;
@@ -174,7 +175,8 @@ export const Gestion: React.FC = () => {
                     equipmentId,
                     muscleGroupId,
                     secondaryMuscleGroupIds,
-                    token
+                    token,
+                    videoFile
                 );
                 showToast("success", "Ejercicio actualizado correctamente");
             } else {
@@ -183,7 +185,8 @@ export const Gestion: React.FC = () => {
                     equipmentId,
                     muscleGroupId,
                     secondaryMuscleGroupIds,
-                    token
+                    token,
+                    videoFile
                 );
                 showToast("success", "Ejercicio creado correctamente");
             }
