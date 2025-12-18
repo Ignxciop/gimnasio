@@ -13,6 +13,13 @@ export interface Exercise {
         id: number;
         name: string;
     };
+    secondaryMuscleGroups?: {
+        muscleGroupId: number;
+        muscleGroup: {
+            id: number;
+            name: string;
+        };
+    }[];
     createdAt: string;
     updatedAt: string;
 }
@@ -41,11 +48,12 @@ export const exerciseService = {
         name: string,
         equipmentId: number,
         muscleGroupId: number,
+        secondaryMuscleGroupIds: number[],
         token: string
     ): Promise<Exercise> {
         const response = await api.post<ExerciseResponse>(
             "/exercises",
-            { name, equipmentId, muscleGroupId },
+            { name, equipmentId, muscleGroupId, secondaryMuscleGroupIds },
             token
         );
         return response.data as Exercise;
@@ -56,11 +64,12 @@ export const exerciseService = {
         name: string,
         equipmentId: number,
         muscleGroupId: number,
+        secondaryMuscleGroupIds: number[],
         token: string
     ): Promise<Exercise> {
         const response = await api.put<ExerciseResponse>(
             `/exercises/${id}`,
-            { name, equipmentId, muscleGroupId },
+            { name, equipmentId, muscleGroupId, secondaryMuscleGroupIds },
             token
         );
         return response.data as Exercise;

@@ -13,7 +13,8 @@ interface ExerciseModalProps {
     onSubmit: (
         name: string,
         equipmentId: number,
-        muscleGroupId: number
+        muscleGroupId: number,
+        secondaryMuscleGroupIds: number[]
     ) => Promise<void>;
     exercise?: Exercise | null;
     equipment: Equipment[];
@@ -33,6 +34,9 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
     const [name, setName] = useState("");
     const [equipmentId, setEquipmentId] = useState<number>(0);
     const [muscleGroupId, setMuscleGroupId] = useState<number>(0);
+    const [secondaryMuscleGroupIds, setSecondaryMuscleGroupIds] = useState<
+        number[]
+    >([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -41,10 +45,16 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
             setName(exercise.name);
             setEquipmentId(exercise.equipmentId);
             setMuscleGroupId(exercise.muscleGroupId);
+            setSecondaryMuscleGroupIds(
+                exercise.secondaryMuscleGroups?.map(
+                    (smg) => smg.muscleGroupId
+                ) || []
+            );
         } else {
             setName("");
             setEquipmentId(0);
             setMuscleGroupId(0);
+            setSecondaryMuscleGroupIds([]);
         }
         setError("");
     }, [exercise, isOpen]);
@@ -79,10 +89,16 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
 
         try {
             setLoading(true);
-            await onSubmit(name.trim(), equipmentId, muscleGroupId);
+            await onSubmit(
+                name.trim(),
+                equipmentId,
+                muscleGroupId,
+                secondaryMuscleGroupIds
+            );
             setName("");
             setEquipmentId(0);
             setMuscleGroupId(0);
+            setSecondaryMuscleGroupIds([]);
             onClose();
         } catch (err: unknown) {
             const errorMessage =
@@ -133,19 +149,44 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
 
                 <div className="exercise-modal__field">
                     <label className="exercise-modal__label">
-                        Grupo muscular
+                        Grupo Muscular Primario
                     </label>
                     <Select
                         value={muscleGroupId.toString()}
-                        onChange={(val) => setMuscleGroupId(parseInt(val))}
+                        onChange={(val) =>
+                            setMuscleGroupId(parseInt(val as string))
+                        }
                         options={muscleGroups.map((item) => ({
                             value: item.id,
                             label: item.name,
                         }))}
-                        placeholder="Selecciona un grupo muscular"
+                        placeholder="Selecciona el grupo muscular primario"
                         disabled={loading}
                         className="exercise-modal__select"
                         searchable={true}
+                    />
+                </div>
+
+                <div className="exercise-modal__field">
+                    <label className="exercise-modal__label">
+                        Grupos Musculares Secundarios (opcional)
+                    </label>
+                    <Select
+                        value={secondaryMuscleGroupIds}
+                        onChange={(val) =>
+                            setSecondaryMuscleGroupIds(val as number[])
+                        }
+                        options={muscleGroups
+                            .filter((item) => item.id !== muscleGroupId)
+                            .map((item) => ({
+                                value: item.id,
+                                label: item.name,
+                            }))}
+                        placeholder="Selecciona grupos musculares secundarios"
+                        disabled={loading}
+                        className="exercise-modal__select"
+                        searchable={true}
+                        multiple={true}
                     />
                 </div>
 

@@ -106,7 +106,8 @@ export const Gestion: React.FC = () => {
     const handleSubmitExercise = async (
         name: string,
         equipmentId: number,
-        muscleGroupId: number
+        muscleGroupId: number,
+        secondaryMuscleGroupIds: number[]
     ) => {
         const token = authService.getToken();
         if (!token) return;
@@ -117,6 +118,7 @@ export const Gestion: React.FC = () => {
                 name,
                 equipmentId,
                 muscleGroupId,
+                secondaryMuscleGroupIds,
                 token
             );
         } else {
@@ -124,6 +126,7 @@ export const Gestion: React.FC = () => {
                 name,
                 equipmentId,
                 muscleGroupId,
+                secondaryMuscleGroupIds,
                 token
             );
         }
