@@ -84,7 +84,8 @@
 }
 
 .profile-card__logout {
-    margin: 0 var(--spacing-2xl) var(--spacing-2xl);
+    margin: 0 auto;
+    margin-bottom: var(--spacing-2xl);
     padding: var(--spacing-md) var(--spacing-lg);
     background: var(--gradient-accent);
     color: white;
@@ -98,6 +99,7 @@
     align-items: center;
     justify-content: center;
     gap: var(--spacing-sm);
+    max-width: 200px;
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
 }
 
@@ -120,6 +122,8 @@
     }
 
     .profile-card__logout {
-        margin: 0 var(--spacing-lg) var(--spacing-lg);
+        margin: 0 auto;
+        margin-bottom: var(--spacing-lg);
+        max-width: 90%;
     }
 }
