@@ -12,7 +12,7 @@ export const BottomNav: React.FC = () => {
     return (
         <nav className="bottomnav">
             <NavLink
-                to="/home"
+                to="/inicio"
                 className={({ isActive }) =>
                     "bottomnav__link" +
                     (isActive ? " bottomnav__link--active" : "")

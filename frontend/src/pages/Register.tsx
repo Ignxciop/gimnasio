@@ -12,7 +12,7 @@ export const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
 
     const handleSuccess = () => {
         onRegisterSuccess?.();
-        navigate("/home", { replace: true });
+        navigate("/inicio", { replace: true });
     };
 
     return (

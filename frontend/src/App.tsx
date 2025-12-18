@@ -36,7 +36,7 @@ function App() {
                         path="/login"
                         element={
                             isAuthenticated ? (
-                                <Navigate to="/home" replace />
+                                <Navigate to="/inicio" replace />
                             ) : (
                                 <Login onLoginSuccess={handleLoginSuccess} />
                             )
@@ -47,7 +47,7 @@ function App() {
                         path="/register"
                         element={
                             isAuthenticated ? (
-                                <Navigate to="/home" replace />
+                                <Navigate to="/inicio" replace />
                             ) : (
                                 <Register
                                     onRegisterSuccess={handleRegisterSuccess}
@@ -57,7 +57,7 @@ function App() {
                     />
 
                     <Route
-                        path="/home"
+                        path="/inicio"
                         element={
                             isAuthenticated ? (
                                 <Home onLogout={handleLogout} />
@@ -115,7 +115,7 @@ function App() {
                         path="/"
                         element={
                             isAuthenticated ? (
-                                <Navigate to="/home" replace />
+                                <Navigate to="/inicio" replace />
                             ) : (
                                 <Navigate to="/login" replace />
                             )
@@ -126,7 +126,7 @@ function App() {
                         path="*"
                         element={
                             isAuthenticated ? (
-                                <Navigate to="/home" replace />
+                                <Navigate to="/inicio" replace />
                             ) : (
                                 <Navigate to="/login" replace />
                             )

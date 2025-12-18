@@ -12,7 +12,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
     const handleSuccess = () => {
         onLoginSuccess?.();
-        navigate("/home", { replace: true });
+        navigate("/inicio", { replace: true });
     };
 
     return (
