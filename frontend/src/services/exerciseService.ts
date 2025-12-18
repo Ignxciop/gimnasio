@@ -5,6 +5,7 @@ export interface Exercise {
     name: string;
     equipmentId: number;
     muscleGroupId: number;
+    videoPath?: string | null;
     equipment: {
         id: number;
         name: string;
@@ -49,14 +50,39 @@ export const exerciseService = {
         equipmentId: number,
         muscleGroupId: number,
         secondaryMuscleGroupIds: number[],
-        token: string
+        token: string,
+        videoFile?: File | null
     ): Promise<Exercise> {
-        const response = await api.post<ExerciseResponse>(
-            "/exercises",
-            { name, equipmentId, muscleGroupId, secondaryMuscleGroupIds },
-            token
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("equipmentId", equipmentId.toString());
+        formData.append("muscleGroupId", muscleGroupId.toString());
+        formData.append(
+            "secondaryMuscleGroupIds",
+            JSON.stringify(secondaryMuscleGroupIds)
         );
-        return response.data as Exercise;
+        if (videoFile) {
+            formData.append("video", videoFile);
+        }
+
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/exercises`,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            }
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Error al crear el ejercicio");
+        }
+
+        const data = await response.json();
+        return data.data as Exercise;
     },
 
     async update(
@@ -65,14 +91,41 @@ export const exerciseService = {
         equipmentId: number,
         muscleGroupId: number,
         secondaryMuscleGroupIds: number[],
-        token: string
+        token: string,
+        videoFile?: File | null
     ): Promise<Exercise> {
-        const response = await api.put<ExerciseResponse>(
-            `/exercises/${id}`,
-            { name, equipmentId, muscleGroupId, secondaryMuscleGroupIds },
-            token
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("equipmentId", equipmentId.toString());
+        formData.append("muscleGroupId", muscleGroupId.toString());
+        formData.append(
+            "secondaryMuscleGroupIds",
+            JSON.stringify(secondaryMuscleGroupIds)
         );
-        return response.data as Exercise;
+        if (videoFile) {
+            formData.append("video", videoFile);
+        }
+
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/exercises/${id}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            }
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+                errorData.message || "Error al actualizar el ejercicio"
+            );
+        }
+
+        const data = await response.json();
+        return data.data as Exercise;
     },
 
     async delete(id: number, token: string): Promise<void> {
