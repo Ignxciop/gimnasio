@@ -25,6 +25,8 @@ model User{
   is_active Boolean @default(true)
   roleId Int
   role Role @relation(fields: [roleId], references: [id])
+  folders Folder[]
+  routines Routine[]
 }
 
 model Equipment{
@@ -65,4 +67,27 @@ model ExerciseSecondaryMuscleGroup{
   muscleGroup MuscleGroup @relation(fields: [muscleGroupId], references: [id])
   
   @@unique([exerciseId, muscleGroupId])
+}
+
+model Folder{
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  routines Routine[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Routine{
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  folderId Int?
+  userId String
+  folder Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
