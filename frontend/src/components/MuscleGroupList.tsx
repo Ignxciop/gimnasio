@@ -1,7 +1,6 @@
 import React from "react";
-import { Edit2, Trash2 } from "lucide-react";
+import { Card, CardList } from "./ui/Card";
 import type { MuscleGroup } from "../services/muscleGroupService";
-import "./muscleGroupList.css";
 
 interface MuscleGroupListProps {
     muscleGroups: MuscleGroup[];
@@ -16,45 +15,20 @@ export const MuscleGroupList: React.FC<MuscleGroupListProps> = ({
     onDelete,
     loading,
 }) => {
-    if (muscleGroups.length === 0) {
-        return (
-            <div className="muscle-group-list__empty">
-                <p>No hay grupos musculares registrados</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="muscle-group-list">
-            <div className="muscle-group-list__grid">
-                {muscleGroups.map((item) => (
-                    <div key={item.id} className="muscle-group-card">
-                        <div className="muscle-group-card__content">
-                            <h3 className="muscle-group-card__name">
-                                {item.name}
-                            </h3>
-                            <div className="muscle-group-card__actions">
-                                <button
-                                    onClick={() => onEdit(item)}
-                                    disabled={loading === item.id}
-                                    className="muscle-group-card__button muscle-group-card__button--edit"
-                                    title="Editar"
-                                >
-                                    <Edit2 size={18} />
-                                </button>
-                                <button
-                                    onClick={() => onDelete(item.id)}
-                                    disabled={loading === item.id}
-                                    className="muscle-group-card__button muscle-group-card__button--delete"
-                                    title="Eliminar"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+        <CardList
+            isEmpty={muscleGroups.length === 0}
+            emptyMessage="No hay grupos musculares registrados"
+        >
+            {muscleGroups.map((item) => (
+                <Card
+                    key={item.id}
+                    item={item}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    loading={loading}
+                />
+            ))}
+        </CardList>
     );
 };

@@ -1,7 +1,7 @@
 import React from "react";
-import { Edit2, Trash2, Dumbbell, Users } from "lucide-react";
+import { Dumbbell, Users } from "lucide-react";
+import { Card, CardList } from "./ui/Card";
 import type { Exercise } from "../services/exerciseService";
-import "./exerciseList.css";
 
 interface ExerciseListProps {
     exercises: Exercise[];
@@ -16,53 +16,29 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({
     onDelete,
     loading,
 }) => {
-    if (exercises.length === 0) {
-        return (
-            <div className="exercise-list__empty">
-                <p>No hay ejercicios registrados</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="exercise-list">
-            <div className="exercise-list__grid">
-                {exercises.map((item) => (
-                    <div key={item.id} className="exercise-card">
-                        <div className="exercise-card__header">
-                            <h3 className="exercise-card__name">{item.name}</h3>
-                            <div className="exercise-card__actions">
-                                <button
-                                    onClick={() => onEdit(item)}
-                                    disabled={loading === item.id}
-                                    className="exercise-card__button exercise-card__button--edit"
-                                    title="Editar"
-                                >
-                                    <Edit2 size={18} />
-                                </button>
-                                <button
-                                    onClick={() => onDelete(item.id)}
-                                    disabled={loading === item.id}
-                                    className="exercise-card__button exercise-card__button--delete"
-                                    title="Eliminar"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="exercise-card__details">
-                            <div className="exercise-card__detail">
-                                <Dumbbell size={16} />
-                                <span>{item.equipment.name}</span>
-                            </div>
-                            <div className="exercise-card__detail">
-                                <Users size={16} />
-                                <span>{item.muscleGroup.name}</span>
-                            </div>
-                        </div>
+        <CardList
+            isEmpty={exercises.length === 0}
+            emptyMessage="No hay ejercicios registrados"
+        >
+            {exercises.map((item) => (
+                <Card
+                    key={item.id}
+                    item={item}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    loading={loading}
+                >
+                    <div className="card__detail">
+                        <Dumbbell size={16} />
+                        <span>{item.equipment.name}</span>
                     </div>
-                ))}
-            </div>
-        </div>
+                    <div className="card__detail">
+                        <Users size={16} />
+                        <span>{item.muscleGroup.name}</span>
+                    </div>
+                </Card>
+            ))}
+        </CardList>
     );
 };
