@@ -42,6 +42,17 @@
     color: var(--text-muted);
 }
 
+.exercise-modal__input[type="file"] {
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.exercise-modal__file-name {
+    font-size: 0.875rem;
+    color: var(--accent-mid);
+    font-weight: 500;
+}
+
 .exercise-modal__select {
 }
 
