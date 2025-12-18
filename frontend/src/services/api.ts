@@ -3,6 +3,13 @@ const API_BASE_URL = import.meta.env.VITE_API_URL;
 export class ApiError extends Error {
     statusCode: number;
     errors?: Array<{ field: string; message: string }>;
+    response: {
+        status: number;
+        data: {
+            message: string;
+            errors?: Array<{ field: string; message: string }>;
+        };
+    };
 
     constructor(
         message: string,
@@ -13,6 +20,13 @@ export class ApiError extends Error {
         this.name = "ApiError";
         this.statusCode = statusCode;
         this.errors = errors;
+        this.response = {
+            status: statusCode,
+            data: {
+                message,
+                errors,
+            },
+        };
     }
 }
 
@@ -36,7 +50,7 @@ export const api = {
 
         if (!response.ok) {
             throw new ApiError(
-                json.error || "Error en la petición",
+                json.message || json.error || "Error en la petición",
                 response.status,
                 json.errors
             );
@@ -63,7 +77,7 @@ export const api = {
 
         if (!response.ok) {
             throw new ApiError(
-                json.error || "Error en la petición",
+                json.message || json.error || "Error en la petición",
                 response.status,
                 json.errors
             );
@@ -95,7 +109,7 @@ export const api = {
 
         if (!response.ok) {
             throw new ApiError(
-                json.error || "Error en la petición",
+                json.message || json.error || "Error en la petición",
                 response.status,
                 json.errors
             );
@@ -122,7 +136,7 @@ export const api = {
 
         if (!response.ok) {
             throw new ApiError(
-                json.error || "Error en la petición",
+                json.message || json.error || "Error en la petición",
                 response.status,
                 json.errors
             );
