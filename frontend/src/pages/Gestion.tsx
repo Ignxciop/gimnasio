@@ -7,6 +7,7 @@ import { MuscleGroupList } from "../components/MuscleGroupList";
 import { MuscleGroupModal } from "../components/MuscleGroupModal";
 import { ExerciseList } from "../components/ExerciseList";
 import { ExerciseModal } from "../components/ExerciseModal";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { equipmentService, type Equipment } from "../services/equipmentService";
 import {
     muscleGroupService,
@@ -17,12 +18,14 @@ import { authService } from "../services/authService";
 import { useModal } from "../hooks/useModal";
 import { useDelete } from "../hooks/useDelete";
 import { useFetch } from "../hooks/useFetch";
+import { useToast } from "../hooks/useToast";
 import "../styles/gestion.css";
 
 type TabType = "equipamiento" | "grupos" | "ejercicios";
 
 export const Gestion: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>("equipamiento");
+    const { showToast } = useToast();
 
     const equipmentFetch = useFetch<Equipment[]>({
         fetchFn: equipmentService.getAll,
@@ -42,19 +45,49 @@ export const Gestion: React.FC = () => {
 
     const equipmentDelete = useDelete({
         deleteFn: equipmentService.delete,
-        onSuccess: equipmentFetch.execute,
+        onSuccess: () => {
+            equipmentFetch.execute();
+            showToast("success", "Equipamiento eliminado correctamente");
+        },
+        onError: (error: any) => {
+            const message =
+                error?.response?.data?.message ||
+                "Error al eliminar el equipamiento";
+            showToast("error", message);
+        },
+        confirmTitle: "Eliminar Equipamiento",
         confirmMessage: "¿Estás seguro de eliminar este equipamiento?",
     });
 
     const muscleGroupDelete = useDelete({
         deleteFn: muscleGroupService.delete,
-        onSuccess: muscleGroupsFetch.execute,
+        onSuccess: () => {
+            muscleGroupsFetch.execute();
+            showToast("success", "Grupo muscular eliminado correctamente");
+        },
+        onError: (error: any) => {
+            const message =
+                error?.response?.data?.message ||
+                "Error al eliminar el grupo muscular";
+            showToast("error", message);
+        },
+        confirmTitle: "Eliminar Grupo Muscular",
         confirmMessage: "¿Estás seguro de eliminar este grupo muscular?",
     });
 
     const exerciseDelete = useDelete({
         deleteFn: exerciseService.delete,
-        onSuccess: exercisesFetch.execute,
+        onSuccess: () => {
+            exercisesFetch.execute();
+            showToast("success", "Ejercicio eliminado correctamente");
+        },
+        onError: (error: any) => {
+            const message =
+                error?.response?.data?.message ||
+                "Error al eliminar el ejercicio";
+            showToast("error", message);
+        },
+        confirmTitle: "Eliminar Ejercicio",
         confirmMessage: "¿Estás seguro de eliminar este ejercicio?",
     });
 
@@ -75,32 +108,53 @@ export const Gestion: React.FC = () => {
         const token = authService.getToken();
         if (!token) return;
 
-        if (equipmentModal.editingItem) {
-            await equipmentService.update(
-                equipmentModal.editingItem.id,
-                name,
-                token
-            );
-        } else {
-            await equipmentService.create(name, token);
+        try {
+            if (equipmentModal.editingItem) {
+                await equipmentService.update(
+                    equipmentModal.editingItem.id,
+                    name,
+                    token
+                );
+                showToast("success", "Equipamiento actualizado correctamente");
+            } else {
+                await equipmentService.create(name, token);
+                showToast("success", "Equipamiento creado correctamente");
+            }
+            await equipmentFetch.execute();
+        } catch (error: any) {
+            const message =
+                error?.response?.data?.message ||
+                "Error al guardar el equipamiento";
+            showToast("error", message);
         }
-        await equipmentFetch.execute();
     };
 
     const handleSubmitMuscleGroup = async (name: string) => {
         const token = authService.getToken();
         if (!token) return;
 
-        if (muscleGroupModal.editingItem) {
-            await muscleGroupService.update(
-                muscleGroupModal.editingItem.id,
-                name,
-                token
-            );
-        } else {
-            await muscleGroupService.create(name, token);
+        try {
+            if (muscleGroupModal.editingItem) {
+                await muscleGroupService.update(
+                    muscleGroupModal.editingItem.id,
+                    name,
+                    token
+                );
+                showToast(
+                    "success",
+                    "Grupo muscular actualizado correctamente"
+                );
+            } else {
+                await muscleGroupService.create(name, token);
+                showToast("success", "Grupo muscular creado correctamente");
+            }
+            await muscleGroupsFetch.execute();
+        } catch (error: any) {
+            const message =
+                error?.response?.data?.message ||
+                "Error al guardar el grupo muscular";
+            showToast("error", message);
         }
-        await muscleGroupsFetch.execute();
     };
 
     const handleSubmitExercise = async (
@@ -112,25 +166,34 @@ export const Gestion: React.FC = () => {
         const token = authService.getToken();
         if (!token) return;
 
-        if (exerciseModal.editingItem) {
-            await exerciseService.update(
-                exerciseModal.editingItem.id,
-                name,
-                equipmentId,
-                muscleGroupId,
-                secondaryMuscleGroupIds,
-                token
-            );
-        } else {
-            await exerciseService.create(
-                name,
-                equipmentId,
-                muscleGroupId,
-                secondaryMuscleGroupIds,
-                token
-            );
+        try {
+            if (exerciseModal.editingItem) {
+                await exerciseService.update(
+                    exerciseModal.editingItem.id,
+                    name,
+                    equipmentId,
+                    muscleGroupId,
+                    secondaryMuscleGroupIds,
+                    token
+                );
+                showToast("success", "Ejercicio actualizado correctamente");
+            } else {
+                await exerciseService.create(
+                    name,
+                    equipmentId,
+                    muscleGroupId,
+                    secondaryMuscleGroupIds,
+                    token
+                );
+                showToast("success", "Ejercicio creado correctamente");
+            }
+            await exercisesFetch.execute();
+        } catch (error: any) {
+            const message =
+                error?.response?.data?.message ||
+                "Error al guardar el ejercicio";
+            showToast("error", message);
         }
-        await exercisesFetch.execute();
     };
 
     return (
@@ -279,47 +342,77 @@ export const Gestion: React.FC = () => {
                 </div>
 
                 {activeTab === "equipamiento" && (
-                    <EquipmentModal
-                        isOpen={equipmentModal.isOpen}
-                        onClose={equipmentModal.closeModal}
-                        onSubmit={handleSubmitEquipment}
-                        equipment={equipmentModal.editingItem}
-                        title={
-                            equipmentModal.editingItem
-                                ? "Editar Equipamiento"
-                                : "Agregar Equipamiento"
-                        }
-                    />
+                    <>
+                        <EquipmentModal
+                            isOpen={equipmentModal.isOpen}
+                            onClose={equipmentModal.closeModal}
+                            onSubmit={handleSubmitEquipment}
+                            equipment={equipmentModal.editingItem}
+                            title={
+                                equipmentModal.editingItem
+                                    ? "Editar Equipamiento"
+                                    : "Agregar Equipamiento"
+                            }
+                        />
+                        <ConfirmDialog
+                            isOpen={equipmentDelete.showConfirm}
+                            onClose={equipmentDelete.cancelDelete}
+                            onConfirm={equipmentDelete.confirmDelete}
+                            title={equipmentDelete.confirmTitle}
+                            message={equipmentDelete.confirmMessage}
+                            variant="danger"
+                        />
+                    </>
                 )}
 
                 {activeTab === "grupos" && (
-                    <MuscleGroupModal
-                        isOpen={muscleGroupModal.isOpen}
-                        onClose={muscleGroupModal.closeModal}
-                        onSubmit={handleSubmitMuscleGroup}
-                        muscleGroup={muscleGroupModal.editingItem}
-                        title={
-                            muscleGroupModal.editingItem
-                                ? "Editar Grupo Muscular"
-                                : "Agregar Grupo Muscular"
-                        }
-                    />
+                    <>
+                        <MuscleGroupModal
+                            isOpen={muscleGroupModal.isOpen}
+                            onClose={muscleGroupModal.closeModal}
+                            onSubmit={handleSubmitMuscleGroup}
+                            muscleGroup={muscleGroupModal.editingItem}
+                            title={
+                                muscleGroupModal.editingItem
+                                    ? "Editar Grupo Muscular"
+                                    : "Agregar Grupo Muscular"
+                            }
+                        />
+                        <ConfirmDialog
+                            isOpen={muscleGroupDelete.showConfirm}
+                            onClose={muscleGroupDelete.cancelDelete}
+                            onConfirm={muscleGroupDelete.confirmDelete}
+                            title={muscleGroupDelete.confirmTitle}
+                            message={muscleGroupDelete.confirmMessage}
+                            variant="danger"
+                        />
+                    </>
                 )}
 
                 {activeTab === "ejercicios" && (
-                    <ExerciseModal
-                        isOpen={exerciseModal.isOpen}
-                        onClose={exerciseModal.closeModal}
-                        onSubmit={handleSubmitExercise}
-                        exercise={exerciseModal.editingItem}
-                        equipment={equipmentFetch.data || []}
-                        muscleGroups={muscleGroupsFetch.data || []}
-                        title={
-                            exerciseModal.editingItem
-                                ? "Editar Ejercicio"
-                                : "Agregar Ejercicio"
-                        }
-                    />
+                    <>
+                        <ExerciseModal
+                            isOpen={exerciseModal.isOpen}
+                            onClose={exerciseModal.closeModal}
+                            onSubmit={handleSubmitExercise}
+                            exercise={exerciseModal.editingItem}
+                            equipment={equipmentFetch.data || []}
+                            muscleGroups={muscleGroupsFetch.data || []}
+                            title={
+                                exerciseModal.editingItem
+                                    ? "Editar Ejercicio"
+                                    : "Agregar Ejercicio"
+                            }
+                        />
+                        <ConfirmDialog
+                            isOpen={exerciseDelete.showConfirm}
+                            onClose={exerciseDelete.cancelDelete}
+                            onConfirm={exerciseDelete.confirmDelete}
+                            title={exerciseDelete.confirmTitle}
+                            message={exerciseDelete.confirmMessage}
+                            variant="danger"
+                        />
+                    </>
                 )}
             </section>
         </MainLayout>
