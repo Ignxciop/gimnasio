@@ -92,10 +92,18 @@ class EquipmentService {
 
             return { message: "Equipamiento eliminado exitosamente" };
         } catch (error) {
+            const errorCode =
+                error.code || error.meta?.code || error.cause?.code;
+            const pgError =
+                error.message?.includes('"23001"') ||
+                error.message?.includes('"23503"') ||
+                error.message?.includes("foreign key constraint");
+
             if (
-                error.code === "P2003" ||
-                error.code === "23001" ||
-                error.code === "23503"
+                errorCode === "P2003" ||
+                errorCode === "23001" ||
+                errorCode === "23503" ||
+                pgError
             ) {
                 const constraintError = new Error(
                     "No se puede eliminar este equipamiento porque está siendo usado en ejercicios"
