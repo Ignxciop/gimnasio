@@ -3,7 +3,7 @@ import folderService from "../services/folderService.js";
 class FolderController {
     async getAll(req, res, next) {
         try {
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const folders = await folderService.getAll(userId);
 
             res.status(200).json({
@@ -18,7 +18,7 @@ class FolderController {
     async getById(req, res, next) {
         try {
             const id = parseInt(req.params.id);
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const folder = await folderService.getById(id, userId);
 
             res.status(200).json({
@@ -33,7 +33,7 @@ class FolderController {
     async create(req, res, next) {
         try {
             const { name, description } = req.body;
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const folder = await folderService.create(
                 name,
                 description,
@@ -54,7 +54,7 @@ class FolderController {
         try {
             const id = parseInt(req.params.id);
             const { name, description } = req.body;
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const folder = await folderService.update(
                 id,
                 name,
@@ -75,7 +75,7 @@ class FolderController {
     async delete(req, res, next) {
         try {
             const id = parseInt(req.params.id);
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const result = await folderService.delete(id, userId);
 
             res.status(200).json({

@@ -3,7 +3,7 @@ import routineService from "../services/routineService.js";
 class RoutineController {
     async getAll(req, res, next) {
         try {
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const routines = await routineService.getAll(userId);
 
             res.status(200).json({
@@ -18,7 +18,7 @@ class RoutineController {
     async getById(req, res, next) {
         try {
             const id = parseInt(req.params.id);
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const routine = await routineService.getById(id, userId);
 
             res.status(200).json({
@@ -33,7 +33,7 @@ class RoutineController {
     async create(req, res, next) {
         try {
             const { name, description, folderId } = req.body;
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const routine = await routineService.create(
                 name,
                 description,
@@ -55,7 +55,7 @@ class RoutineController {
         try {
             const id = parseInt(req.params.id);
             const { name, description, folderId } = req.body;
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const routine = await routineService.update(
                 id,
                 name,
@@ -78,7 +78,7 @@ class RoutineController {
         try {
             const id = parseInt(req.params.id);
             const { folderId } = req.body;
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const routine = await routineService.move(
                 id,
                 folderId || null,
@@ -98,7 +98,7 @@ class RoutineController {
     async delete(req, res, next) {
         try {
             const id = parseInt(req.params.id);
-            const userId = req.user.id;
+            const userId = req.user.userId;
             const result = await routineService.delete(id, userId);
 
             res.status(200).json({
