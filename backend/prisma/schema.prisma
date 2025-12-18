@@ -40,7 +40,8 @@ model MuscleGroup{
   name String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  exercises Exercise[]
+  primaryExercises Exercise[] @relation("PrimaryMuscleGroup")
+  secondaryExercises ExerciseSecondaryMuscleGroup[]
 }
 
 model Exercise{
@@ -49,7 +50,18 @@ model Exercise{
   equipmentId Int
   muscleGroupId Int
   equipment Equipment @relation(fields: [equipmentId], references: [id])
-  muscleGroup MuscleGroup @relation(fields: [muscleGroupId], references: [id])
+  muscleGroup MuscleGroup @relation("PrimaryMuscleGroup", fields: [muscleGroupId], references: [id])
+  secondaryMuscleGroups ExerciseSecondaryMuscleGroup[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ExerciseSecondaryMuscleGroup{
+  id Int @id @default(autoincrement())
+  exerciseId Int
+  muscleGroupId Int
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  muscleGroup MuscleGroup @relation(fields: [muscleGroupId], references: [id])
+  
+  @@unique([exerciseId, muscleGroupId])
 }
