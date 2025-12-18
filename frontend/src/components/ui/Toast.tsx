@@ -11,9 +11,23 @@ interface ToastProps {
 
 export const Toast: React.FC<ToastProps> = ({ type, message, onClose }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const [progress, setProgress] = useState(100);
 
     useEffect(() => {
         setTimeout(() => setIsVisible(true), 10);
+
+        const duration = 5000;
+        const interval = 50;
+        const decrement = (interval / duration) * 100;
+
+        const progressInterval = setInterval(() => {
+            setProgress((prev) => {
+                const next = prev - decrement;
+                return next <= 0 ? 0 : next;
+            });
+        }, interval);
+
+        return () => clearInterval(progressInterval);
     }, []);
 
     const handleClose = () => {
@@ -39,6 +53,10 @@ export const Toast: React.FC<ToastProps> = ({ type, message, onClose }) => {
             <button onClick={handleClose} className="toast__close">
                 <X size={16} />
             </button>
+            <div
+                className="toast__progress"
+                style={{ width: `${progress}%` }}
+            ></div>
         </div>
     );
 };
