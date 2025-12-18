@@ -25,11 +25,41 @@ export const Select: React.FC<SelectProps> = ({
     className = "",
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({
+        top: 0,
+        left: 0,
+        width: 0,
+    });
     const selectRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     const selectedOption = options.find(
         (opt) => opt.value.toString() === value.toString()
     );
+
+    useEffect(() => {
+        const updatePosition = () => {
+            if (buttonRef.current && isOpen) {
+                const rect = buttonRef.current.getBoundingClientRect();
+                setDropdownPosition({
+                    top: rect.bottom + 4,
+                    left: rect.left,
+                    width: rect.width,
+                });
+            }
+        };
+
+        if (isOpen) {
+            updatePosition();
+            window.addEventListener("scroll", updatePosition, true);
+            window.addEventListener("resize", updatePosition);
+        }
+
+        return () => {
+            window.removeEventListener("scroll", updatePosition, true);
+            window.removeEventListener("resize", updatePosition);
+        };
+    }, [isOpen]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -58,6 +88,7 @@ export const Select: React.FC<SelectProps> = ({
     return (
         <div ref={selectRef} className={`select-wrapper ${className}`}>
             <button
+                ref={buttonRef}
                 type="button"
                 className={`select ${isOpen ? "select--open" : ""} ${
                     disabled ? "select--disabled" : ""
@@ -81,7 +112,14 @@ export const Select: React.FC<SelectProps> = ({
             </button>
 
             {isOpen && !disabled && (
-                <div className="select-dropdown">
+                <div
+                    className="select-dropdown"
+                    style={{
+                        top: `${dropdownPosition.top}px`,
+                        left: `${dropdownPosition.left}px`,
+                        width: `${dropdownPosition.width}px`,
+                    }}
+                >
                     {options.map((option) => {
                         const isSelected =
                             option.value.toString() === value.toString();

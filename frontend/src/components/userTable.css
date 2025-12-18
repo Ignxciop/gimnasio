@@ -9,11 +9,13 @@
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     overflow-x: auto;
+    overflow-y: visible;
 }
 
 .user-table__table {
     width: 100%;
     border-collapse: collapse;
+    overflow: visible;
 }
 
 .user-table__thead {
@@ -76,6 +78,7 @@
 
 .user-table__role {
     position: relative;
+    overflow: visible;
 }
 
 .user-table__select .select {
@@ -86,6 +89,7 @@
 
 .user-table__select .select-dropdown {
     min-width: 150px;
+    z-index: 1000;
 }
 
 .user-table__status-badge {
