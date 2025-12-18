@@ -36,11 +36,13 @@ class ExerciseController {
                 muscleGroupId,
                 secondaryMuscleGroupIds = [],
             } = req.body;
+            const videoPath = req.file ? req.file.filename : null;
             const exercise = await exerciseService.create(
                 name,
                 equipmentId,
                 muscleGroupId,
-                secondaryMuscleGroupIds
+                secondaryMuscleGroupIds,
+                videoPath
             );
 
             res.status(201).json({
@@ -62,12 +64,14 @@ class ExerciseController {
                 muscleGroupId,
                 secondaryMuscleGroupIds = [],
             } = req.body;
+            const videoPath = req.file ? req.file.filename : null;
             const exercise = await exerciseService.update(
                 id,
                 name,
                 equipmentId,
                 muscleGroupId,
-                secondaryMuscleGroupIds
+                secondaryMuscleGroupIds,
+                videoPath
             );
 
             res.status(200).json({
