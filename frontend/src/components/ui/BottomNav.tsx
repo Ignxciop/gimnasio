@@ -22,6 +22,11 @@ export const BottomNav: React.FC = () => {
                 <span className="bottomnav__label">Inicio</span>
             </NavLink>
 
+            <NavLink to="#" className="bottomnav__link">
+                <Dumbbell className="bottomnav__icon" size={22} />
+                <span className="bottomnav__label">Rutinas</span>
+            </NavLink>
+
             <NavLink
                 to="/perfil"
                 className={({ isActive }) =>
@@ -58,11 +63,6 @@ export const BottomNav: React.FC = () => {
                     <span className="bottomnav__label">Gestión</span>
                 </NavLink>
             )}
-
-            <NavLink to="#" className="bottomnav__link">
-                <Dumbbell className="bottomnav__icon" size={22} />
-                <span className="bottomnav__label">Rutinas</span>
-            </NavLink>
         </nav>
     );
 };
