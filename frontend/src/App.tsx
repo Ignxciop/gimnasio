@@ -6,6 +6,7 @@ import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
 import { Admin } from "./pages/Admin";
 import { Gestion } from "./pages/Gestion";
+import Rutinas from "./pages/Rutinas";
 import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
 
@@ -93,6 +94,17 @@ function App() {
                         element={
                             isAuthenticated ? (
                                 <Gestion />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/rutinas"
+                        element={
+                            isAuthenticated ? (
+                                <Rutinas />
                             ) : (
                                 <Navigate to="/login" replace />
                             )
