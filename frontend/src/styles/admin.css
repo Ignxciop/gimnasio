@@ -4,9 +4,14 @@
 
 .admin__header {
     padding: var(--spacing-xl);
-    background: var(--color-bg-tertiary);
-    border-bottom: 1px solid var(--color-border);
-    box-shadow: var(--shadow-md);
+    background: linear-gradient(
+        135deg,
+        rgba(11, 11, 11, 0.95) 0%,
+        rgba(20, 20, 20, 0.9) 100%
+    );
+    backdrop-filter: blur(10px);
+    border-bottom: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .admin__title-section {
