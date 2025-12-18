@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { Check, ChevronDown } from "lucide-react";
 import "./select.css";
 
 interface SelectOption {
@@ -23,23 +24,89 @@ export const Select: React.FC<SelectProps> = ({
     disabled = false,
     className = "",
 }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const selectRef = useRef<HTMLDivElement>(null);
+
+    const selectedOption = options.find(
+        (opt) => opt.value.toString() === value.toString()
+    );
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                selectRef.current &&
+                !selectRef.current.contains(event.target as Node)
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen]);
+
+    const handleSelect = (optionValue: string | number) => {
+        onChange(optionValue.toString());
+        setIsOpen(false);
+    };
+
     return (
-        <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled}
-            className={`select ${className}`}
-        >
-            {placeholder && (
-                <option value="" disabled>
-                    {placeholder}
-                </option>
+        <div ref={selectRef} className={`select-wrapper ${className}`}>
+            <button
+                type="button"
+                className={`select ${isOpen ? "select--open" : ""} ${
+                    disabled ? "select--disabled" : ""
+                }`}
+                onClick={() => !disabled && setIsOpen(!isOpen)}
+                disabled={disabled}
+            >
+                <span
+                    className={
+                        selectedOption ? "select__value" : "select__placeholder"
+                    }
+                >
+                    {selectedOption ? selectedOption.label : placeholder}
+                </span>
+                <ChevronDown
+                    size={18}
+                    className={`select__icon ${
+                        isOpen ? "select__icon--rotated" : ""
+                    }`}
+                />
+            </button>
+
+            {isOpen && !disabled && (
+                <div className="select-dropdown">
+                    {options.map((option) => {
+                        const isSelected =
+                            option.value.toString() === value.toString();
+                        return (
+                            <div
+                                key={option.value}
+                                className={`select-option ${
+                                    isSelected ? "select-option--selected" : ""
+                                }`}
+                                onClick={() => handleSelect(option.value)}
+                            >
+                                <span className="select-option__label">
+                                    {option.label}
+                                </span>
+                                {isSelected && (
+                                    <Check
+                                        size={18}
+                                        className="select-option__check"
+                                    />
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
             )}
-            {options.map((option) => (
-                <option key={option.value} value={option.value}>
-                    {option.label}
-                </option>
-            ))}
-        </select>
+        </div>
     );
 };
