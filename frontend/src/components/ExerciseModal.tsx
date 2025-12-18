@@ -146,11 +146,6 @@ export const ExerciseModal: React.FC<ExerciseModalProps> = ({
                         className="exercise-modal__select"
                     />
                 </div>
-                                {item.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
 
                 {error && (
                     <span className="exercise-modal__error">{error}</span>
