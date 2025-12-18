@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { Check, ChevronDown, Search, X } from "lucide-react";
 import "./select.css";
 
 interface SelectOption {
@@ -8,13 +8,14 @@ interface SelectOption {
 }
 
 interface SelectProps {
-    value: string | number;
-    onChange: (value: string) => void;
+    value: string | number | number[];
+    onChange: (value: string | number[]) => void;
     options: SelectOption[];
     placeholder?: string;
     disabled?: boolean;
     className?: string;
     searchable?: boolean;
+    multiple?: boolean;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -25,6 +26,7 @@ export const Select: React.FC<SelectProps> = ({
     disabled = false,
     className = "",
     searchable = false,
+    multiple = false,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -37,9 +39,15 @@ export const Select: React.FC<SelectProps> = ({
     const buttonRef = useRef<HTMLButtonElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
-    const selectedOption = options.find(
-        (opt) => opt.value.toString() === value.toString()
-    );
+    const selectedValues = multiple && Array.isArray(value) ? value : [];
+    const selectedOption =
+        !multiple && !Array.isArray(value)
+            ? options.find((opt) => opt.value.toString() === value.toString())
+            : null;
+
+    const selectedOptions = multiple
+        ? options.filter((opt) => selectedValues.includes(Number(opt.value)))
+        : [];
 
     const filteredOptions =
         searchable && searchTerm
@@ -98,8 +106,25 @@ export const Select: React.FC<SelectProps> = ({
     }, [isOpen]);
 
     const handleSelect = (optionValue: string | number) => {
-        onChange(optionValue.toString());
-        setIsOpen(false);
+        if (multiple) {
+            const numValue = Number(optionValue);
+            const currentValues = Array.isArray(value) ? value : [];
+            const newValues = currentValues.includes(numValue)
+                ? currentValues.filter((v) => v !== numValue)
+                : [...currentValues, numValue];
+            onChange(newValues);
+        } else {
+            onChange(optionValue.toString());
+            setIsOpen(false);
+        }
+    };
+
+    const handleRemoveTag = (optionValue: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (multiple && Array.isArray(value)) {
+            const newValues = value.filter((v) => v !== optionValue);
+            onChange(newValues);
+        }
     };
 
     return (
@@ -109,17 +134,45 @@ export const Select: React.FC<SelectProps> = ({
                 type="button"
                 className={`select ${isOpen ? "select--open" : ""} ${
                     disabled ? "select--disabled" : ""
-                }`}
+                } ${multiple ? "select--multiple" : ""}`}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 disabled={disabled}
             >
-                <span
-                    className={
-                        selectedOption ? "select__value" : "select__placeholder"
-                    }
-                >
-                    {selectedOption ? selectedOption.label : placeholder}
-                </span>
+                {multiple ? (
+                    <div className="select__tags">
+                        {selectedOptions.length === 0 ? (
+                            <span className="select__placeholder">
+                                {placeholder}
+                            </span>
+                        ) : (
+                            selectedOptions.map((opt) => (
+                                <span key={opt.value} className="select__tag">
+                                    {opt.label}
+                                    <X
+                                        size={14}
+                                        onClick={(e) =>
+                                            handleRemoveTag(
+                                                Number(opt.value),
+                                                e
+                                            )
+                                        }
+                                        className="select__tag-remove"
+                                    />
+                                </span>
+                            ))
+                        )}
+                    </div>
+                ) : (
+                    <span
+                        className={
+                            selectedOption
+                                ? "select__value"
+                                : "select__placeholder"
+                        }
+                    >
+                        {selectedOption ? selectedOption.label : placeholder}
+                    </span>
+                )}
                 <ChevronDown
                     size={18}
                     className={`select__icon ${
@@ -158,9 +211,11 @@ export const Select: React.FC<SelectProps> = ({
                             </div>
                         ) : (
                             filteredOptions.map((option) => {
-                                const isSelected =
-                                    option.value.toString() ===
-                                    value.toString();
+                                const isSelected = multiple
+                                    ? Array.isArray(value) &&
+                                      value.includes(Number(option.value))
+                                    : option.value.toString() ===
+                                      value.toString();
                                 return (
                                     <div
                                         key={option.value}
