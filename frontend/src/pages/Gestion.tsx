@@ -195,18 +195,20 @@ export const Gestion: React.FC = () => {
                                     Agregar Equipamiento
                                 </button>
                             </div>
-                            {equipmentFetch.loading ? (
-                                <div className="gestion__placeholder">
-                                    <p>Cargando equipamiento...</p>
-                                </div>
-                            ) : (
-                                <EquipmentList
-                                    equipment={equipmentFetch.data || []}
-                                    onEdit={equipmentModal.openEditModal}
-                                    onDelete={equipmentDelete.deleteItem}
-                                    loading={equipmentDelete.deletingId}
-                                />
-                            )}
+                            <div className="gestion__section-content">
+                                {equipmentFetch.loading ? (
+                                    <div className="gestion__placeholder">
+                                        <p>Cargando equipamiento...</p>
+                                    </div>
+                                ) : (
+                                    <EquipmentList
+                                        equipment={equipmentFetch.data || []}
+                                        onEdit={equipmentModal.openEditModal}
+                                        onDelete={equipmentDelete.deleteItem}
+                                        loading={equipmentDelete.deletingId}
+                                    />
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -223,18 +225,22 @@ export const Gestion: React.FC = () => {
                                     Agregar Grupo Muscular
                                 </button>
                             </div>
-                            {muscleGroupsFetch.loading ? (
-                                <div className="gestion__placeholder">
-                                    <p>Cargando grupos musculares...</p>
-                                </div>
-                            ) : (
-                                <MuscleGroupList
-                                    muscleGroups={muscleGroupsFetch.data || []}
-                                    onEdit={muscleGroupModal.openEditModal}
-                                    onDelete={muscleGroupDelete.deleteItem}
-                                    loading={muscleGroupDelete.deletingId}
-                                />
-                            )}
+                            <div className="gestion__section-content">
+                                {muscleGroupsFetch.loading ? (
+                                    <div className="gestion__placeholder">
+                                        <p>Cargando grupos musculares...</p>
+                                    </div>
+                                ) : (
+                                    <MuscleGroupList
+                                        muscleGroups={
+                                            muscleGroupsFetch.data || []
+                                        }
+                                        onEdit={muscleGroupModal.openEditModal}
+                                        onDelete={muscleGroupDelete.deleteItem}
+                                        loading={muscleGroupDelete.deletingId}
+                                    />
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -251,18 +257,20 @@ export const Gestion: React.FC = () => {
                                     Agregar Ejercicio
                                 </button>
                             </div>
-                            {exercisesFetch.loading ? (
-                                <div className="gestion__placeholder">
-                                    <p>Cargando ejercicios...</p>
-                                </div>
-                            ) : (
-                                <ExerciseList
-                                    exercises={exercisesFetch.data || []}
-                                    onEdit={exerciseModal.openEditModal}
-                                    onDelete={exerciseDelete.deleteItem}
-                                    loading={exerciseDelete.deletingId}
-                                />
-                            )}
+                            <div className="gestion__section-content">
+                                {exercisesFetch.loading ? (
+                                    <div className="gestion__placeholder">
+                                        <p>Cargando ejercicios...</p>
+                                    </div>
+                                ) : (
+                                    <ExerciseList
+                                        exercises={exercisesFetch.data || []}
+                                        onEdit={exerciseModal.openEditModal}
+                                        onDelete={exerciseDelete.deleteItem}
+                                        loading={exerciseDelete.deletingId}
+                                    />
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
