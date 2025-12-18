@@ -1,6 +1,6 @@
 import { Router } from "express";
 import folderController from "../controllers/folderController.js";
-import authMiddleware from "../middlewares/authMiddleware.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 import {
     createFolderValidation,
     updateFolderValidation,
@@ -8,20 +8,15 @@ import {
 
 const router = Router();
 
-router.get("/", authMiddleware, folderController.getAll);
-router.get("/:id", authMiddleware, folderController.getById);
-router.post(
-    "/",
-    authMiddleware,
-    createFolderValidation,
-    folderController.create
-);
+router.get("/", authenticate, folderController.getAll);
+router.get("/:id", authenticate, folderController.getById);
+router.post("/", authenticate, createFolderValidation, folderController.create);
 router.put(
     "/:id",
-    authMiddleware,
+    authenticate,
     updateFolderValidation,
     folderController.update
 );
-router.delete("/:id", authMiddleware, folderController.delete);
+router.delete("/:id", authenticate, folderController.delete);
 
 export default router;

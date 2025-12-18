@@ -1,6 +1,6 @@
 import { Router } from "express";
 import routineController from "../controllers/routineController.js";
-import authMiddleware from "../middlewares/authMiddleware.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 import {
     createRoutineValidation,
     updateRoutineValidation,
@@ -9,26 +9,26 @@ import {
 
 const router = Router();
 
-router.get("/", authMiddleware, routineController.getAll);
-router.get("/:id", authMiddleware, routineController.getById);
+router.get("/", authenticate, routineController.getAll);
+router.get("/:id", authenticate, routineController.getById);
 router.post(
     "/",
-    authMiddleware,
+    authenticate,
     createRoutineValidation,
     routineController.create
 );
 router.put(
     "/:id",
-    authMiddleware,
+    authenticate,
     updateRoutineValidation,
     routineController.update
 );
 router.patch(
     "/:id/move",
-    authMiddleware,
+    authenticate,
     moveRoutineValidation,
     routineController.move
 );
-router.delete("/:id", authMiddleware, routineController.delete);
+router.delete("/:id", authenticate, routineController.delete);
 
 export default router;
