@@ -1,4 +1,10 @@
 import { prisma } from "../config/prisma.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class ExerciseService {
     async getAll() {
@@ -46,7 +52,8 @@ class ExerciseService {
         name,
         equipmentId,
         muscleGroupId,
-        secondaryMuscleGroupIds = []
+        secondaryMuscleGroupIds = [],
+        videoPath = null
     ) {
         const existingExercise = await prisma.exercise.findUnique({
             where: { name },
@@ -83,6 +90,7 @@ class ExerciseService {
                 name,
                 equipmentId,
                 muscleGroupId,
+                videoPath,
                 secondaryMuscleGroups: {
                     create: secondaryMuscleGroupIds
                         .filter((id) => id !== muscleGroupId)
@@ -108,7 +116,8 @@ class ExerciseService {
         name,
         equipmentId,
         muscleGroupId,
-        secondaryMuscleGroupIds = []
+        secondaryMuscleGroupIds = [],
+        videoPath = null
     ) {
         const existingExercise = await prisma.exercise.findUnique({
             where: { id },
@@ -153,12 +162,24 @@ class ExerciseService {
             throw error;
         }
 
+        if (videoPath && existingExercise.videoPath) {
+            const oldVideoPath = path.join(
+                __dirname,
+                "../../resources/examples_exercises",
+                existingExercise.videoPath
+            );
+            if (fs.existsSync(oldVideoPath)) {
+                fs.unlinkSync(oldVideoPath);
+            }
+        }
+
         const exercise = await prisma.exercise.update({
             where: { id },
             data: {
                 name,
                 equipmentId,
                 muscleGroupId,
+                ...(videoPath && { videoPath }),
                 secondaryMuscleGroups: {
                     deleteMany: {},
                     create: secondaryMuscleGroupIds
@@ -189,6 +210,17 @@ class ExerciseService {
             const error = new Error("Ejercicio no encontrado");
             error.statusCode = 404;
             throw error;
+        }
+
+        if (existingExercise.videoPath) {
+            const videoPath = path.join(
+                __dirname,
+                "../../resources/examples_exercises",
+                existingExercise.videoPath
+            );
+            if (fs.existsSync(videoPath)) {
+                fs.unlinkSync(videoPath);
+            }
         }
 
         await prisma.exercise.delete({
