@@ -96,7 +96,11 @@ class MuscleGroupService {
 
             return { message: "Grupo muscular eliminado exitosamente" };
         } catch (error) {
-            if (error.code === "P2003") {
+            if (
+                error.code === "P2003" ||
+                error.code === "23001" ||
+                error.code === "23503"
+            ) {
                 const constraintError = new Error(
                     "No se puede eliminar este grupo muscular porque está siendo usado en ejercicios"
                 );
