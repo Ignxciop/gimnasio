@@ -21,6 +21,8 @@
     opacity: 0;
     transform: translateX(400px);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .toast--visible {
@@ -94,6 +96,33 @@
 .toast__close:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
+}
+
+.toast__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: currentColor;
+    transition: width 0.05s linear;
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+.toast--success .toast__progress {
+    background: #22c55e;
+}
+
+.toast--error .toast__progress {
+    background: #ef4444;
+}
+
+.toast--warning .toast__progress {
+    background: #f59e0b;
+}
+
+.toast--info .toast__progress {
+    background: #3b82f6;
 }
 
 @media (max-width: 768px) {
