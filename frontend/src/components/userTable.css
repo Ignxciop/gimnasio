@@ -74,32 +74,18 @@
     color: var(--color-text-secondary);
 }
 
-.user-table__select {
+.user-table__role {
+    position: relative;
+}
+
+.user-table__select .select {
     padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
-    color: var(--color-text-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
+    min-width: 150px;
 }
 
-.user-table__select:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--color-border-hover);
-}
-
-.user-table__select:focus {
-    outline: none;
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--accent-mid);
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
-}
-
-.user-table__select:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.user-table__select .select-dropdown {
+    min-width: 150px;
 }
 
 .user-table__status-badge {
