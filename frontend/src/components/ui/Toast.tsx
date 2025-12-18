@@ -23,12 +23,18 @@ export const Toast: React.FC<ToastProps> = ({ type, message, onClose }) => {
         const progressInterval = setInterval(() => {
             setProgress((prev) => {
                 const next = prev - decrement;
-                return next <= 0 ? 0 : next;
+                if (next <= 0) {
+                    clearInterval(progressInterval);
+                    setIsVisible(false);
+                    setTimeout(onClose, 300);
+                    return 0;
+                }
+                return next;
             });
         }, interval);
 
         return () => clearInterval(progressInterval);
-    }, []);
+    }, [onClose]);
 
     const handleClose = () => {
         setIsVisible(false);
