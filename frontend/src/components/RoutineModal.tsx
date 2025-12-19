@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { Select } from "./ui/Select";
 import type { Routine, RoutineFormData, Folder } from "../types/routine";
 import "./routineModal.css";
 
@@ -96,25 +97,25 @@ export default function RoutineModal({
 
                     <div className="form-group">
                         <label htmlFor="folderId">Carpeta</label>
-                        <select
-                            id="folderId"
-                            value={formData.folderId || ""}
-                            onChange={(e) =>
+                        <Select
+                            value={formData.folderId?.toString() || ""}
+                            onChange={(value) =>
                                 setFormData({
                                     ...formData,
-                                    folderId: e.target.value
-                                        ? parseInt(e.target.value)
+                                    folderId: value
+                                        ? parseInt(value as string)
                                         : null,
                                 })
                             }
-                        >
-                            <option value="">Sin carpeta</option>
-                            {folders.map((folder) => (
-                                <option key={folder.id} value={folder.id}>
-                                    {folder.name}
-                                </option>
-                            ))}
-                        </select>
+                            options={[
+                                { value: "", label: "Sin carpeta" },
+                                ...folders.map((folder) => ({
+                                    value: folder.id.toString(),
+                                    label: folder.name,
+                                })),
+                            ]}
+                            placeholder="Selecciona una carpeta"
+                        />
                     </div>
 
                     <div className="modal-actions">
