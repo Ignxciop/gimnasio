@@ -43,20 +43,6 @@ export const BottomNav: React.FC = () => {
                 <User className="bottomnav__icon" size={22} />
                 <span className="bottomnav__label">Perfil</span>
             </NavLink>
-
-            {isAdmin && (
-                <NavLink
-                    to="/admin"
-                    className={({ isActive }) =>
-                        "bottomnav__link" +
-                        (isActive ? " bottomnav__link--active" : "")
-                    }
-                >
-                    <Shield className="bottomnav__icon" size={22} />
-                    <span className="bottomnav__label">Admin</span>
-                </NavLink>
-            )}
-
             {canManage && (
                 <NavLink
                     to="/gestion"
@@ -67,6 +53,18 @@ export const BottomNav: React.FC = () => {
                 >
                     <Settings className="bottomnav__icon" size={22} />
                     <span className="bottomnav__label">Gestión</span>
+                </NavLink>
+            )}
+            {isAdmin && (
+                <NavLink
+                    to="/admin"
+                    className={({ isActive }) =>
+                        "bottomnav__link" +
+                        (isActive ? " bottomnav__link--active" : "")
+                    }
+                >
+                    <Shield className="bottomnav__icon" size={22} />
+                    <span className="bottomnav__label">Admin</span>
                 </NavLink>
             )}
         </nav>

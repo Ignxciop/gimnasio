@@ -48,19 +48,6 @@ export const LeftNav: React.FC = () => {
                         Perfil
                     </NavLink>
                 </li>
-                {isAdmin && (
-                    <li>
-                        <NavLink
-                            to="/admin"
-                            className={({ isActive }) =>
-                                "leftnav__link" +
-                                (isActive ? " leftnav__link--active" : "")
-                            }
-                        >
-                            Administración
-                        </NavLink>
-                    </li>
-                )}
                 {canManage && (
                     <li>
                         <NavLink
@@ -71,6 +58,19 @@ export const LeftNav: React.FC = () => {
                             }
                         >
                             Gestión
+                        </NavLink>
+                    </li>
+                )}
+                {isAdmin && (
+                    <li>
+                        <NavLink
+                            to="/admin"
+                            className={({ isActive }) =>
+                                "leftnav__link" +
+                                (isActive ? " leftnav__link--active" : "")
+                            }
+                        >
+                            Administración
                         </NavLink>
                     </li>
                 )}
