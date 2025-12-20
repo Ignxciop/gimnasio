@@ -83,6 +83,18 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 24px;
     padding: 1.5rem;
+    cursor: move;
+    transition: all 0.3s ease;
+}
+
+.folder-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.folder-card.drag-over {
+    border-color: var(--accent-mid);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+    transform: scale(1.02);
 }
 
 .folder-header {
@@ -152,11 +164,26 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 16px;
     transition: all 0.2s ease;
+    cursor: move;
 }
 
 .routine-card:hover {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
+}
+
+.drag-handle {
+    color: var(--text-secondary);
+    cursor: grab;
+    transition: color 0.2s ease;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-handle:hover {
+    color: var(--accent-mid);
 }
 
 .routine-info {
@@ -180,6 +207,12 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 24px;
     padding: 1.5rem;
+    min-height: 150px;
+    transition: all 0.3s ease;
+}
+
+.no-folder-section:hover {
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .no-folder-section h3 {

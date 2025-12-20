@@ -1,5 +1,11 @@
-import { useEffect } from "react";
-import { FolderPlus, Plus, Folder as FolderIcon, FileText } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+    FolderPlus,
+    Plus,
+    Folder as FolderIcon,
+    FileText,
+    GripVertical,
+} from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import FolderModal from "../components/FolderModal";
 import RoutineModal from "../components/RoutineModal";
@@ -21,6 +27,9 @@ export default function Rutinas() {
     const { showToast } = useToast();
     const folderModal = useModal<Folder>();
     const routineModal = useModal<Routine>();
+    const [draggedFolder, setDraggedFolder] = useState<Folder | null>(null);
+    const [draggedRoutine, setDraggedRoutine] = useState<Routine | null>(null);
+    const [dragOverFolder, setDragOverFolder] = useState<number | null>(null);
 
     const foldersFetch = useFetch<Folder[]>({
         fetchFn: folderService.getAll,
@@ -160,6 +169,189 @@ export default function Rutinas() {
         );
     };
 
+    const handleFolderDragStart = (folder: Folder) => {
+        setDraggedFolder(folder);
+    };
+
+    const handleFolderDragOver = (e: React.DragEvent, folder: Folder) => {
+        e.preventDefault();
+        if (draggedFolder && draggedFolder.id !== folder.id) {
+            setDragOverFolder(folder.id);
+        }
+    };
+
+    const handleFolderDragLeave = () => {
+        setDragOverFolder(null);
+    };
+
+    const handleFolderDrop = async (
+        e: React.DragEvent,
+        targetFolder: Folder
+    ) => {
+        e.preventDefault();
+        setDragOverFolder(null);
+
+        if (!draggedFolder || draggedFolder.id === targetFolder.id) {
+            setDraggedFolder(null);
+            return;
+        }
+
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            const folders = foldersFetch.data || [];
+            const draggedIndex = folders.findIndex(
+                (f) => f.id === draggedFolder.id
+            );
+            const targetIndex = folders.findIndex(
+                (f) => f.id === targetFolder.id
+            );
+
+            const reorderedFolders = [...folders];
+            reorderedFolders.splice(draggedIndex, 1);
+            reorderedFolders.splice(targetIndex, 0, draggedFolder);
+
+            const updatedFolders = reorderedFolders.map((folder, index) => ({
+                id: folder.id,
+                order: index,
+            }));
+
+            await folderService.reorder(updatedFolders, token);
+            foldersFetch.execute();
+            showToast("success", "Orden actualizado exitosamente");
+        } catch (error) {
+            showToast("error", "Error al actualizar el orden");
+        }
+
+        setDraggedFolder(null);
+    };
+
+    const handleRoutineDragStart = (routine: Routine) => {
+        setDraggedRoutine(routine);
+    };
+
+    const handleRoutineDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleRoutineDropInFolder = async (
+        e: React.DragEvent,
+        targetFolderId: number | null
+    ) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!draggedRoutine) return;
+
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            const routines = routinesFetch.data || [];
+            const targetRoutines = routines.filter(
+                (r) => r.folderId === targetFolderId
+            );
+
+            const updatedRoutines = targetRoutines.map((routine, index) => ({
+                id: routine.id,
+                order:
+                    routine.id === draggedRoutine.id
+                        ? targetRoutines.length
+                        : index,
+                folderId: routine.folderId,
+            }));
+
+            if (draggedRoutine.folderId !== targetFolderId) {
+                updatedRoutines.push({
+                    id: draggedRoutine.id,
+                    order: targetRoutines.length,
+                    folderId: targetFolderId,
+                });
+            }
+
+            await routineService.reorder(updatedRoutines, token);
+            routinesFetch.execute();
+            showToast("success", "Rutina movida exitosamente");
+        } catch (error) {
+            showToast("error", "Error al mover la rutina");
+        }
+
+        setDraggedRoutine(null);
+    };
+
+    const handleRoutineDropOnRoutine = async (
+        e: React.DragEvent,
+        targetRoutine: Routine
+    ) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!draggedRoutine || draggedRoutine.id === targetRoutine.id) {
+            setDraggedRoutine(null);
+            return;
+        }
+
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            const routines = routinesFetch.data || [];
+            const sameFolder =
+                draggedRoutine.folderId === targetRoutine.folderId;
+            const folderRoutines = routines.filter(
+                (r) => r.folderId === targetRoutine.folderId
+            );
+
+            if (sameFolder) {
+                const draggedIndex = folderRoutines.findIndex(
+                    (r) => r.id === draggedRoutine.id
+                );
+                const targetIndex = folderRoutines.findIndex(
+                    (r) => r.id === targetRoutine.id
+                );
+
+                const reordered = [...folderRoutines];
+                reordered.splice(draggedIndex, 1);
+                reordered.splice(targetIndex, 0, draggedRoutine);
+
+                const updatedRoutines = reordered.map((routine, index) => ({
+                    id: routine.id,
+                    order: index,
+                    folderId: routine.folderId,
+                }));
+
+                await routineService.reorder(updatedRoutines, token);
+            } else {
+                const targetIndex = folderRoutines.findIndex(
+                    (r) => r.id === targetRoutine.id
+                );
+                const updatedRoutines = folderRoutines.map(
+                    (routine, index) => ({
+                        id: routine.id,
+                        order: index >= targetIndex ? index + 1 : index,
+                        folderId: routine.folderId,
+                    })
+                );
+
+                updatedRoutines.push({
+                    id: draggedRoutine.id,
+                    order: targetIndex,
+                    folderId: targetRoutine.folderId,
+                });
+
+                await routineService.reorder(updatedRoutines, token);
+            }
+
+            routinesFetch.execute();
+            showToast("success", "Orden actualizado exitosamente");
+        } catch (error) {
+            showToast("error", "Error al actualizar el orden");
+        }
+
+        setDraggedRoutine(null);
+    };
+
     if (foldersFetch.loading || routinesFetch.loading) {
         return (
             <MainLayout>
@@ -198,10 +390,29 @@ export default function Rutinas() {
                                 {foldersFetch.data.map((folder) => (
                                     <div
                                         key={folder.id}
-                                        className="folder-card"
+                                        className={`folder-card ${
+                                            dragOverFolder === folder.id
+                                                ? "drag-over"
+                                                : ""
+                                        }`}
+                                        draggable
+                                        onDragStart={() =>
+                                            handleFolderDragStart(folder)
+                                        }
+                                        onDragOver={(e) =>
+                                            handleFolderDragOver(e, folder)
+                                        }
+                                        onDragLeave={handleFolderDragLeave}
+                                        onDrop={(e) =>
+                                            handleFolderDrop(e, folder)
+                                        }
                                     >
                                         <div className="folder-header">
                                             <div className="folder-info">
+                                                <GripVertical
+                                                    size={20}
+                                                    className="drag-handle"
+                                                />
                                                 <FolderIcon size={24} />
                                                 <h3>{folder.name}</h3>
                                             </div>
@@ -229,14 +440,42 @@ export default function Rutinas() {
                                                 {folder.description}
                                             </p>
                                         )}
-                                        <div className="routines-list">
+                                        <div
+                                            className="routines-list"
+                                            onDragOver={handleRoutineDragOver}
+                                            onDrop={(e) =>
+                                                handleRoutineDropInFolder(
+                                                    e,
+                                                    folder.id
+                                                )
+                                            }
+                                        >
                                             {getRoutinesByFolder(folder.id).map(
                                                 (routine) => (
                                                     <div
                                                         key={routine.id}
                                                         className="routine-card"
+                                                        draggable
+                                                        onDragStart={() =>
+                                                            handleRoutineDragStart(
+                                                                routine
+                                                            )
+                                                        }
+                                                        onDragOver={
+                                                            handleRoutineDragOver
+                                                        }
+                                                        onDrop={(e) =>
+                                                            handleRoutineDropOnRoutine(
+                                                                e,
+                                                                routine
+                                                            )
+                                                        }
                                                     >
                                                         <div className="routine-info">
+                                                            <GripVertical
+                                                                size={16}
+                                                                className="drag-handle"
+                                                            />
                                                             <FileText
                                                                 size={18}
                                                             />
@@ -275,15 +514,34 @@ export default function Rutinas() {
                     </div>
 
                     {getRoutinesByFolder(null).length > 0 && (
-                        <div className="no-folder-section">
+                        <div
+                            className="no-folder-section"
+                            onDragOver={handleRoutineDragOver}
+                            onDrop={(e) => handleRoutineDropInFolder(e, null)}
+                        >
                             <h3>Sin Carpeta</h3>
                             <div className="routines-list">
                                 {getRoutinesByFolder(null).map((routine) => (
                                     <div
                                         key={routine.id}
                                         className="routine-card"
+                                        draggable
+                                        onDragStart={() =>
+                                            handleRoutineDragStart(routine)
+                                        }
+                                        onDragOver={handleRoutineDragOver}
+                                        onDrop={(e) =>
+                                            handleRoutineDropOnRoutine(
+                                                e,
+                                                routine
+                                            )
+                                        }
                                     >
                                         <div className="routine-info">
+                                            <GripVertical
+                                                size={16}
+                                                className="drag-handle"
+                                            />
                                             <FileText size={18} />
                                             <span>{routine.name}</span>
                                         </div>
