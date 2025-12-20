@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Input } from "./ui/Input";
+import { Button } from "./ui/Button";
 import type {
     RoutineExercise,
     RoutineExerciseFormData,
 } from "../types/routineExercise";
 import "./editRoutineExerciseModal.css";
+
+const getVideoUrl = (videoPath: string | null) => {
+    if (!videoPath) return null;
+    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
+};
 
 interface EditRoutineExerciseModalProps {
     isOpen: boolean;
@@ -58,6 +64,22 @@ export default function EditRoutineExerciseModal({
                     </button>
                 </div>
 
+                {routineExercise.exercise?.videoPath && (
+                    <div className="exercise-video-container">
+                        <video
+                            src={
+                                getVideoUrl(
+                                    routineExercise.exercise.videoPath
+                                ) || ""
+                            }
+                            autoPlay
+                            loop
+                            muted
+                            className="exercise-video"
+                        />
+                    </div>
+                )}
+
                 <div className="exercise-name-display">
                     {routineExercise.exercise?.name}
                 </div>
@@ -79,6 +101,7 @@ export default function EditRoutineExerciseModal({
                                 }
                                 min="1"
                                 max="100"
+                                placeholder="Ej: 3"
                                 required
                             />
                         </div>
@@ -98,6 +121,7 @@ export default function EditRoutineExerciseModal({
                                 }
                                 min="1"
                                 max="1000"
+                                placeholder="Ej: 10"
                                 required
                             />
                         </div>
@@ -119,7 +143,7 @@ export default function EditRoutineExerciseModal({
                                 }
                                 min="0"
                                 step="0.5"
-                                placeholder="Opcional"
+                                placeholder="Ej: 50"
                             />
                         </div>
 
@@ -139,22 +163,23 @@ export default function EditRoutineExerciseModal({
                                 }
                                 min="0"
                                 max="600"
+                                placeholder="Ej: 60"
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="modal-actions">
-                        <button
+                        <Button
                             type="button"
                             onClick={onClose}
-                            className="btn-cancel"
+                            variant="secondary"
                         >
                             Cancelar
-                        </button>
-                        <button type="submit" className="btn-submit">
+                        </Button>
+                        <Button type="submit" variant="primary">
                             Guardar
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>
