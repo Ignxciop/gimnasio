@@ -10,8 +10,10 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import FolderModal from "../components/FolderModal";
 import RoutineModal from "../components/RoutineModal";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
+import { useDelete } from "../hooks/useDelete";
 import { useToast } from "../hooks/useToast";
 import { folderService } from "../services/folderService";
 import { routineService } from "../services/routineService";
@@ -38,6 +40,38 @@ export default function Rutinas() {
     });
     const routinesFetch = useFetch<Routine[]>({
         fetchFn: routineService.getAll,
+    });
+
+    const folderDelete = useDelete({
+        deleteFn: folderService.delete,
+        onSuccess: () => {
+            foldersFetch.execute();
+            routinesFetch.execute();
+            showToast("success", "Carpeta eliminada exitosamente");
+        },
+        onError: (error: any) => {
+            const message =
+                error?.response?.data?.message || "Error al eliminar carpeta";
+            showToast("error", message);
+        },
+        confirmTitle: "Eliminar Carpeta",
+        confirmMessage:
+            "¿Estás seguro de eliminar esta carpeta? Las rutinas dentro se moverán a 'Sin carpeta'.",
+    });
+
+    const routineDelete = useDelete({
+        deleteFn: routineService.delete,
+        onSuccess: () => {
+            routinesFetch.execute();
+            showToast("success", "Rutina eliminada exitosamente");
+        },
+        onError: (error: any) => {
+            const message =
+                error?.response?.data?.message || "Error al eliminar rutina";
+            showToast("error", message);
+        },
+        confirmTitle: "Eliminar Rutina",
+        confirmMessage: "¿Estás seguro de eliminar esta rutina?",
     });
 
     useEffect(() => {
@@ -117,52 +151,6 @@ export default function Rutinas() {
                 error instanceof Error
                     ? error.message
                     : "Error al guardar rutina"
-            );
-        }
-    };
-
-    const handleDeleteFolder = async (id: number) => {
-        if (
-            !confirm(
-                "¿Estás seguro de eliminar esta carpeta? Las rutinas dentro se moverán a 'Sin carpeta'."
-            )
-        )
-            return;
-
-        try {
-            const token = authService.getToken();
-            if (!token) return;
-
-            await folderService.delete(id, token);
-            showToast("success", "Carpeta eliminada exitosamente");
-            foldersFetch.execute();
-            routinesFetch.execute();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al eliminar carpeta"
-            );
-        }
-    };
-
-    const handleDeleteRoutine = async (id: number) => {
-        if (!confirm("¿Estás seguro de eliminar esta rutina?")) return;
-
-        try {
-            const token = authService.getToken();
-            if (!token) return;
-
-            await routineService.delete(id, token);
-            showToast("success", "Rutina eliminada exitosamente");
-            routinesFetch.execute();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al eliminar rutina"
             );
         }
     };
@@ -442,7 +430,7 @@ export default function Rutinas() {
                                                 </button>
                                                 <button
                                                     onClick={() =>
-                                                        handleDeleteFolder(
+                                                        folderDelete.confirmDelete(
                                                             folder.id
                                                         )
                                                     }
@@ -520,7 +508,7 @@ export default function Rutinas() {
                                                             </button>
                                                             <button
                                                                 onClick={() =>
-                                                                    handleDeleteRoutine(
+                                                                    routineDelete.confirmDelete(
                                                                         routine.id
                                                                     )
                                                                 }
@@ -589,7 +577,7 @@ export default function Rutinas() {
                                             </button>
                                             <button
                                                 onClick={() =>
-                                                    handleDeleteRoutine(
+                                                    routineDelete.confirmDelete(
                                                         routine.id
                                                     )
                                                 }
@@ -627,6 +615,22 @@ export default function Rutinas() {
                 onSubmit={handleRoutineSubmit}
                 routine={routineModal.editingItem}
                 folders={foldersFetch.data || []}
+            />
+
+            <ConfirmDialog
+                isOpen={folderDelete.isOpen}
+                title={folderDelete.title}
+                message={folderDelete.message}
+                onConfirm={folderDelete.handleConfirm}
+                onCancel={folderDelete.handleCancel}
+            />
+
+            <ConfirmDialog
+                isOpen={routineDelete.isOpen}
+                title={routineDelete.title}
+                message={routineDelete.message}
+                onConfirm={routineDelete.handleConfirm}
+                onCancel={routineDelete.handleCancel}
             />
         </MainLayout>
     );
