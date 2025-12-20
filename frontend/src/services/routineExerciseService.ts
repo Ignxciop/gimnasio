@@ -1,8 +1,9 @@
-import { API_URL } from "../config/api";
 import type {
     RoutineExercise,
     RoutineExerciseFormData,
 } from "../types/routineExercise";
+
+const API_URL = "http://localhost:3000/api";
 
 const handleError = (error: any, defaultMessage: string) => {
     if (error.errors && Array.isArray(error.errors)) {
