@@ -73,6 +73,7 @@ model Folder{
   id Int @id @default(autoincrement())
   name String
   description String?
+  order Int @default(0)
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   routines Routine[]
@@ -84,6 +85,7 @@ model Routine{
   id Int @id @default(autoincrement())
   name String
   description String?
+  order Int @default(0)
   folderId Int?
   userId String
   folder Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)

@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Folder" ADD COLUMN     "order" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "Routine" ADD COLUMN     "order" INTEGER NOT NULL DEFAULT 0;
