@@ -117,6 +117,7 @@ export default function RoutinesManager() {
                 showToast("success", "Carpeta creada exitosamente");
             }
             foldersFetch.execute();
+            folderModal.closeModal();
         } catch (error) {
             showToast(
                 "error",
@@ -144,6 +145,7 @@ export default function RoutinesManager() {
                 showToast("success", "Rutina creada exitosamente");
             }
             routinesFetch.execute();
+            routineModal.closeModal();
         } catch (error) {
             showToast(
                 "error",
