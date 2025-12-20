@@ -55,6 +55,7 @@ model Exercise{
   equipment Equipment @relation(fields: [equipmentId], references: [id])
   muscleGroup MuscleGroup @relation("PrimaryMuscleGroup", fields: [muscleGroupId], references: [id])
   secondaryMuscleGroups ExerciseSecondaryMuscleGroup[]
+  routineExercises RoutineExercise[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -90,6 +91,24 @@ model Routine{
   userId String
   folder Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises RoutineExercise[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model RoutineExercise{
+  id Int @id @default(autoincrement())
+  routineId Int
+  exerciseId Int
+  sets Int
+  reps Int
+  weight Decimal?
+  restTime Int
+  order Int @default(0)
+  routine Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([routineId, exerciseId])
 }
