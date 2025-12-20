@@ -2,6 +2,7 @@ export interface Folder {
     id: number;
     name: string;
     description?: string | null;
+    order: number;
     userId: number;
     createdAt: string;
     updatedAt: string;
@@ -12,6 +13,7 @@ export interface Routine {
     id: number;
     name: string;
     description?: string | null;
+    order: number;
     folderId?: number | null;
     userId: number;
     createdAt: string;

@@ -122,4 +122,32 @@ export const folderService = {
             );
         }
     },
+
+    async reorder(
+        items: Array<{ id: number; order: number }>,
+        token: string
+    ): Promise<void> {
+        try {
+            const response = await fetch(`${API_URL}/folders/reorder`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ items }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                handleError(error, "No se pudo actualizar el orden");
+            }
+        } catch (error: any) {
+            if (error.message) {
+                throw error;
+            }
+            throw new Error(
+                "No se pudo actualizar el orden. Intenta nuevamente"
+            );
+        }
+    },
 };

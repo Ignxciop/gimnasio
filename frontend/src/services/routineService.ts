@@ -130,4 +130,34 @@ export const routineService = {
             throw new Error(error.message || "Error al eliminar rutina");
         }
     },
+
+    async reorder(
+        items: Array<{ id: number; order: number; folderId: number | null }>,
+        token: string
+    ): Promise<void> {
+        try {
+            const response = await fetch(`${API_URL}/routines/reorder`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ items }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(
+                    error.message || "No se pudo actualizar el orden"
+                );
+            }
+        } catch (error: any) {
+            if (error.message) {
+                throw error;
+            }
+            throw new Error(
+                "No se pudo actualizar el orden. Intenta nuevamente"
+            );
+        }
+    },
 };
