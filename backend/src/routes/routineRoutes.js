@@ -5,6 +5,7 @@ import {
     createRoutineValidation,
     updateRoutineValidation,
     moveRoutineValidation,
+    reorderRoutineValidation,
 } from "../validators/routineValidator.js";
 import { validationResult } from "express-validator";
 
@@ -46,6 +47,13 @@ router.patch(
     moveRoutineValidation,
     handleValidationErrors,
     routineController.move
+);
+router.patch(
+    "/reorder",
+    authenticate,
+    reorderRoutineValidation,
+    handleValidationErrors,
+    routineController.reorder
 );
 router.delete("/:id", authenticate, routineController.delete);
 

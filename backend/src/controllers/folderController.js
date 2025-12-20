@@ -86,6 +86,21 @@ class FolderController {
             next(error);
         }
     }
+
+    async reorder(req, res, next) {
+        try {
+            const { items } = req.body;
+            const userId = req.user.userId;
+            const result = await folderService.reorder(items, userId);
+
+            res.status(200).json({
+                success: true,
+                message: result.message,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new FolderController();

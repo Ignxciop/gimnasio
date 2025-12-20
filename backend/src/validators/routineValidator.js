@@ -68,3 +68,23 @@ export const moveRoutineValidation = [
             "El ID de la carpeta debe ser null o un número entero positivo"
         ),
 ];
+
+export const reorderRoutineValidation = [
+    body("items")
+        .isArray({ min: 1 })
+        .withMessage("Se requiere un array de items"),
+    body("items.*.id")
+        .isInt({ min: 1 })
+        .withMessage("El ID debe ser un número entero positivo"),
+    body("items.*.order")
+        .isInt({ min: 0 })
+        .withMessage("El orden debe ser un número entero no negativo"),
+    body("items.*.folderId")
+        .optional()
+        .custom(
+            (value) => value === null || (Number.isInteger(value) && value > 0)
+        )
+        .withMessage(
+            "El ID de la carpeta debe ser null o un número entero positivo"
+        ),
+];

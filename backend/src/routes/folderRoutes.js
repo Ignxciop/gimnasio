@@ -4,6 +4,7 @@ import { authenticate } from "../middlewares/authMiddleware.js";
 import {
     createFolderValidation,
     updateFolderValidation,
+    reorderFolderValidation,
 } from "../validators/folderValidator.js";
 import { validationResult } from "express-validator";
 
@@ -40,5 +41,12 @@ router.put(
     folderController.update
 );
 router.delete("/:id", authenticate, folderController.delete);
+router.patch(
+    "/reorder",
+    authenticate,
+    reorderFolderValidation,
+    handleValidationErrors,
+    folderController.reorder
+);
 
 export default router;

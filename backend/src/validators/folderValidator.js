@@ -42,3 +42,15 @@ export const getFolderByIdValidation = [
         .isInt({ min: 1 })
         .withMessage("El ID debe ser un número entero positivo"),
 ];
+
+export const reorderFolderValidation = [
+    body("items")
+        .isArray({ min: 1 })
+        .withMessage("Se requiere un array de items"),
+    body("items.*.id")
+        .isInt({ min: 1 })
+        .withMessage("El ID debe ser un número entero positivo"),
+    body("items.*.order")
+        .isInt({ min: 0 })
+        .withMessage("El orden debe ser un número entero no negativo"),
+];
