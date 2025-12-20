@@ -213,7 +213,6 @@ export default function RoutinesManager() {
             const updatedFolders = reorderedFolders.map((folder, index) => ({
                 id: folder.id,
                 order: index,
-                folderId: folder.folderId,
             }));
 
             await folderService.reorder(updatedFolders, token);
@@ -313,6 +312,7 @@ export default function RoutinesManager() {
                 const updatedRoutines = reordered.map((routine, index) => ({
                     id: routine.id,
                     order: index,
+                    folderId: targetRoutine.folderId ?? null,
                 }));
 
                 await routineService.reorder(updatedRoutines, token);
@@ -325,7 +325,7 @@ export default function RoutinesManager() {
                     {
                         id: draggedRoutine.id,
                         order: targetIndex,
-                        folderId: targetRoutine.folderId,
+                        folderId: targetRoutine.folderId ?? null,
                     },
                 ];
 
