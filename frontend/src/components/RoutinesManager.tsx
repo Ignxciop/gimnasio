@@ -213,12 +213,13 @@ export default function RoutinesManager() {
             const updatedFolders = reorderedFolders.map((folder, index) => ({
                 id: folder.id,
                 order: index,
+                folderId: folder.folderId,
             }));
 
             await folderService.reorder(updatedFolders, token);
             foldersFetch.execute();
             showToast("success", "Orden actualizado exitosamente");
-        } catch (error) {
+        } catch {
             showToast("error", "Error al actualizar el orden");
         }
 
@@ -267,7 +268,7 @@ export default function RoutinesManager() {
             await routineService.reorder(updatedRoutines, token);
             routinesFetch.execute();
             showToast("success", "Rutina movida exitosamente");
-        } catch (error) {
+        } catch {
             showToast("error", "Error al mover la rutina");
         }
 
@@ -333,7 +334,7 @@ export default function RoutinesManager() {
 
             routinesFetch.execute();
             showToast("success", "Orden actualizado exitosamente");
-        } catch (error) {
+        } catch {
             showToast("error", "Error al actualizar el orden");
         }
 
