@@ -18,6 +18,11 @@ import AddExerciseModal from "../components/AddExerciseModal";
 import EditRoutineExerciseModal from "../components/EditRoutineExerciseModal";
 import "../styles/routineDetail.css";
 
+const getVideoUrl = (videoPath: string | null) => {
+    if (!videoPath) return null;
+    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
+};
+
 export default function RoutineDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -223,6 +228,19 @@ export default function RoutineDetail() {
                                         size={20}
                                         className="drag-handle"
                                     />
+                                    {routineExercise.exercise?.videoPath && (
+                                        <div className="exercise-thumbnail">
+                                            <video
+                                                src={
+                                                    getVideoUrl(
+                                                        routineExercise.exercise
+                                                            .videoPath
+                                                    ) || ""
+                                                }
+                                                className="exercise-thumbnail-video"
+                                            />
+                                        </div>
+                                    )}
                                     <div className="exercise-info">
                                         <h3>
                                             {routineExercise.exercise?.name}

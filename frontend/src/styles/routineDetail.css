@@ -115,6 +115,21 @@
     color: var(--accent-mid);
 }
 
+.exercise-thumbnail {
+    width: 120px;
+    height: 90px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.exercise-thumbnail-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .exercise-info {
     flex: 1;
 }
