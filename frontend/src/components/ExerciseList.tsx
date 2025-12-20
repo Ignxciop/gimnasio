@@ -3,6 +3,11 @@ import { Dumbbell, Users, Target } from "lucide-react";
 import { Card, CardList } from "./ui/Card";
 import type { Exercise } from "../services/exerciseService";
 
+const getVideoUrl = (videoPath: string | null) => {
+    if (!videoPath) return null;
+    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
+};
+
 interface ExerciseListProps {
     exercises: Exercise[];
     onEdit: (exercise: Exercise) => void;
@@ -29,6 +34,14 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({
                     onDelete={onDelete}
                     loading={loading}
                 >
+                    {item.videoPath && (
+                        <div className="exercise-thumbnail-wrapper">
+                            <video
+                                src={getVideoUrl(item.videoPath) || ""}
+                                className="exercise-thumbnail-card"
+                            />
+                        </div>
+                    )}
                     <div className="card__detail">
                         <Dumbbell size={16} />
                         <span>{item.equipment.name}</span>

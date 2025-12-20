@@ -101,6 +101,21 @@
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.exercise-thumbnail-wrapper {
+    width: 100%;
+    margin-bottom: 0.75rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.exercise-thumbnail-card {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
 .card__detail {
     display: flex;
     align-items: center;
