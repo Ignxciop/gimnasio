@@ -164,14 +164,27 @@ class RoutineService {
     }
 
     async reorder(items, userId) {
-        const updates = items.map((item) =>
-            prisma.routine.updateMany({
+        const updates = items.map(async (item) => {
+            const routine = await prisma.routine.findFirst({
                 where: { id: item.id, userId },
-                data: { order: item.order, folderId: item.folderId },
-            })
-        );
+            });
 
-        await prisma.$transaction(updates);
+            if (!routine) {
+                return null;
+            }
+
+            const updateData = { order: item.order };
+            if (item.folderId !== undefined) {
+                updateData.folderId = item.folderId;
+            }
+
+            return prisma.routine.update({
+                where: { id: item.id },
+                data: updateData,
+            });
+        });
+
+        await Promise.all(updates);
 
         return { message: "Orden actualizado exitosamente" };
     }
