@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Check, ChevronDown, Search, X } from "lucide-react";
 import "./select.css";
 
@@ -37,6 +38,7 @@ export const Select: React.FC<SelectProps> = ({
     });
     const selectRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     const selectedValues = multiple && Array.isArray(value) ? value : [];
@@ -90,7 +92,9 @@ export const Select: React.FC<SelectProps> = ({
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 selectRef.current &&
-                !selectRef.current.contains(event.target as Node)
+                !selectRef.current.contains(event.target as Node) &&
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
             ) {
                 setIsOpen(false);
             }
@@ -181,69 +185,78 @@ export const Select: React.FC<SelectProps> = ({
                 />
             </button>
 
-            {isOpen && !disabled && (
-                <div
-                    className="select-dropdown"
-                    style={{
-                        top: `${dropdownPosition.top}px`,
-                        left: `${dropdownPosition.left}px`,
-                        width: `${dropdownPosition.width}px`,
-                    }}
-                >
-                    {searchable && (
-                        <div className="select-search">
-                            <Search size={16} className="select-search__icon" />
-                            <input
-                                ref={searchInputRef}
-                                type="text"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="Buscar..."
-                                className="select-search__input"
-                                onClick={(e) => e.stopPropagation()}
-                            />
-                        </div>
-                    )}
-                    <div className="select-options">
-                        {filteredOptions.length === 0 ? (
-                            <div className="select-option select-option--empty">
-                                No se encontraron resultados
+            {isOpen &&
+                !disabled &&
+                createPortal(
+                    <div
+                        ref={dropdownRef}
+                        className="select-dropdown"
+                        style={{
+                            top: `${dropdownPosition.top}px`,
+                            left: `${dropdownPosition.left}px`,
+                            width: `${dropdownPosition.width}px`,
+                        }}
+                    >
+                        {searchable && (
+                            <div className="select-search">
+                                <Search
+                                    size={16}
+                                    className="select-search__icon"
+                                />
+                                <input
+                                    ref={searchInputRef}
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    placeholder="Buscar..."
+                                    className="select-search__input"
+                                    onClick={(e) => e.stopPropagation()}
+                                />
                             </div>
-                        ) : (
-                            filteredOptions.map((option) => {
-                                const isSelected = multiple
-                                    ? Array.isArray(value) &&
-                                      value.includes(Number(option.value))
-                                    : option.value.toString() ===
-                                      value.toString();
-                                return (
-                                    <div
-                                        key={option.value}
-                                        className={`select-option ${
-                                            isSelected
-                                                ? "select-option--selected"
-                                                : ""
-                                        }`}
-                                        onClick={() =>
-                                            handleSelect(option.value)
-                                        }
-                                    >
-                                        <span className="select-option__label">
-                                            {option.label}
-                                        </span>
-                                        {isSelected && (
-                                            <Check
-                                                size={18}
-                                                className="select-option__check"
-                                            />
-                                        )}
-                                    </div>
-                                );
-                            })
                         )}
-                    </div>
-                </div>
-            )}
+                        <div className="select-options">
+                            {filteredOptions.length === 0 ? (
+                                <div className="select-option select-option--empty">
+                                    No se encontraron resultados
+                                </div>
+                            ) : (
+                                filteredOptions.map((option) => {
+                                    const isSelected = multiple
+                                        ? Array.isArray(value) &&
+                                          value.includes(Number(option.value))
+                                        : option.value.toString() ===
+                                          value.toString();
+                                    return (
+                                        <div
+                                            key={option.value}
+                                            className={`select-option ${
+                                                isSelected
+                                                    ? "select-option--selected"
+                                                    : ""
+                                            }`}
+                                            onClick={() =>
+                                                handleSelect(option.value)
+                                            }
+                                        >
+                                            <span className="select-option__label">
+                                                {option.label}
+                                            </span>
+                                            {isSelected && (
+                                                <Check
+                                                    size={18}
+                                                    className="select-option__check"
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>,
+                    document.body
+                )}
         </div>
     );
 };
