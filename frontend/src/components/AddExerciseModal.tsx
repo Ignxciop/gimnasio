@@ -4,9 +4,15 @@ import { useFetch } from "../hooks/useFetch";
 import { exerciseService } from "../services/exerciseService";
 import { Select } from "./ui/Select";
 import { Input } from "./ui/Input";
+import { Button } from "./ui/Button";
 import type { RoutineExerciseFormData } from "../types/routineExercise";
 import type { Exercise } from "../types/exercise";
 import "./addExerciseModal.css";
+
+const getVideoUrl = (videoPath: string | null) => {
+    if (!videoPath) return null;
+    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
+};
 
 interface AddExerciseModalProps {
     isOpen: boolean;
@@ -21,11 +27,14 @@ export default function AddExerciseModal({
 }: AddExerciseModalProps) {
     const [formData, setFormData] = useState<RoutineExerciseFormData>({
         exerciseId: 0,
-        sets: 3,
-        reps: 10,
+        sets: 0,
+        reps: 0,
         weight: undefined,
-        restTime: 60,
+        restTime: 0,
     });
+    const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+        null
+    );
 
     const exercisesFetch = useFetch<Exercise[]>({
         fetchFn: exerciseService.getAll,
@@ -36,11 +45,12 @@ export default function AddExerciseModal({
             exercisesFetch.execute();
             setFormData({
                 exerciseId: 0,
-                sets: 3,
-                reps: 10,
+                sets: 0,
+                reps: 0,
                 weight: undefined,
-                restTime: 60,
+                restTime: 0,
             });
+            setSelectedExercise(null);
         }
     }, [isOpen]);
 
@@ -76,18 +86,38 @@ export default function AddExerciseModal({
                 </div>
 
                 <form onSubmit={handleSubmit} className="modal-form">
+                    {selectedExercise?.videoPath && (
+                        <div className="exercise-video-container">
+                            <video
+                                src={
+                                    getVideoUrl(selectedExercise.videoPath) ||
+                                    ""
+                                }
+                                autoPlay
+                                loop
+                                muted
+                                className="exercise-video"
+                            />
+                        </div>
+                    )}
+
                     <div className="form-group">
                         <label>
                             Ejercicio <span className="required">*</span>
                         </label>
                         <Select
                             value={formData.exerciseId}
-                            onChange={(value) =>
+                            onChange={(value) => {
+                                const exerciseId = Number(value);
+                                const exercise = exercisesFetch.data?.find(
+                                    (ex) => ex.id === exerciseId
+                                );
                                 setFormData({
                                     ...formData,
-                                    exerciseId: Number(value),
-                                })
-                            }
+                                    exerciseId,
+                                });
+                                setSelectedExercise(exercise || null);
+                            }}
                             options={exerciseOptions}
                             placeholder="Selecciona un ejercicio"
                             searchable
@@ -101,15 +131,18 @@ export default function AddExerciseModal({
                             </label>
                             <Input
                                 type="number"
-                                value={formData.sets}
+                                value={formData.sets || ""}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        sets: Number(e.target.value),
+                                        sets: e.target.value
+                                            ? Number(e.target.value)
+                                            : 0,
                                     })
                                 }
                                 min="1"
                                 max="100"
+                                placeholder="Ej: 3"
                                 required
                             />
                         </div>
@@ -120,15 +153,18 @@ export default function AddExerciseModal({
                             </label>
                             <Input
                                 type="number"
-                                value={formData.reps}
+                                value={formData.reps || ""}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        reps: Number(e.target.value),
+                                        reps: e.target.value
+                                            ? Number(e.target.value)
+                                            : 0,
                                     })
                                 }
                                 min="1"
                                 max="1000"
+                                placeholder="Ej: 10"
                                 required
                             />
                         </div>
@@ -150,7 +186,7 @@ export default function AddExerciseModal({
                                 }
                                 min="0"
                                 step="0.5"
-                                placeholder="Opcional"
+                                placeholder="Ej: 50"
                             />
                         </div>
 
@@ -161,35 +197,38 @@ export default function AddExerciseModal({
                             </label>
                             <Input
                                 type="number"
-                                value={formData.restTime}
+                                value={formData.restTime || ""}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        restTime: Number(e.target.value),
+                                        restTime: e.target.value
+                                            ? Number(e.target.value)
+                                            : 0,
                                     })
                                 }
                                 min="0"
                                 max="600"
+                                placeholder="Ej: 60"
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="modal-actions">
-                        <button
+                        <Button
                             type="button"
                             onClick={onClose}
-                            className="btn-cancel"
+                            variant="secondary"
                         >
                             Cancelar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
-                            className="btn-submit"
+                            variant="primary"
                             disabled={formData.exerciseId === 0}
                         >
                             Agregar
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

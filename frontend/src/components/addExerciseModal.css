@@ -2,6 +2,20 @@
     max-width: 600px;
 }
 
+.exercise-video-container {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.exercise-video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 .exercise-name-display {
     padding: 1rem;
     margin-bottom: 1.5rem;
@@ -22,6 +36,16 @@
 
 .required {
     color: var(--accent-mid);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
 }
 
 @media (max-width: 768px) {
