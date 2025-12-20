@@ -430,7 +430,7 @@ export default function Rutinas() {
                                                 </button>
                                                 <button
                                                     onClick={() =>
-                                                        folderDelete.confirmDelete(
+                                                        folderDelete.deleteItem(
                                                             folder.id
                                                         )
                                                     }
@@ -508,7 +508,7 @@ export default function Rutinas() {
                                                             </button>
                                                             <button
                                                                 onClick={() =>
-                                                                    routineDelete.confirmDelete(
+                                                                    routineDelete.deleteItem(
                                                                         routine.id
                                                                     )
                                                                 }
@@ -577,7 +577,7 @@ export default function Rutinas() {
                                             </button>
                                             <button
                                                 onClick={() =>
-                                                    routineDelete.confirmDelete(
+                                                    routineDelete.deleteItem(
                                                         routine.id
                                                     )
                                                 }
@@ -618,19 +618,21 @@ export default function Rutinas() {
             />
 
             <ConfirmDialog
-                isOpen={folderDelete.isOpen}
-                title={folderDelete.title}
-                message={folderDelete.message}
-                onConfirm={folderDelete.handleConfirm}
-                onCancel={folderDelete.handleCancel}
+                isOpen={folderDelete.showConfirm}
+                onClose={folderDelete.cancelDelete}
+                onConfirm={folderDelete.confirmDelete}
+                title={folderDelete.confirmTitle}
+                message={folderDelete.confirmMessage}
+                variant="danger"
             />
 
             <ConfirmDialog
-                isOpen={routineDelete.isOpen}
-                title={routineDelete.title}
-                message={routineDelete.message}
-                onConfirm={routineDelete.handleConfirm}
-                onCancel={routineDelete.handleCancel}
+                isOpen={routineDelete.showConfirm}
+                onClose={routineDelete.cancelDelete}
+                onConfirm={routineDelete.confirmDelete}
+                title={routineDelete.confirmTitle}
+                message={routineDelete.confirmMessage}
+                variant="danger"
             />
         </MainLayout>
     );

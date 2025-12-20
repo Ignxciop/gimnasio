@@ -34,10 +34,16 @@ class RoutineController {
         try {
             const { name, description, folderId } = req.body;
             const userId = req.user.userId;
+
+            const normalizedFolderId =
+                folderId === null || folderId === undefined || folderId === ""
+                    ? null
+                    : parseInt(folderId);
+
             const routine = await routineService.create(
                 name,
                 description,
-                folderId || null,
+                normalizedFolderId,
                 userId
             );
 

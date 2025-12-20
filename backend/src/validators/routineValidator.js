@@ -13,9 +13,18 @@ export const createRoutineValidation = [
         .isLength({ max: 500 })
         .withMessage("La descripción no puede superar los 500 caracteres"),
     body("folderId")
-        .optional()
-        .isInt({ min: 1 })
-        .withMessage("El ID de la carpeta debe ser un número entero positivo"),
+        .optional({ nullable: true })
+        .custom((value) => {
+            if (value === null || value === undefined || value === "") {
+                return true;
+            }
+            if (Number.isInteger(value) && value > 0) {
+                return true;
+            }
+            throw new Error(
+                "El ID de la carpeta debe ser null o un número entero positivo"
+            );
+        }),
 ];
 
 export const updateRoutineValidation = [
