@@ -6,10 +6,10 @@ class FolderService {
             where: { userId },
             include: {
                 routines: {
-                    orderBy: { createdAt: "desc" },
+                    orderBy: { order: "asc" },
                 },
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { order: "asc" },
         });
         return folders;
     }
@@ -19,7 +19,7 @@ class FolderService {
             where: { id, userId },
             include: {
                 routines: {
-                    orderBy: { createdAt: "desc" },
+                    orderBy: { order: "asc" },
                 },
             },
         });
@@ -34,11 +34,18 @@ class FolderService {
     }
 
     async create(name, description, userId) {
+        const maxOrder = await prisma.folder.findFirst({
+            where: { userId },
+            orderBy: { order: "desc" },
+            select: { order: true },
+        });
+
         const folder = await prisma.folder.create({
             data: {
                 name,
                 description,
                 userId,
+                order: maxOrder ? maxOrder.order + 1 : 0,
             },
             include: {
                 routines: true,
@@ -89,6 +96,19 @@ class FolderService {
         });
 
         return { message: "Carpeta eliminada exitosamente" };
+    }
+
+    async reorder(items, userId) {
+        const updates = items.map((item) =>
+            prisma.folder.updateMany({
+                where: { id: item.id, userId },
+                data: { order: item.order },
+            })
+        );
+
+        await prisma.$transaction(updates);
+
+        return { message: "Orden actualizado exitosamente" };
     }
 }
 

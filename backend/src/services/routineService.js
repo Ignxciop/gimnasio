@@ -7,7 +7,7 @@ class RoutineService {
             include: {
                 folder: true,
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { order: "asc" },
         });
         return routines;
     }
@@ -42,12 +42,19 @@ class RoutineService {
             }
         }
 
+        const maxOrder = await prisma.routine.findFirst({
+            where: { userId, folderId },
+            orderBy: { order: "desc" },
+            select: { order: true },
+        });
+
         const routine = await prisma.routine.create({
             data: {
                 name,
                 description,
                 folderId,
                 userId,
+                order: maxOrder ? maxOrder.order + 1 : 0,
             },
             include: {
                 folder: true,
@@ -118,10 +125,17 @@ class RoutineService {
             }
         }
 
+        const maxOrder = await prisma.routine.findFirst({
+            where: { userId, folderId },
+            orderBy: { order: "desc" },
+            select: { order: true },
+        });
+
         const routine = await prisma.routine.update({
             where: { id },
             data: {
                 folderId,
+                order: maxOrder ? maxOrder.order + 1 : 0,
             },
             include: {
                 folder: true,
@@ -147,6 +161,19 @@ class RoutineService {
         });
 
         return { message: "Rutina eliminada exitosamente" };
+    }
+
+    async reorder(items, userId) {
+        const updates = items.map((item) =>
+            prisma.routine.updateMany({
+                where: { id: item.id, userId },
+                data: { order: item.order, folderId: item.folderId },
+            })
+        );
+
+        await prisma.$transaction(updates);
+
+        return { message: "Orden actualizado exitosamente" };
     }
 }
 
