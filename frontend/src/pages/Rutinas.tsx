@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     FolderPlus,
     Plus,
@@ -24,6 +25,7 @@ import type {
 import "../styles/rutinas.css";
 
 export default function Rutinas() {
+    const navigate = useNavigate();
     const { showToast } = useToast();
     const folderModal = useModal<Folder>();
     const routineModal = useModal<Routine>();
@@ -57,6 +59,10 @@ export default function Rutinas() {
 
     const handleEditRoutine = (routine: Routine) => {
         routineModal.openEditModal(routine);
+    };
+
+    const handleOpenRoutine = (routineId: number) => {
+        navigate(`/rutinas/${routineId}`);
     };
 
     const handleFolderSubmit = async (data: FolderFormData) => {
@@ -489,7 +495,16 @@ export default function Rutinas() {
                                                             <FileText
                                                                 size={18}
                                                             />
-                                                            <span>
+                                                            <span
+                                                                onClick={() =>
+                                                                    handleOpenRoutine(
+                                                                        routine.id
+                                                                    )
+                                                                }
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                }}
+                                                            >
                                                                 {routine.name}
                                                             </span>
                                                         </div>
@@ -553,7 +568,16 @@ export default function Rutinas() {
                                                 className="drag-handle"
                                             />
                                             <FileText size={18} />
-                                            <span>{routine.name}</span>
+                                            <span
+                                                onClick={() =>
+                                                    handleOpenRoutine(
+                                                        routine.id
+                                                    )
+                                                }
+                                                style={{ cursor: "pointer" }}
+                                            >
+                                                {routine.name}
+                                            </span>
                                         </div>
                                         <div className="routine-actions">
                                             <button
