@@ -188,6 +188,11 @@ export default function Rutinas() {
         e: React.DragEvent,
         targetFolder: Folder
     ) => {
+        if (draggedRoutine) {
+            await handleRoutineDropInFolder(e, targetFolder.id);
+            return;
+        }
+
         e.preventDefault();
         setDragOverFolder(null);
 
@@ -244,6 +249,11 @@ export default function Rutinas() {
 
         if (!draggedRoutine) return;
 
+        if (draggedRoutine.folderId === targetFolderId) {
+            setDraggedRoutine(null);
+            return;
+        }
+
         try {
             const token = authService.getToken();
             if (!token) return;
@@ -253,22 +263,13 @@ export default function Rutinas() {
                 (r) => r.folderId === targetFolderId
             );
 
-            const updatedRoutines = targetRoutines.map((routine, index) => ({
-                id: routine.id,
-                order:
-                    routine.id === draggedRoutine.id
-                        ? targetRoutines.length
-                        : index,
-                folderId: routine.folderId,
-            }));
-
-            if (draggedRoutine.folderId !== targetFolderId) {
-                updatedRoutines.push({
+            const updatedRoutines = [
+                {
                     id: draggedRoutine.id,
                     order: targetRoutines.length,
                     folderId: targetFolderId,
-                });
-            }
+                },
+            ];
 
             await routineService.reorder(updatedRoutines, token);
             routinesFetch.execute();
@@ -303,6 +304,13 @@ export default function Rutinas() {
                 (r) => r.folderId === targetRoutine.folderId
             );
 
+            console.log(
+                "Misma carpeta?",
+                sameFolder,
+                "Rutinas en carpeta:",
+                folderRoutines.length
+            );
+
             if (sameFolder) {
                 const draggedIndex = folderRoutines.findIndex(
                     (r) => r.id === draggedRoutine.id
@@ -318,28 +326,30 @@ export default function Rutinas() {
                 const updatedRoutines = reordered.map((routine, index) => ({
                     id: routine.id,
                     order: index,
-                    folderId: routine.folderId,
                 }));
 
+                console.log(
+                    "REORDENAR en misma carpeta - Enviando:",
+                    updatedRoutines
+                );
                 await routineService.reorder(updatedRoutines, token);
             } else {
                 const targetIndex = folderRoutines.findIndex(
                     (r) => r.id === targetRoutine.id
                 );
-                const updatedRoutines = folderRoutines.map(
-                    (routine, index) => ({
-                        id: routine.id,
-                        order: index >= targetIndex ? index + 1 : index,
-                        folderId: routine.folderId,
-                    })
+
+                const updatedRoutines = [
+                    {
+                        id: draggedRoutine.id,
+                        order: targetIndex,
+                        folderId: targetRoutine.folderId,
+                    },
+                ];
+
+                console.log(
+                    "MOVER entre carpetas - Enviando:",
+                    updatedRoutines
                 );
-
-                updatedRoutines.push({
-                    id: draggedRoutine.id,
-                    order: targetIndex,
-                    folderId: targetRoutine.folderId,
-                });
-
                 await routineService.reorder(updatedRoutines, token);
             }
 
