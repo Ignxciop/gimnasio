@@ -101,7 +101,7 @@
     max-height: 250px;
     display: flex;
     flex-direction: column;
-    z-index: 9999;
+    z-index: 99999;
     animation: slideDown 0.2s ease;
 }
 
