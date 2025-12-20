@@ -27,9 +27,10 @@ export const MuscleGroupSection: React.FC = () => {
             muscleGroupsFetch.execute();
             showToast("success", "Grupo muscular eliminado correctamente");
         },
-        onError: (error: any) {
+        onError: (error: unknown) => {
             const message =
-                error?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message ||
                 "Error al eliminar el grupo muscular";
             showToast("error", message);
         },
@@ -39,6 +40,7 @@ export const MuscleGroupSection: React.FC = () => {
 
     useEffect(() => {
         muscleGroupsFetch.execute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmit = async (name: string) => {
@@ -61,9 +63,10 @@ export const MuscleGroupSection: React.FC = () => {
                 showToast("success", "Grupo muscular creado correctamente");
             }
             await muscleGroupsFetch.execute();
-        } catch (error: any) {
+        } catch (error: unknown) {
             const message =
-                error?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message ||
                 "Error al guardar el grupo muscular";
             showToast("error", message);
         }

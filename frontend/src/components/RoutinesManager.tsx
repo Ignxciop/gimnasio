@@ -47,9 +47,10 @@ export default function RoutinesManager() {
             routinesFetch.execute();
             showToast("success", "Carpeta eliminada exitosamente");
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             const message =
-                error?.response?.data?.message || "Error al eliminar carpeta";
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message || "Error al eliminar carpeta";
             showToast("error", message);
         },
         confirmTitle: "Eliminar Carpeta",
@@ -63,9 +64,10 @@ export default function RoutinesManager() {
             routinesFetch.execute();
             showToast("success", "Rutina eliminada exitosamente");
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             const message =
-                error?.response?.data?.message || "Error al eliminar rutina";
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message || "Error al eliminar rutina";
             showToast("error", message);
         },
         confirmTitle: "Eliminar Rutina",
@@ -75,6 +77,7 @@ export default function RoutinesManager() {
     useEffect(() => {
         foldersFetch.execute();
         routinesFetch.execute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleCreateFolder = () => {

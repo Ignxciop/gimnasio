@@ -24,9 +24,10 @@ export const EquipmentSection: React.FC = () => {
             equipmentFetch.execute();
             showToast("success", "Equipamiento eliminado correctamente");
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             const message =
-                error?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message ||
                 "Error al eliminar el equipamiento";
             showToast("error", message);
         },
@@ -36,6 +37,7 @@ export const EquipmentSection: React.FC = () => {
 
     useEffect(() => {
         equipmentFetch.execute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmit = async (name: string) => {
@@ -55,9 +57,10 @@ export const EquipmentSection: React.FC = () => {
                 showToast("success", "Equipamiento creado correctamente");
             }
             await equipmentFetch.execute();
-        } catch (error: any) {
+        } catch (error: unknown) {
             const message =
-                error?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message ||
                 "Error al guardar el equipamiento";
             showToast("error", message);
         }

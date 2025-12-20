@@ -37,9 +37,10 @@ export const ExerciseSection: React.FC = () => {
             exercisesFetch.execute();
             showToast("success", "Ejercicio eliminado correctamente");
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             const message =
-                error?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message ||
                 "Error al eliminar el ejercicio";
             showToast("error", message);
         },
@@ -51,6 +52,7 @@ export const ExerciseSection: React.FC = () => {
         exercisesFetch.execute();
         equipmentFetch.execute();
         muscleGroupsFetch.execute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmit = async (
@@ -87,9 +89,10 @@ export const ExerciseSection: React.FC = () => {
                 showToast("success", "Ejercicio creado correctamente");
             }
             await exercisesFetch.execute();
-        } catch (error: any) {
+        } catch (error: unknown) {
             const message =
-                error?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message ||
                 "Error al guardar el ejercicio";
             showToast("error", message);
         }
