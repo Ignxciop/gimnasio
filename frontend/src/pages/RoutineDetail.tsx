@@ -36,6 +36,7 @@ export default function RoutineDetail() {
     const navigate = useNavigate();
     const { showToast } = useToast();
     const [routine, setRoutine] = useState<Routine | null>(null);
+    const [activeRoutineId, setActiveRoutineId] = useState<number | null>(null);
     const [draggedExercise, setDraggedExercise] =
         useState<RoutineExercise | null>(null);
 
@@ -55,6 +56,11 @@ export default function RoutineDetail() {
 
                 const data = await routineService.getById(Number(id), token);
                 setRoutine(data);
+
+                const active = await activeRoutineService.getActive(token);
+                if (active && active.routineId === Number(id)) {
+                    setActiveRoutineId(active.id);
+                }
             } catch {
                 showToast("error", "No se pudo cargar la rutina");
                 navigate("/rutinas");
@@ -184,6 +190,11 @@ export default function RoutineDetail() {
         try {
             const token = authService.getToken();
             if (!token || !id) return;
+
+            if (activeRoutineId) {
+                navigate(`/rutinas/${id}/activa/${activeRoutineId}`);
+                return;
+            }
 
             const activeRoutine = await activeRoutineService.create(
                 Number(id),
@@ -349,7 +360,11 @@ export default function RoutineDetail() {
                 <button
                     onClick={handleStartWorkout}
                     className="btn-start-workout"
-                    title="Iniciar entrenamiento"
+                    title={
+                        activeRoutineId
+                            ? "Continuar entrenamiento"
+                            : "Iniciar entrenamiento"
+                    }
                 >
                     <Play size={24} fill="currentColor" />
                 </button>
