@@ -55,12 +55,10 @@ class ExerciseService {
         secondaryMuscleGroupIds = [],
         videoPath = null
     ) {
-        const existingExercise = await prisma.exercise.findUnique({
+        const existingExercise = await prisma.exercise.findFirst({
             where: {
-                name_equipmentId: {
-                    name,
-                    equipmentId,
-                },
+                name,
+                equipmentId,
             },
         });
 
