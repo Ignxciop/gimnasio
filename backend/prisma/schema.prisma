@@ -27,6 +27,7 @@ model User{
   role Role @relation(fields: [roleId], references: [id])
   folders Folder[]
   routines Routine[]
+  activeRoutines ActiveRoutine[]
 }
 
 model Equipment{
@@ -56,6 +57,7 @@ model Exercise{
   muscleGroup MuscleGroup @relation("PrimaryMuscleGroup", fields: [muscleGroupId], references: [id])
   secondaryMuscleGroups ExerciseSecondaryMuscleGroup[]
   routineExercises RoutineExercise[]
+  activeRoutineSets ActiveRoutineSet[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -94,6 +96,7 @@ model Routine{
   folder Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   exercises RoutineExercise[]
+  activeRoutines ActiveRoutine[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -114,4 +117,37 @@ model RoutineExercise{
   updatedAt DateTime @updatedAt
   
   @@unique([routineId, exerciseId])
+}
+
+model ActiveRoutine{
+  id Int @id @default(autoincrement())
+  userId String
+  routineId Int
+  startTime DateTime @default(now())
+  endTime DateTime?
+  status String @default("active")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  routine Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  sets ActiveRoutineSet[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActiveRoutineSet{
+  id Int @id @default(autoincrement())
+  activeRoutineId Int
+  exerciseId Int
+  setNumber Int
+  targetWeight Decimal?
+  targetRepsMin Int
+  targetRepsMax Int
+  actualWeight Decimal?
+  actualReps Int?
+  completed Boolean @default(false)
+  isPR Boolean @default(false)
+  order Int @default(0)
+  activeRoutine ActiveRoutine @relation(fields: [activeRoutineId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
