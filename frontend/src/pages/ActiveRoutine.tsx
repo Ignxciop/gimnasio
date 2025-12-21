@@ -233,6 +233,15 @@ export default function ActiveRoutine() {
     const handleCompleteWorkout = async () => {
         if (!activeRoutine) return;
 
+        const completedSets = activeRoutine.sets.filter((s) => s.completed);
+        if (completedSets.length === 0) {
+            showToast(
+                "error",
+                "Debes completar al menos 1 serie para finalizar"
+            );
+            return;
+        }
+
         const incompleteSets = activeRoutine.sets.filter((s) => !s.completed);
         if (incompleteSets.length > 0) {
             completeModal.openModal();
@@ -403,7 +412,7 @@ export default function ActiveRoutine() {
                                                             )
                                                         }
                                                         disabled={set.completed}
-                                                        placeholder={set.targetRepsMin.toString()}
+                                                        placeholder={set.targetRepsMax.toString()}
                                                     />
                                                 </div>
                                                 <button
