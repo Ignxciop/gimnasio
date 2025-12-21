@@ -344,35 +344,45 @@ export default function ActiveRoutine() {
                                         <span className="set-number">
                                             {set.setNumber}
                                         </span>
-                                        <input
-                                            type="text"
-                                            className="set-input"
-                                            value={set.actualWeight ?? ""}
-                                            onChange={(e) =>
-                                                handleWeightChange(
-                                                    set.id,
-                                                    e.target.value
-                                                )
-                                            }
-                                            disabled={set.completed}
-                                            placeholder={
-                                                set.targetWeight?.toString() ||
-                                                "0"
-                                            }
-                                        />
-                                        <input
-                                            type="number"
-                                            className="set-input"
-                                            value={set.actualReps ?? ""}
-                                            onChange={(e) =>
-                                                handleRepsChange(
-                                                    set.id,
-                                                    e.target.value
-                                                )
-                                            }
-                                            disabled={set.completed}
-                                            placeholder={set.targetRepsMin.toString()}
-                                        />
+                                        <div className="input-wrapper">
+                                            <label className="input-label">
+                                                KG
+                                            </label>
+                                            <input
+                                                type="text"
+                                                className="set-input"
+                                                value={set.actualWeight ?? ""}
+                                                onChange={(e) =>
+                                                    handleWeightChange(
+                                                        set.id,
+                                                        e.target.value
+                                                    )
+                                                }
+                                                disabled={set.completed}
+                                                placeholder={
+                                                    set.targetWeight?.toString() ||
+                                                    "0"
+                                                }
+                                            />
+                                        </div>
+                                        <div className="input-wrapper">
+                                            <label className="input-label">
+                                                REPS
+                                            </label>
+                                            <input
+                                                type="number"
+                                                className="set-input"
+                                                value={set.actualReps ?? ""}
+                                                onChange={(e) =>
+                                                    handleRepsChange(
+                                                        set.id,
+                                                        e.target.value
+                                                    )
+                                                }
+                                                disabled={set.completed}
+                                                placeholder={set.targetRepsMin.toString()}
+                                            />
+                                        </div>
                                         <button
                                             onClick={() =>
                                                 handleCompleteSet(set.id)
