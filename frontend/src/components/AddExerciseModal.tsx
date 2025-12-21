@@ -200,19 +200,28 @@ export default function AddExerciseModal({
                         <div className="form-group">
                             <label>Peso (kg)</label>
                             <Input
-                                type="number"
+                                type="text"
                                 value={formData.weight || ""}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        weight: e.target.value
-                                            ? Number(e.target.value)
-                                            : undefined,
-                                    })
-                                }
-                                min="0"
-                                step="0.5"
-                                placeholder="Ej: 50"
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(
+                                        ",",
+                                        "."
+                                    );
+                                    const numValue =
+                                        value === ""
+                                            ? undefined
+                                            : parseFloat(value);
+                                    if (
+                                        value === "" ||
+                                        (!isNaN(numValue!) && numValue! >= 0)
+                                    ) {
+                                        setFormData({
+                                            ...formData,
+                                            weight: numValue,
+                                        });
+                                    }
+                                }}
+                                placeholder="Ej: 50 o 50,5"
                             />
                         </div>
                     </div>
