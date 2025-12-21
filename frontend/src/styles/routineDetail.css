@@ -204,6 +204,34 @@
     margin: 0.5rem 0;
 }
 
+.btn-start-workout {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 100;
+}
+
+.btn-start-workout:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(220, 20, 60, 0.4);
+}
+
+.btn-start-workout:active {
+    transform: scale(0.95);
+}
+
 @media (max-width: 768px) {
     .routine-detail-container {
         padding: 1rem;

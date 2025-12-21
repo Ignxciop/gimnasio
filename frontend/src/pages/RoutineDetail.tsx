@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, GripVertical, Trash2, Edit } from "lucide-react";
+import { ArrowLeft, Plus, GripVertical, Trash2, Edit, Play } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
 import { routineService } from "../services/routineService";
 import { routineExerciseService } from "../services/routineExerciseService";
+import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import "../styles/routineDetail.css";
 import type { Routine } from "../types/routine";
@@ -171,6 +172,27 @@ export default function RoutineDetail() {
         setDraggedExercise(null);
     };
 
+    const handleStartWorkout = async () => {
+        try {
+            const token = authService.getToken();
+            if (!token || !id) return;
+
+            const activeRoutine = await activeRoutineService.create(
+                Number(id),
+                token
+            );
+            showToast("success", "Entrenamiento iniciado");
+            navigate(`/rutinas/${id}/activa/${activeRoutine.id}`);
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al iniciar entrenamiento"
+            );
+        }
+    };
+
     if (!routine) {
         return (
             <MainLayout>
@@ -306,6 +328,16 @@ export default function RoutineDetail() {
                                 </div>
                             </div>
                         ))
+
+            {exercisesFetch.data && exercisesFetch.data.length > 0 && (
+                <button
+                    onClick={handleStartWorkout}
+                    className="btn-start-workout"
+                    title="Iniciar entrenamiento"
+                >
+                    <Play size={24} fill="currentColor" />
+                </button>
+            )}
                     ) : (
                         <div className="empty-state">
                             <p>No hay ejercicios en esta rutina</p>
