@@ -98,6 +98,25 @@ class ActiveRoutineController {
             next(error);
         }
     }
+
+    async cancel(req, res, next) {
+        try {
+            const activeRoutineId = parseInt(req.params.id);
+            const userId = req.user.userId;
+
+            const result = await activeRoutineService.cancel(
+                activeRoutineId,
+                userId
+            );
+
+            res.status(200).json({
+                success: true,
+                message: result.message,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new ActiveRoutineController();

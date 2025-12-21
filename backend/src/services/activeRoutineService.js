@@ -235,6 +235,32 @@ class ActiveRoutineService {
 
         return completed;
     }
+
+    async cancel(activeRoutineId, userId) {
+        const activeRoutine = await prisma.activeRoutine.findFirst({
+            where: {
+                id: activeRoutineId,
+                userId,
+                status: "active",
+            },
+        });
+
+        if (!activeRoutine) {
+            const error = new Error("Rutina activa no encontrada");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        await prisma.activeRoutineSet.deleteMany({
+            where: { activeRoutineId },
+        });
+
+        await prisma.activeRoutine.delete({
+            where: { id: activeRoutineId },
+        });
+
+        return { success: true, message: "Rutina cancelada" };
+    }
 }
 
 export default new ActiveRoutineService();

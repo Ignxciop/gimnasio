@@ -138,4 +138,21 @@ export const activeRoutineService = {
             throw new Error(error.message || "Error al completar rutina");
         }
     },
+
+    async cancel(activeRoutineId: number, token: string): Promise<void> {
+        const response = await fetch(
+            `${API_URL}/active-routines/${activeRoutineId}/cancel`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al cancelar rutina");
+        }
+    },
 };

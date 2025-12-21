@@ -420,7 +420,26 @@ export default function ActiveRoutine() {
                 <ConfirmDialog
                     isOpen={cancelModal.isOpen}
                     onClose={cancelModal.closeModal}
-                    onConfirm={() => navigate(`/rutinas/${routineId}`)}
+                    onConfirm={async () => {
+                        try {
+                            const token = authService.getToken();
+                            if (!token || !activeRoutine) return;
+
+                            await activeRoutineService.cancel(
+                                activeRoutine.id,
+                                token
+                            );
+                            showToast("success", "Rutina cancelada");
+                            navigate(`/rutinas/${routineId}`);
+                        } catch (error) {
+                            showToast(
+                                "error",
+                                error instanceof Error
+                                    ? error.message
+                                    : "Error al cancelar rutina"
+                            );
+                        }
+                    }}
                     title="Cancelar rutina"
                     message="¿Seguro que deseas cancelar esta rutina? Se perderá todo el progreso."
                     confirmText="Sí, cancelar"

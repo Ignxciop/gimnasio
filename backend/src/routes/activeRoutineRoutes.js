@@ -52,4 +52,6 @@ router.put(
 
 router.post("/:id/complete", authenticate, activeRoutineController.complete);
 
+router.delete("/:id/cancel", authenticate, activeRoutineController.cancel);
+
 export default router;
