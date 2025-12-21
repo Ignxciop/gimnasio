@@ -113,9 +113,9 @@
 }
 
 .exercise-video-container {
-    width: 100%;
-    margin-bottom: 1.5rem;
-    border-radius: 16px;
+    max-width: 350px;
+    margin: 0 auto 1rem;
+    border-radius: 12px;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.3);
 }
