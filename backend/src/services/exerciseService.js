@@ -56,11 +56,18 @@ class ExerciseService {
         videoPath = null
     ) {
         const existingExercise = await prisma.exercise.findUnique({
-            where: { name },
+            where: {
+                name_equipmentId: {
+                    name,
+                    equipmentId,
+                },
+            },
         });
 
         if (existingExercise) {
-            const error = new Error("Ya existe un ejercicio con ese nombre");
+            const error = new Error(
+                "Ya existe un ejercicio con ese nombre y equipamiento"
+            );
             error.statusCode = 400;
             throw error;
         }
@@ -132,12 +139,15 @@ class ExerciseService {
         const nameExists = await prisma.exercise.findFirst({
             where: {
                 name,
+                equipmentId,
                 NOT: { id },
             },
         });
 
         if (nameExists) {
-            const error = new Error("Ya existe un ejercicio con ese nombre");
+            const error = new Error(
+                "Ya existe un ejercicio con ese nombre y equipamiento"
+            );
             error.statusCode = 400;
             throw error;
         }
