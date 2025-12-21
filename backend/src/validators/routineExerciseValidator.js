@@ -10,9 +10,24 @@ export const createRoutineExerciseValidation = [
     body("sets")
         .isInt({ min: 1, max: 100 })
         .withMessage("Las series deben ser un número entre 1 y 100"),
-    body("reps")
+    body("repsMin")
         .isInt({ min: 1, max: 1000 })
-        .withMessage("Las repeticiones deben ser un número entre 1 y 1000"),
+        .withMessage(
+            "Las repeticiones mínimas deben ser un número entre 1 y 1000"
+        ),
+    body("repsMax")
+        .isInt({ min: 1, max: 1000 })
+        .withMessage(
+            "Las repeticiones máximas deben ser un número entre 1 y 1000"
+        )
+        .custom((value, { req }) => {
+            if (value < req.body.repsMin) {
+                throw new Error(
+                    "Las repeticiones máximas deben ser mayores o iguales a las mínimas"
+                );
+            }
+            return true;
+        }),
     body("weight")
         .optional()
         .isFloat({ min: 0 })
@@ -31,9 +46,24 @@ export const updateRoutineExerciseValidation = [
     body("sets")
         .isInt({ min: 1, max: 100 })
         .withMessage("Las series deben ser un número entre 1 y 100"),
-    body("reps")
+    body("repsMin")
         .isInt({ min: 1, max: 1000 })
-        .withMessage("Las repeticiones deben ser un número entre 1 y 1000"),
+        .withMessage(
+            "Las repeticiones mínimas deben ser un número entre 1 y 1000"
+        ),
+    body("repsMax")
+        .isInt({ min: 1, max: 1000 })
+        .withMessage(
+            "Las repeticiones máximas deben ser un número entre 1 y 1000"
+        )
+        .custom((value, { req }) => {
+            if (value < req.body.repsMin) {
+                throw new Error(
+                    "Las repeticiones máximas deben ser mayores o iguales a las mínimas"
+                );
+            }
+            return true;
+        }),
     body("weight")
         .optional()
         .isFloat({ min: 0 })
