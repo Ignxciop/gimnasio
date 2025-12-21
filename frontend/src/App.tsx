@@ -8,6 +8,7 @@ import { Admin } from "./pages/Admin";
 import { Gestion } from "./pages/Gestion";
 import Rutinas from "./pages/Rutinas";
 import RoutineDetail from "./pages/RoutineDetail";
+import ActiveRoutine from "./pages/ActiveRoutine";
 import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
 
@@ -117,6 +118,17 @@ function App() {
                         element={
                             isAuthenticated ? (
                                 <RoutineDetail />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/rutinas/:routineId/activa/:activeId"
+                        element={
+                            isAuthenticated ? (
+                                <ActiveRoutine />
                             ) : (
                                 <Navigate to="/login" replace />
                             )
