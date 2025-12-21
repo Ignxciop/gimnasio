@@ -289,92 +289,101 @@ export default function ActiveRoutine() {
                 </div>
 
                 <div className="sets-list">
-                    {activeRoutine.sets.map((set) => (
-                        <div
-                            key={set.id}
-                            className={`set-card ${
-                                set.completed ? "completed" : ""
-                            } ${set.isPR ? "pr" : ""}`}
-                            draggable
-                            onDragStart={() => handleDragStart(set)}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(e, set)}
-                        >
-                            <div className="set-card-content">
-                                <GripVertical
-                                    size={20}
-                                    className="drag-handle"
-                                />
-                                {set.exercise.videoPath && (
-                                    <div className="set-thumbnail">
+                    {Object.entries(
+                        activeRoutine.sets.reduce((acc, set) => {
+                            const exerciseId = set.exerciseId;
+                            if (!acc[exerciseId]) {
+                                acc[exerciseId] = {
+                                    exercise: set.exercise,
+                                    sets: [],
+                                };
+                            }
+                            acc[exerciseId].sets.push(set);
+                            return acc;
+                        }, {} as Record<number, { exercise: (typeof activeRoutine.sets)[0]["exercise"]; sets: typeof activeRoutine.sets }>)
+                    ).map(([exerciseId, { exercise, sets }]) => (
+                        <div key={exerciseId} className="exercise-group">
+                            <div className="exercise-group-header">
+                                {exercise.videoPath && (
+                                    <div className="exercise-thumbnail">
                                         <video
                                             src={
                                                 getVideoUrl(
-                                                    set.exercise.videoPath
+                                                    exercise.videoPath
                                                 ) || ""
                                             }
-                                            className="set-thumbnail-video"
+                                            className="exercise-thumbnail-video"
                                         />
                                     </div>
                                 )}
-                                <div className="set-info">
-                                    <h3>{set.exercise.name}</h3>
-                                    <div className="set-details">
-                                        <span className="set-number">
-                                            Serie {set.setNumber}
-                                        </span>
-                                        <span className="set-target">
-                                            Target:{" "}
-                                            {set.targetRepsMin ===
-                                            set.targetRepsMax
-                                                ? `${set.targetRepsMin} reps`
-                                                : `${set.targetRepsMin}-${set.targetRepsMax} reps`}
-                                            {set.targetWeight &&
-                                                ` @ ${set.targetWeight} kg`}
-                                        </span>
+                                <div className="exercise-info">
+                                    <h3>{exercise.name}</h3>
+                                    <div className="exercise-meta">
+                                        <span>{exercise.muscleGroup.name}</span>
+                                        <span>•</span>
+                                        <span>{exercise.equipment.name}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="set-inputs">
-                                <div className="input-group">
-                                    <label>Peso (kg)</label>
-                                    <input
-                                        type="text"
-                                        value={set.actualWeight ?? ""}
-                                        onChange={(e) =>
-                                            handleWeightChange(
-                                                set.id,
-                                                e.target.value
-                                            )
-                                        }
-                                        disabled={set.completed}
-                                        placeholder={
-                                            set.targetWeight?.toString() || "0"
-                                        }
-                                    />
-                                </div>
-                                <div className="input-group">
-                                    <label>Reps</label>
-                                    <input
-                                        type="number"
-                                        value={set.actualReps ?? ""}
-                                        onChange={(e) =>
-                                            handleRepsChange(
-                                                set.id,
-                                                e.target.value
-                                            )
-                                        }
-                                        disabled={set.completed}
-                                        placeholder={set.targetRepsMin.toString()}
-                                    />
-                                </div>
-                                <button
-                                    onClick={() => handleCompleteSet(set.id)}
-                                    className="btn-complete-set"
-                                    disabled={set.completed}
-                                >
-                                    <Check size={20} />
-                                </button>
+                            <div className="sets-group">
+                                {sets.map((set) => (
+                                    <div
+                                        key={set.id}
+                                        className={`set-card ${
+                                            set.completed ? "completed" : ""
+                                        } ${set.isPR ? "pr" : ""}`}
+                                        draggable
+                                        onDragStart={() => handleDragStart(set)}
+                                        onDragOver={handleDragOver}
+                                        onDrop={(e) => handleDrop(e, set)}
+                                    >
+                                        <GripVertical
+                                            size={16}
+                                            className="drag-handle"
+                                        />
+                                        <span className="set-number">
+                                            {set.setNumber}
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="set-input"
+                                            value={set.actualWeight ?? ""}
+                                            onChange={(e) =>
+                                                handleWeightChange(
+                                                    set.id,
+                                                    e.target.value
+                                                )
+                                            }
+                                            disabled={set.completed}
+                                            placeholder={
+                                                set.targetWeight?.toString() ||
+                                                "0"
+                                            }
+                                        />
+                                        <input
+                                            type="number"
+                                            className="set-input"
+                                            value={set.actualReps ?? ""}
+                                            onChange={(e) =>
+                                                handleRepsChange(
+                                                    set.id,
+                                                    e.target.value
+                                                )
+                                            }
+                                            disabled={set.completed}
+                                            placeholder={set.targetRepsMin.toString()}
+                                        />
+                                        <button
+                                            onClick={() =>
+                                                handleCompleteSet(set.id)
+                                            }
+                                            className="btn-complete-set"
+                                            disabled={set.completed}
+                                        >
+                                            <Check size={18} />
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     ))}
