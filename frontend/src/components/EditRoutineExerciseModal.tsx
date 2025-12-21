@@ -28,7 +28,8 @@ export default function EditRoutineExerciseModal({
 }: EditRoutineExerciseModalProps) {
     const [formData, setFormData] = useState({
         sets: 3,
-        reps: 10,
+        repsMin: 6,
+        repsMax: 10,
         weight: undefined as number | undefined,
         restTime: 60,
     });
@@ -37,7 +38,8 @@ export default function EditRoutineExerciseModal({
         if (isOpen && routineExercise) {
             setFormData({
                 sets: routineExercise.sets,
-                reps: routineExercise.reps,
+                repsMin: routineExercise.repsMin,
+                repsMax: routineExercise.repsMax,
                 weight: routineExercise.weight || undefined,
                 restTime: routineExercise.restTime,
             });
@@ -108,26 +110,48 @@ export default function EditRoutineExerciseModal({
 
                         <div className="form-group">
                             <label>
-                                Repeticiones <span className="required">*</span>
+                                Repeticiones Mínimas{" "}
+                                <span className="required">*</span>
                             </label>
                             <Input
                                 type="number"
-                                value={formData.reps}
+                                value={formData.repsMin}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        reps: Number(e.target.value),
+                                        repsMin: Number(e.target.value),
                                     })
                                 }
                                 min="1"
                                 max="1000"
-                                placeholder="Ej: 10"
+                                placeholder="Ej: 6"
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="form-row">
+                        <div className="form-group">
+                            <label>
+                                Repeticiones Máximas{" "}
+                                <span className="required">*</span>
+                            </label>
+                            <Input
+                                type="number"
+                                value={formData.repsMax}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        repsMax: Number(e.target.value),
+                                    })
+                                }
+                                min="1"
+                                max="1000"
+                                placeholder="Ej: 8"
+                                required
+                            />
+                        </div>
+
                         <div className="form-group">
                             <label>Peso (kg)</label>
                             <Input
@@ -146,7 +170,9 @@ export default function EditRoutineExerciseModal({
                                 placeholder="Ej: 50"
                             />
                         </div>
+                    </div>
 
+                    <div className="form-row">
                         <div className="form-group">
                             <label>
                                 Descanso (segundos){" "}
