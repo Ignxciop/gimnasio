@@ -1,5 +1,3 @@
-import api from "./api";
-
 interface ActiveRoutineSet {
     id: number;
     exerciseId: number;
@@ -42,21 +40,42 @@ interface ActiveRoutine {
     sets: ActiveRoutineSet[];
 }
 
+const API_URL = "http://localhost:3000/api";
+
 export const activeRoutineService = {
     async getActive(token: string): Promise<ActiveRoutine | null> {
-        const response = await api.get("/active-routines/active", {
-            headers: { Authorization: `Bearer ${token}` },
+        const response = await fetch(`${API_URL}/active-routines/active`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
-        return response.data.data;
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al obtener rutina activa");
+        }
+
+        const data = await response.json();
+        return data.data;
     },
 
     async create(routineId: number, token: string): Promise<ActiveRoutine> {
-        const response = await api.post(
-            "/active-routines",
-            { routineId },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        return response.data.data;
+        const response = await fetch(`${API_URL}/active-routines`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ routineId }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al crear rutina activa");
+        }
+
+        const data = await response.json();
+        return data.data;
     },
 
     async updateSet(
@@ -65,27 +84,58 @@ export const activeRoutineService = {
         actualReps: number | null,
         token: string
     ): Promise<ActiveRoutineSet> {
-        const response = await api.put(
-            `/active-routines/sets/${setId}`,
-            { actualWeight, actualReps },
-            { headers: { Authorization: `Bearer ${token}` } }
+        const response = await fetch(
+            `${API_URL}/active-routines/sets/${setId}`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ actualWeight, actualReps }),
+            }
         );
-        return response.data.data;
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al actualizar serie");
+        }
+
+        const data = await response.json();
+        return data.data;
     },
 
     async reorderSets(setIds: number[], token: string): Promise<void> {
-        await api.put(
-            "/active-routines/reorder",
-            { setIds },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const response = await fetch(`${API_URL}/active-routines/reorder`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ setIds }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al reordenar series");
+        }
     },
 
     async complete(activeRoutineId: number, token: string): Promise<void> {
-        await api.post(
-            `/active-routines/${activeRoutineId}/complete`,
-            {},
-            { headers: { Authorization: `Bearer ${token}` } }
+        const response = await fetch(
+            `${API_URL}/active-routines/${activeRoutineId}/complete`,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
         );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al completar rutina");
+        }
     },
 };
