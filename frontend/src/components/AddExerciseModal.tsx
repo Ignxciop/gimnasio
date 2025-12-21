@@ -33,6 +33,7 @@ export default function AddExerciseModal({
         weight: undefined,
         restTime: 0,
     });
+    const [weightInput, setWeightInput] = useState<string>("");
     const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
         null
     );
@@ -52,6 +53,7 @@ export default function AddExerciseModal({
                 weight: undefined,
                 restTime: 0,
             });
+            setWeightInput("");
             setSelectedExercise(null);
         }
     }, [isOpen]);
@@ -63,7 +65,11 @@ export default function AddExerciseModal({
             return;
         }
 
-        onSubmit(formData);
+        const weight =
+            weightInput === ""
+                ? undefined
+                : parseFloat(weightInput.replace(",", "."));
+        onSubmit({ ...formData, weight });
     };
 
     if (!isOpen) return null;
@@ -201,24 +207,14 @@ export default function AddExerciseModal({
                             <label>Peso (kg)</label>
                             <Input
                                 type="text"
-                                value={formData.weight || ""}
+                                value={weightInput}
                                 onChange={(e) => {
-                                    const value = e.target.value.replace(
-                                        ",",
-                                        "."
-                                    );
-                                    const numValue =
-                                        value === ""
-                                            ? undefined
-                                            : parseFloat(value);
+                                    const value = e.target.value;
                                     if (
                                         value === "" ||
-                                        (!isNaN(numValue!) && numValue! >= 0)
+                                        /^\d*[,.]?\d*$/.test(value)
                                     ) {
-                                        setFormData({
-                                            ...formData,
-                                            weight: numValue,
-                                        });
+                                        setWeightInput(value);
                                     }
                                 }}
                                 placeholder="Ej: 50 o 50,5"
