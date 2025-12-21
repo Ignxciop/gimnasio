@@ -48,7 +48,7 @@ model MuscleGroup{
 
 model Exercise{
   id Int @id @default(autoincrement())
-  name String @unique
+  name String
   equipmentId Int
   muscleGroupId Int
   videoPath String?
@@ -58,6 +58,8 @@ model Exercise{
   routineExercises RoutineExercise[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  @@unique([name, equipmentId])
 }
 
 model ExerciseSecondaryMuscleGroup{
