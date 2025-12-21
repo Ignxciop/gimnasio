@@ -28,7 +28,8 @@ export default function AddExerciseModal({
     const [formData, setFormData] = useState<RoutineExerciseFormData>({
         exerciseId: 0,
         sets: 0,
-        reps: 0,
+        repsMin: 0,
+        repsMax: 0,
         weight: undefined,
         restTime: 0,
     });
@@ -46,7 +47,8 @@ export default function AddExerciseModal({
             setFormData({
                 exerciseId: 0,
                 sets: 0,
-                reps: 0,
+                repsMin: 0,
+                repsMax: 0,
                 weight: undefined,
                 restTime: 0,
             });
@@ -149,28 +151,52 @@ export default function AddExerciseModal({
 
                         <div className="form-group">
                             <label>
-                                Repeticiones <span className="required">*</span>
+                                Repeticiones Mínimas{" "}
+                                <span className="required">*</span>
                             </label>
                             <Input
                                 type="number"
-                                value={formData.reps || ""}
+                                value={formData.repsMin || ""}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        reps: e.target.value
+                                        repsMin: e.target.value
                                             ? Number(e.target.value)
                                             : 0,
                                     })
                                 }
                                 min="1"
                                 max="1000"
-                                placeholder="Ej: 10"
+                                placeholder="Ej: 6"
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="form-row">
+                        <div className="form-group">
+                            <label>
+                                Repeticiones Máximas{" "}
+                                <span className="required">*</span>
+                            </label>
+                            <Input
+                                type="number"
+                                value={formData.repsMax || ""}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        repsMax: e.target.value
+                                            ? Number(e.target.value)
+                                            : 0,
+                                    })
+                                }
+                                min="1"
+                                max="1000"
+                                placeholder="Ej: 8"
+                                required
+                            />
+                        </div>
+
                         <div className="form-group">
                             <label>Peso (kg)</label>
                             <Input
@@ -189,7 +215,9 @@ export default function AddExerciseModal({
                                 placeholder="Ej: 50"
                             />
                         </div>
+                    </div>
 
+                    <div className="form-row">
                         <div className="form-group">
                             <label>
                                 Descanso (segundos){" "}
