@@ -266,4 +266,11 @@
         width: 100%;
         justify-content: flex-end;
     }
+
+    .btn-start-workout {
+        bottom: 5.5rem;
+        right: 1.5rem;
+        width: 56px;
+        height: 56px;
+    }
 }

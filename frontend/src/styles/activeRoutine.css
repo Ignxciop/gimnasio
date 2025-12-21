@@ -210,6 +210,7 @@
 @media (max-width: 768px) {
     .active-routine-container {
         padding: 1rem;
+        padding-bottom: 6rem;
     }
 
     .active-routine-header {
@@ -225,6 +226,12 @@
     .btn-complete-workout {
         width: 100%;
         justify-content: center;
+        position: fixed;
+        bottom: 4.5rem;
+        left: 1rem;
+        right: 1rem;
+        width: calc(100% - 2rem);
+        z-index: 100;
     }
 
     .set-card-content {
