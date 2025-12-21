@@ -10,12 +10,11 @@ export const createActiveRoutineValidation = [
 
 export const updateSetValidation = [
     body("actualWeight")
-        .optional()
+        .optional({ values: "null" })
         .isFloat({ min: 0, max: 1000 })
         .withMessage("El peso debe estar entre 0 y 1000 kg"),
     body("actualReps")
-        .notEmpty()
-        .withMessage("Las repeticiones son requeridas")
+        .optional({ values: "null" })
         .isInt({ min: 1, max: 1000 })
         .withMessage("Las repeticiones deben estar entre 1 y 1000"),
 ];
