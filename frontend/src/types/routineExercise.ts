@@ -5,7 +5,8 @@ export interface RoutineExercise {
     routineId: number;
     exerciseId: number;
     sets: number;
-    reps: number;
+    repsMin: number;
+    repsMax: number;
     weight: number | null;
     restTime: number;
     order: number;
@@ -17,7 +18,8 @@ export interface RoutineExercise {
 export interface RoutineExerciseFormData {
     exerciseId: number;
     sets: number;
-    reps: number;
+    repsMin: number;
+    repsMax: number;
     weight?: number;
     restTime: number;
 }
