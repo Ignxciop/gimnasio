@@ -28,7 +28,16 @@ class RoutineExerciseService {
         return routineExercises;
     }
 
-    async create(routineId, exerciseId, sets, reps, weight, restTime, userId) {
+    async create(
+        routineId,
+        exerciseId,
+        sets,
+        repsMin,
+        repsMax,
+        weight,
+        restTime,
+        userId
+    ) {
         const routine = await prisma.routine.findFirst({
             where: { id: routineId, userId },
         });
@@ -75,7 +84,8 @@ class RoutineExerciseService {
                 routineId,
                 exerciseId,
                 sets,
-                reps,
+                repsMin,
+                repsMax,
                 weight,
                 restTime,
                 order: maxOrder ? maxOrder.order + 1 : 0,
@@ -93,7 +103,7 @@ class RoutineExerciseService {
         return routineExercise;
     }
 
-    async update(id, sets, reps, weight, restTime, userId) {
+    async update(id, sets, repsMin, repsMax, weight, restTime, userId) {
         const existing = await prisma.routineExercise.findFirst({
             where: {
                 id,
@@ -111,7 +121,8 @@ class RoutineExerciseService {
             where: { id },
             data: {
                 sets,
-                reps,
+                repsMin,
+                repsMax,
                 weight,
                 restTime,
             },
