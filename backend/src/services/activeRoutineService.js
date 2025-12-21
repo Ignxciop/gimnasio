@@ -52,6 +52,29 @@ class ActiveRoutineService {
             throw error;
         }
 
+        const exerciseIds = routine.exercises.map((ex) => ex.exerciseId);
+        const historicalMaxWeights = await prisma.activeRoutineSet.groupBy({
+            by: ["exerciseId"],
+            where: {
+                exerciseId: { in: exerciseIds },
+                completed: true,
+                activeRoutine: {
+                    userId,
+                    status: "completed",
+                },
+            },
+            _max: {
+                actualWeight: true,
+            },
+        });
+
+        const maxWeightMap = Object.fromEntries(
+            historicalMaxWeights.map((item) => [
+                item.exerciseId,
+                item._max.actualWeight,
+            ])
+        );
+
         const activeRoutine = await prisma.activeRoutine.create({
             data: {
                 userId,
@@ -59,11 +82,14 @@ class ActiveRoutineService {
                 sets: {
                     create: routine.exercises.flatMap((routineEx) => {
                         const sets = [];
+                        const maxHistorical =
+                            maxWeightMap[routineEx.exerciseId];
+                        const targetWeight = maxHistorical || routineEx.weight;
                         for (let i = 0; i < routineEx.sets; i++) {
                             sets.push({
                                 exerciseId: routineEx.exerciseId,
                                 setNumber: i + 1,
-                                targetWeight: routineEx.weight,
+                                targetWeight,
                                 targetRepsMin: routineEx.repsMin,
                                 targetRepsMax: routineEx.repsMax,
                                 order: routineEx.order * 100 + i,
@@ -109,18 +135,21 @@ class ActiveRoutineService {
             throw error;
         }
 
+        const finalWeight = actualWeight ?? set.targetWeight ?? 0;
+        const finalReps = actualReps ?? set.targetRepsMax;
+
         const isPR = await this.checkIfPR(
             set.exerciseId,
-            actualWeight,
-            actualReps,
+            finalWeight,
+            finalReps,
             userId
         );
 
         const updatedSet = await prisma.activeRoutineSet.update({
             where: { id: setId },
             data: {
-                actualWeight,
-                actualReps,
+                actualWeight: finalWeight,
+                actualReps: finalReps,
                 completed: true,
                 isPR,
             },
