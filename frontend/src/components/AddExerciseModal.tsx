@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 import { useFetch } from "../hooks/useFetch";
 import { exerciseService } from "../services/exerciseService";
-import { Select } from "./ui/Select";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import type { RoutineExerciseFormData } from "../types/routineExercise";
@@ -37,6 +36,7 @@ export default function AddExerciseModal({
     const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
         null
     );
+    const [searchTerm, setSearchTerm] = useState("");
 
     const exercisesFetch = useFetch<Exercise[]>({
         fetchFn: exerciseService.getAll,
@@ -55,6 +55,7 @@ export default function AddExerciseModal({
             });
             setWeightInput("");
             setSelectedExercise(null);
+            setSearchTerm("");
         }
     }, [isOpen]);
 
@@ -74,11 +75,10 @@ export default function AddExerciseModal({
 
     if (!isOpen) return null;
 
-    const exerciseOptions =
-        exercisesFetch.data?.map((ex) => ({
-            value: ex.id,
-            label: ex.name,
-        })) || [];
+    const filteredExercises =
+        exercisesFetch.data?.filter((ex) =>
+            ex.name.toLowerCase().includes(searchTerm.toLowerCase())
+        ) || [];
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -113,23 +113,67 @@ export default function AddExerciseModal({
                         <label>
                             Ejercicio <span className="required">*</span>
                         </label>
-                        <Select
-                            value={formData.exerciseId}
-                            onChange={(value) => {
-                                const exerciseId = Number(value);
-                                const exercise = exercisesFetch.data?.find(
-                                    (ex) => ex.id === exerciseId
-                                );
-                                setFormData({
-                                    ...formData,
-                                    exerciseId,
-                                });
-                                setSelectedExercise(exercise || null);
-                            }}
-                            options={exerciseOptions}
-                            placeholder="Selecciona un ejercicio"
-                            searchable
-                        />
+                        <div className="exercise-search">
+                            <div className="search-input-wrapper">
+                                <Search size={18} className="search-icon" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar ejercicio..."
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                    className="search-input"
+                                />
+                            </div>
+                            <div className="exercise-list">
+                                {filteredExercises.length > 0 ? (
+                                    filteredExercises.map((exercise) => (
+                                        <div
+                                            key={exercise.id}
+                                            className={`exercise-list-item ${
+                                                formData.exerciseId ===
+                                                exercise.id
+                                                    ? "selected"
+                                                    : ""
+                                            }`}
+                                            onClick={() => {
+                                                setFormData({
+                                                    ...formData,
+                                                    exerciseId: exercise.id,
+                                                });
+                                                setSelectedExercise(exercise);
+                                            }}
+                                        >
+                                            {exercise.videoPath && (
+                                                <div className="exercise-list-thumbnail">
+                                                    <video
+                                                        src={
+                                                            getVideoUrl(
+                                                                exercise.videoPath
+                                                            ) || ""
+                                                        }
+                                                        className="exercise-list-video"
+                                                    />
+                                                </div>
+                                            )}
+                                            <div className="exercise-list-info">
+                                                <span className="exercise-list-name">
+                                                    {exercise.name}
+                                                </span>
+                                                <span className="exercise-list-equipment">
+                                                    {exercise.equipment?.name}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="exercise-list-empty">
+                                        No se encontraron ejercicios
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="form-row">
