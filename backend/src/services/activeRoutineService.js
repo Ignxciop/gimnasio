@@ -57,7 +57,7 @@ class ActiveRoutineService {
                 userId,
                 routineId,
                 sets: {
-                    create: routine.exercises.flatMap((routineEx, exIndex) => {
+                    create: routine.exercises.flatMap((routineEx) => {
                         const sets = [];
                         for (let i = 0; i < routineEx.sets; i++) {
                             sets.push({
@@ -66,7 +66,7 @@ class ActiveRoutineService {
                                 targetWeight: routineEx.weight,
                                 targetRepsMin: routineEx.repsMin,
                                 targetRepsMax: routineEx.repsMax,
-                                order: exIndex * 100 + i,
+                                order: routineEx.order * 100 + i,
                             });
                         }
                         return sets;
