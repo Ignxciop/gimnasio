@@ -8,6 +8,7 @@
     flex: 1;
     padding: var(--spacing-2xl);
     background-color: var(--color-bg-primary);
+    padding-bottom: calc(var(--spacing-2xl) + 5rem);
 }
 
 @media (max-width: 768px) {
@@ -21,6 +22,6 @@
 
     .main-layout__content {
         padding: var(--spacing-lg);
-        padding-bottom: 5rem;
+        padding-bottom: calc(var(--spacing-lg) + 5rem);
     }
 }
