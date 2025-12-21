@@ -250,7 +250,10 @@ export default function RoutineDetail() {
                                                 {routineExercise.sets} series
                                             </span>
                                             <span className="detail-badge">
-                                                {routineExercise.reps} reps
+                                                {routineExercise.repsMin ===
+                                                routineExercise.repsMax
+                                                    ? `${routineExercise.repsMin} reps`
+                                                    : `${routineExercise.repsMin}-${routineExercise.repsMax} reps`}
                                             </span>
                                             {routineExercise.weight && (
                                                 <span className="detail-badge">
