@@ -20,14 +20,16 @@ class RoutineExerciseController {
     async create(req, res, next) {
         try {
             const routineId = parseInt(req.params.routineId);
-            const { exerciseId, sets, reps, weight, restTime } = req.body;
+            const { exerciseId, sets, repsMin, repsMax, weight, restTime } =
+                req.body;
             const userId = req.user.userId;
 
             const routineExercise = await routineExerciseService.create(
                 routineId,
                 exerciseId,
                 sets,
-                reps,
+                repsMin,
+                repsMax,
                 weight || null,
                 restTime,
                 userId
@@ -46,13 +48,14 @@ class RoutineExerciseController {
     async update(req, res, next) {
         try {
             const id = parseInt(req.params.id);
-            const { sets, reps, weight, restTime } = req.body;
+            const { sets, repsMin, repsMax, weight, restTime } = req.body;
             const userId = req.user.userId;
 
             const routineExercise = await routineExerciseService.update(
                 id,
                 sets,
-                reps,
+                repsMin,
+                repsMax,
                 weight || null,
                 restTime,
                 userId
