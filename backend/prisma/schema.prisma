@@ -101,7 +101,8 @@ model RoutineExercise{
   routineId Int
   exerciseId Int
   sets Int
-  reps Int
+  repsMin Int
+  repsMax Int
   weight Decimal?
   restTime Int
   order Int @default(0)
