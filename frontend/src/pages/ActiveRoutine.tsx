@@ -91,7 +91,7 @@ export default function ActiveRoutine() {
                 }
 
                 setActiveRoutine(data);
-            } catch (error) {
+            } catch {
                 showToast("error", "Error al cargar rutina activa");
                 navigate(`/rutinas/${routineId}`);
             }
@@ -219,7 +219,7 @@ export default function ActiveRoutine() {
             });
 
             showToast("success", "Orden actualizado");
-        } catch (error) {
+        } catch {
             showToast("error", "Error al actualizar orden");
         }
 
