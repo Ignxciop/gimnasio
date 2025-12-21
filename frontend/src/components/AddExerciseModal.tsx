@@ -44,6 +44,7 @@ export default function AddExerciseModal({
 
     useEffect(() => {
         if (isOpen) {
+            document.body.style.overflow = "hidden";
             exercisesFetch.execute();
             setFormData({
                 exerciseId: 0,
@@ -56,7 +57,13 @@ export default function AddExerciseModal({
             setWeightInput("");
             setSelectedExercise(null);
             setSearchTerm("");
+        } else {
+            document.body.style.overflow = "";
         }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
     }, [isOpen]);
 
     const handleSubmit = (e: React.FormEvent) => {

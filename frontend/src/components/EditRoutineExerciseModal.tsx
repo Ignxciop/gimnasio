@@ -36,18 +36,27 @@ export default function EditRoutineExerciseModal({
     const [weightInput, setWeightInput] = useState<string>("");
 
     useEffect(() => {
-        if (isOpen && routineExercise) {
-            setFormData({
-                sets: routineExercise.sets,
-                repsMin: routineExercise.repsMin,
-                repsMax: routineExercise.repsMax,
-                weight: routineExercise.weight || undefined,
-                restTime: routineExercise.restTime,
-            });
-            setWeightInput(
-                routineExercise.weight ? String(routineExercise.weight) : ""
-            );
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+            if (routineExercise) {
+                setFormData({
+                    sets: routineExercise.sets,
+                    repsMin: routineExercise.repsMin,
+                    repsMax: routineExercise.repsMax,
+                    weight: routineExercise.weight || undefined,
+                    restTime: routineExercise.restTime,
+                });
+                setWeightInput(
+                    routineExercise.weight ? String(routineExercise.weight) : ""
+                );
+            }
+        } else {
+            document.body.style.overflow = "";
         }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
     }, [isOpen, routineExercise]);
 
     const handleSubmit = (e: React.FormEvent) => {
