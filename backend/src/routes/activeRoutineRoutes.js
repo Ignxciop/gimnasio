@@ -1,6 +1,6 @@
 import express from "express";
 import activeRoutineController from "../controllers/activeRoutineController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 import { validationResult } from "express-validator";
 import {
     createActiveRoutineValidation,
@@ -24,11 +24,11 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 
-router.get("/active", authMiddleware, activeRoutineController.getActive);
+router.get("/active", authenticate, activeRoutineController.getActive);
 
 router.post(
     "/",
-    authMiddleware,
+    authenticate,
     createActiveRoutineValidation,
     handleValidationErrors,
     activeRoutineController.create
@@ -36,7 +36,7 @@ router.post(
 
 router.put(
     "/sets/:setId",
-    authMiddleware,
+    authenticate,
     updateSetValidation,
     handleValidationErrors,
     activeRoutineController.updateSet
@@ -44,12 +44,12 @@ router.put(
 
 router.put(
     "/reorder",
-    authMiddleware,
+    authenticate,
     reorderSetsValidation,
     handleValidationErrors,
     activeRoutineController.reorderSets
 );
 
-router.post("/:id/complete", authMiddleware, activeRoutineController.complete);
+router.post("/:id/complete", authenticate, activeRoutineController.complete);
 
 export default router;
