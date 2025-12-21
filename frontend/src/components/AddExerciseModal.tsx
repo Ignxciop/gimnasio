@@ -115,7 +115,6 @@ export default function AddExerciseModal({
                         </label>
                         <div className="exercise-search">
                             <div className="search-input-wrapper">
-                                <Search size={18} className="search-icon" />
                                 <input
                                     type="text"
                                     placeholder="Buscar ejercicio..."
@@ -125,6 +124,7 @@ export default function AddExerciseModal({
                                     }
                                     className="search-input"
                                 />
+                                <Search size={18} className="search-icon" />
                             </div>
                             <div className="exercise-list">
                                 {filteredExercises.length > 0 ? (

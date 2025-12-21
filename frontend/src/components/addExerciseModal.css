@@ -14,22 +14,28 @@
 
 .search-icon {
     position: absolute;
-    left: 12px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-secondary);
     pointer-events: none;
+    z-index: 1;
 }
 
 .search-input {
     width: 100%;
-    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    padding: 0.75rem 2.75rem 0.75rem 0.75rem;
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     color: var(--text-primary);
     font-size: 0.9375rem;
     transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
 }
 
 .search-input:focus {
