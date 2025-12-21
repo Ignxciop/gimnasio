@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, GripVertical, Trash2, Edit, Play } from "lucide-react";
+import {
+    ArrowLeft,
+    Plus,
+    GripVertical,
+    Trash2,
+    Edit,
+    Play,
+} from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
@@ -48,7 +55,7 @@ export default function RoutineDetail() {
 
                 const data = await routineService.getById(Number(id), token);
                 setRoutine(data);
-            } catch (error) {
+            } catch {
                 showToast("error", "No se pudo cargar la rutina");
                 navigate("/rutinas");
             }
@@ -56,7 +63,8 @@ export default function RoutineDetail() {
 
         fetchRoutine();
         exercisesFetch.execute();
-    }, [id]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, navigate, showToast]);
 
     const handleAddExercise = async (data: RoutineExerciseFormData) => {
         try {
@@ -165,7 +173,7 @@ export default function RoutineDetail() {
             await routineExerciseService.reorder(updatedExercises, token);
             exercisesFetch.execute();
             showToast("success", "Orden actualizado exitosamente");
-        } catch (error) {
+        } catch {
             showToast("error", "Error al actualizar el orden");
         }
 
@@ -328,6 +336,14 @@ export default function RoutineDetail() {
                                 </div>
                             </div>
                         ))
+                    ) : (
+                        <div className="empty-state">
+                            <p>No hay ejercicios en esta rutina</p>
+                            <p>Comienza agregando ejercicios</p>
+                        </div>
+                    )}
+                </div>
+            </div>
 
             {exercisesFetch.data && exercisesFetch.data.length > 0 && (
                 <button
@@ -338,14 +354,6 @@ export default function RoutineDetail() {
                     <Play size={24} fill="currentColor" />
                 </button>
             )}
-                    ) : (
-                        <div className="empty-state">
-                            <p>No hay ejercicios en esta rutina</p>
-                            <p>Comienza agregando ejercicios</p>
-                        </div>
-                    )}
-                </div>
-            </div>
 
             <AddExerciseModal
                 isOpen={addExerciseModal.isOpen}
