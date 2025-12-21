@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, GripVertical } from "lucide-react";
+import { ArrowLeft, Check, GripVertical, X } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
+import { useModal } from "../hooks/useModal";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import "../styles/activeRoutine.css";
@@ -71,6 +73,8 @@ export default function ActiveRoutine() {
     const { routineId, activeId } = useParams();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const cancelModal = useModal();
+    const completeModal = useModal();
     const [activeRoutine, setActiveRoutine] = useState<ActiveRoutine | null>(
         null
     );
@@ -231,14 +235,15 @@ export default function ActiveRoutine() {
 
         const incompleteSets = activeRoutine.sets.filter((s) => !s.completed);
         if (incompleteSets.length > 0) {
-            if (
-                !confirm(
-                    `Tienes ${incompleteSets.length} series sin completar. ¿Deseas finalizar igualmente?`
-                )
-            ) {
-                return;
-            }
+            completeModal.openModal();
+            return;
         }
+
+        await confirmCompleteWorkout();
+    };
+
+    const confirmCompleteWorkout = async () => {
+        if (!activeRoutine) return;
 
         try {
             const token = authService.getToken();
@@ -269,23 +274,26 @@ export default function ActiveRoutine() {
         <MainLayout>
             <div className="active-routine-container">
                 <div className="active-routine-header">
-                    <button
-                        onClick={() => navigate(`/rutinas/${routineId}`)}
-                        className="btn-back"
-                    >
-                        <ArrowLeft size={20} />
-                        Volver
-                    </button>
+                    <div className="header-buttons">
+                        <button
+                            onClick={() => navigate(`/rutinas/${routineId}`)}
+                            className="btn-back"
+                        >
+                            <ArrowLeft size={18} />
+                            Volver
+                        </button>
+                        <button
+                            onClick={cancelModal.openModal}
+                            className="btn-cancel"
+                        >
+                            <X size={18} />
+                            Cancelar
+                        </button>
+                    </div>
                     <div className="routine-info">
                         <h1>{activeRoutine.routine.name}</h1>
                         <div className="timer">{formatTime(elapsedTime)}</div>
                     </div>
-                    <button
-                        onClick={handleCompleteWorkout}
-                        className="btn-complete-workout"
-                    >
-                        Finalizar
-                    </button>
                 </div>
 
                 <div className="sets-list">
@@ -341,63 +349,97 @@ export default function ActiveRoutine() {
                                             size={16}
                                             className="drag-handle"
                                         />
-                                        <span className="set-number">
-                                            {set.setNumber}
-                                        </span>
-                                        <div className="input-wrapper">
-                                            <label className="input-label">
-                                                KG
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="set-input"
-                                                value={set.actualWeight ?? ""}
-                                                onChange={(e) =>
-                                                    handleWeightChange(
-                                                        set.id,
-                                                        e.target.value
-                                                    )
+                                        <div className="set-content">
+                                            <span className="set-number">
+                                                {set.setNumber}
+                                            </span>
+                                            <div className="input-wrapper">
+                                                <label className="input-label">
+                                                    KG
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="set-input"
+                                                    value={
+                                                        set.actualWeight ?? ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        handleWeightChange(
+                                                            set.id,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    disabled={set.completed}
+                                                    placeholder={
+                                                        set.targetWeight?.toString() ||
+                                                        "0"
+                                                    }
+                                                />
+                                            </div>
+                                            <div className="input-wrapper">
+                                                <label className="input-label">
+                                                    REPS
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    className="set-input"
+                                                    value={set.actualReps ?? ""}
+                                                    onChange={(e) =>
+                                                        handleRepsChange(
+                                                            set.id,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    disabled={set.completed}
+                                                    placeholder={set.targetRepsMin.toString()}
+                                                />
+                                            </div>
+                                            <button
+                                                onClick={() =>
+                                                    handleCompleteSet(set.id)
                                                 }
+                                                className="btn-complete-set"
                                                 disabled={set.completed}
-                                                placeholder={
-                                                    set.targetWeight?.toString() ||
-                                                    "0"
-                                                }
-                                            />
+                                            >
+                                                <Check size={18} />
+                                            </button>
                                         </div>
-                                        <div className="input-wrapper">
-                                            <label className="input-label">
-                                                REPS
-                                            </label>
-                                            <input
-                                                type="number"
-                                                className="set-input"
-                                                value={set.actualReps ?? ""}
-                                                onChange={(e) =>
-                                                    handleRepsChange(
-                                                        set.id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                disabled={set.completed}
-                                                placeholder={set.targetRepsMin.toString()}
-                                            />
-                                        </div>
-                                        <button
-                                            onClick={() =>
-                                                handleCompleteSet(set.id)
-                                            }
-                                            className="btn-complete-set"
-                                            disabled={set.completed}
-                                        >
-                                            <Check size={18} />
-                                        </button>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     ))}
                 </div>
+                <button
+                    onClick={handleCompleteWorkout}
+                    className="btn-complete-workout"
+                >
+                    Finalizar entrenamiento
+                </button>
+
+                <ConfirmDialog
+                    isOpen={cancelModal.isOpen}
+                    onClose={cancelModal.closeModal}
+                    onConfirm={() => navigate(`/rutinas/${routineId}`)}
+                    title="Cancelar rutina"
+                    message="¿Seguro que deseas cancelar esta rutina? Se perderá todo el progreso."
+                    confirmText="Sí, cancelar"
+                    cancelText="No, continuar"
+                    variant="danger"
+                />
+
+                <ConfirmDialog
+                    isOpen={completeModal.isOpen}
+                    onClose={completeModal.closeModal}
+                    onConfirm={confirmCompleteWorkout}
+                    title="Finalizar entrenamiento"
+                    message={`Tienes ${
+                        activeRoutine.sets.filter((s) => !s.completed).length
+                    } series sin completar. ¿Deseas finalizar igualmente?`}
+                    confirmText="Sí, finalizar"
+                    cancelText="Cancelar"
+                    variant="warning"
+                />
             </div>
         </MainLayout>
     );
