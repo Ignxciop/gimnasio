@@ -72,4 +72,16 @@ router.get(
     activeRoutineController.getCompletedByDate
 );
 
+router.get(
+    "/streak/weekly",
+    authenticate,
+    activeRoutineController.getWeeklyStreak
+);
+
+router.get(
+    "/stats/monthly",
+    authenticate,
+    activeRoutineController.getMonthlyStats
+);
+
 export default router;

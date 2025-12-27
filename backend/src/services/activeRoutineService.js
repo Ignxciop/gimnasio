@@ -401,6 +401,164 @@ class ActiveRoutineService {
             sets: ar.sets,
         }));
     }
+
+    async getWeeklyStreak(userId) {
+        const completedRoutines = await prisma.activeRoutine.findMany({
+            where: {
+                userId,
+                status: "completed",
+                endTime: { not: null },
+            },
+            select: {
+                endTime: true,
+            },
+            orderBy: {
+                endTime: "desc",
+            },
+        });
+
+        if (completedRoutines.length === 0) {
+            return { currentStreak: 0 };
+        }
+
+        const getWeekNumber = (date) => {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            const yearStart = new Date(d.getFullYear(), 0, 1);
+            const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+            return `${d.getFullYear()}-W${weekNo}`;
+        };
+
+        const workoutWeeks = new Set();
+        completedRoutines.forEach((routine) => {
+            const weekKey = getWeekNumber(routine.endTime);
+            workoutWeeks.add(weekKey);
+        });
+
+        const sortedWeeks = Array.from(workoutWeeks).sort().reverse();
+
+        const currentWeek = getWeekNumber(new Date());
+
+        let streak = 0;
+        let checkWeek = currentWeek;
+
+        for (const week of sortedWeeks) {
+            if (week === checkWeek) {
+                streak++;
+                const [year, weekNum] = checkWeek.split("-W");
+                const previousWeekNum = parseInt(weekNum) - 1;
+                if (previousWeekNum > 0) {
+                    checkWeek = `${year}-W${previousWeekNum}`;
+                } else {
+                    checkWeek = `${parseInt(year) - 1}-W52`;
+                }
+            } else if (week < checkWeek) {
+                break;
+            }
+        }
+
+        return { currentStreak: streak };
+    }
+
+    async getMonthlyStats(userId, year, month) {
+        const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+        const endDate = new Date(Date.UTC(year, month, 1, 0, 0, 0));
+
+        const currentMonthRoutines = await prisma.activeRoutine.findMany({
+            where: {
+                userId,
+                status: "completed",
+                endTime: {
+                    gte: startDate,
+                    lt: endDate,
+                },
+            },
+            include: {
+                sets: {
+                    where: {
+                        completed: true,
+                    },
+                },
+            },
+        });
+
+        const previousStartDate = new Date(
+            Date.UTC(year, month - 2, 1, 0, 0, 0)
+        );
+        const previousEndDate = startDate;
+
+        const previousMonthRoutines = await prisma.activeRoutine.findMany({
+            where: {
+                userId,
+                status: "completed",
+                endTime: {
+                    gte: previousStartDate,
+                    lt: previousEndDate,
+                },
+            },
+            include: {
+                sets: {
+                    where: {
+                        completed: true,
+                    },
+                },
+            },
+        });
+
+        const calculateStats = (routines) => {
+            let totalWorkouts = routines.length;
+            let totalTime = 0;
+            let totalVolume = 0;
+
+            routines.forEach((routine) => {
+                if (routine.startTime && routine.endTime) {
+                    totalTime +=
+                        (new Date(routine.endTime) -
+                            new Date(routine.startTime)) /
+                        1000;
+                }
+
+                routine.sets.forEach((set) => {
+                    if (set.actualWeight && set.actualReps) {
+                        totalVolume += set.actualWeight * set.actualReps;
+                    }
+                });
+            });
+
+            return {
+                totalWorkouts,
+                totalTime: Math.floor(totalTime),
+                totalVolume: Math.floor(totalVolume),
+            };
+        };
+
+        const currentStats = calculateStats(currentMonthRoutines);
+        const previousStats = calculateStats(previousMonthRoutines);
+
+        const calculateChange = (current, previous) => {
+            if (previous === 0) return current > 0 ? 100 : 0;
+            return Math.round(((current - previous) / previous) * 100);
+        };
+
+        return {
+            current: currentStats,
+            comparison: {
+                workouts: calculateChange(
+                    currentStats.totalWorkouts,
+                    previousStats.totalWorkouts
+                ),
+                time: calculateChange(
+                    currentStats.totalTime,
+                    previousStats.totalTime
+                ),
+                volume: calculateChange(
+                    currentStats.totalVolume,
+                    previousStats.totalVolume
+                ),
+            },
+        };
+    }
 }
 
 export default new ActiveRoutineService();

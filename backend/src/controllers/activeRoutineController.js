@@ -179,6 +179,41 @@ class ActiveRoutineController {
             next(error);
         }
     }
+
+    async getWeeklyStreak(req, res, next) {
+        try {
+            const userId = req.user.userId;
+
+            const streak = await activeRoutineService.getWeeklyStreak(userId);
+
+            res.status(200).json({
+                success: true,
+                data: streak,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getMonthlyStats(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            const { year, month } = req.query;
+
+            const stats = await activeRoutineService.getMonthlyStats(
+                userId,
+                parseInt(year),
+                parseInt(month)
+            );
+
+            res.status(200).json({
+                success: true,
+                data: stats,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new ActiveRoutineController();
