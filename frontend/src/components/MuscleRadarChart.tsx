@@ -42,12 +42,13 @@ export const MuscleRadarChart: React.FC<MuscleRadarChartProps> = ({
                     <PolarAngleAxis
                         dataKey="muscle"
                         tick={{ fill: "#fff", fontSize: 14 }}
+                        className="muscle-radar-chart__label"
                     />
                     <PolarRadiusAxis
                         angle={90}
                         domain={[0, 100]}
-                        tick={{ fill: "#fff", fontSize: 12 }}
-                        stroke="rgba(255, 255, 255, 0.3)"
+                        tick={false}
+                        stroke="rgba(255, 255, 255, 0)"
                     />
                     <Radar
                         name="Desarrollo"

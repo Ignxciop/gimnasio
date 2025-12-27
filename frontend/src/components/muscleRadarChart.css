@@ -5,8 +5,20 @@
     align-items: center;
 }
 
+.muscle-radar-chart__label {
+    font-size: 14px;
+}
+
 @media (max-width: 768px) {
     .muscle-radar-chart {
         padding: 0;
+    }
+
+    .muscle-radar-chart__label {
+        font-size: 11px !important;
+    }
+
+    .muscle-radar-chart text {
+        font-size: 11px !important;
     }
 }
