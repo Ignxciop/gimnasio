@@ -10,6 +10,7 @@ class ProfileService {
                 lastname: true,
                 username: true,
                 email: true,
+                gender: true,
                 isProfilePublic: true,
                 is_active: true,
                 role: {
@@ -38,6 +39,7 @@ class ProfileService {
                 name: true,
                 lastname: true,
                 username: true,
+                gender: true,
                 isProfilePublic: true,
                 role: {
                     select: {

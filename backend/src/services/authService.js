@@ -13,6 +13,7 @@ class AuthService {
                 username: true,
                 email: true,
                 password: true,
+                gender: true,
                 is_active: true,
                 roleId: true,
                 role: {

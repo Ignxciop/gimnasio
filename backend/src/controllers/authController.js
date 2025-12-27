@@ -4,8 +4,15 @@ import authService from "../services/authService.js";
 class AuthController {
     async register(req, res, next) {
         try {
-            const { name, lastname, username, email, password, roleId } =
-                req.body;
+            const {
+                name,
+                lastname,
+                username,
+                email,
+                password,
+                gender,
+                roleId,
+            } = req.body;
 
             const user = await userService.createUser({
                 name,
@@ -13,6 +20,7 @@ class AuthController {
                 username,
                 email,
                 password,
+                gender,
                 roleId: roleId ? parseInt(roleId) : 3,
             });
 

@@ -2,7 +2,15 @@ import bcryptjs from "bcryptjs";
 import { prisma } from "../config/prisma.js";
 
 class UserService {
-    async createUser({ name, lastname, username, email, password, roleId }) {
+    async createUser({
+        name,
+        lastname,
+        username,
+        email,
+        password,
+        gender,
+        roleId,
+    }) {
         const existingEmail = await prisma.user.findUnique({
             where: { email },
         });
@@ -41,6 +49,7 @@ class UserService {
                 username,
                 email,
                 password: hashedPassword,
+                gender,
                 roleId,
                 is_active: true,
             },
@@ -50,6 +59,7 @@ class UserService {
                 lastname: true,
                 username: true,
                 email: true,
+                gender: true,
                 createdAt: true,
                 is_active: true,
                 role: {
