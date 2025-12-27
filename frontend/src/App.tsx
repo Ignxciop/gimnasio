@@ -9,6 +9,7 @@ import { Gestion } from "./pages/Gestion";
 import Rutinas from "./pages/Rutinas";
 import RoutineDetail from "./pages/RoutineDetail";
 import ActiveRoutine from "./pages/ActiveRoutine";
+import WorkoutDay from "./pages/WorkoutDay";
 import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
 
@@ -63,6 +64,17 @@ function App() {
                         element={
                             isAuthenticated ? (
                                 <Home onLogout={handleLogout} />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/day/:year/:month/:day"
+                        element={
+                            isAuthenticated ? (
+                                <WorkoutDay />
                             ) : (
                                 <Navigate to="/login" replace />
                             )
