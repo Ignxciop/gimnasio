@@ -14,6 +14,7 @@ interface ProfileData {
     lastname: string;
     username: string;
     email?: string;
+    gender: "male" | "female";
     isProfilePublic: boolean;
     role: {
         role: string;

@@ -9,6 +9,7 @@ export interface RegisterData {
     email: string;
     username: string;
     password: string;
+    gender: "male" | "female";
 }
 
 export interface RegisterResponse {
@@ -26,6 +27,7 @@ export interface User {
     lastname: string;
     username: string;
     email: string;
+    gender: "male" | "female";
     is_active: boolean;
     roleId: number;
     role: {
