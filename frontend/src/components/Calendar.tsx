@@ -69,12 +69,11 @@ export const Calendar: React.FC<CalendarProps> = ({
             year === today.getFullYear()
         );
     };
-const handleDayClick = (day: number | null) => {
+    const handleDayClick = (day: number | null) => {
         if (!day || !completedDates.includes(day)) return;
         onDayClick(year, month + 1, day);
     };
 
-    
     return (
         <div className="calendar">
             <div className="calendar-header">
@@ -101,17 +100,17 @@ const handleDayClick = (day: number | null) => {
                 <span>Dom</span>
             </div>
             <div className="calendar-days">
-                {days.map((day, index) => ( ${
-                            day && completedDates.includes(day)
-                                ? "calendar-day--clickable"
-                                : ""
-                        }`}
-                        onClick={() => handleDayClick(day)
+                {days.map((day, index) => (
                     <div
                         key={index}
                         className={`calendar-day ${
                             day ? "" : "calendar-day--empty"
-                        } ${isToday(day) ? "calendar-day--today" : ""}`}
+                        } ${isToday(day) ? "calendar-day--today" : ""} ${
+                            day && completedDates.includes(day)
+                                ? "calendar-day--clickable"
+                                : ""
+                        }`}
+                        onClick={() => handleDayClick(day)}
                     >
                         {day && (
                             <>

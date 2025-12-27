@@ -4,7 +4,8 @@ import { ArrowLeft, ChevronDown, ChevronUp, Clock } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
-import { dashboardService, DayWorkout } from "../services/dashboardService";
+import { dashboardService } from "../services/dashboardService";
+import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
 
 const getVideoUrl = (videoPath: string | null) => {

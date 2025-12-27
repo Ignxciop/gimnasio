@@ -39,7 +39,7 @@ export const LeftNav: React.FC = () => {
                 </li>
                 <li>
                     <NavLink
-                        to="/perfil"
+                        to={`/perfil/${user?.username}`}
                         className={({ isActive }) =>
                             "leftnav__link" +
                             (isActive ? " leftnav__link--active" : "")

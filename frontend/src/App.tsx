@@ -82,10 +82,10 @@ function App() {
                     />
 
                     <Route
-                        path="/perfil"
+                        path="/perfil/:username"
                         element={
                             isAuthenticated ? (
-                                <Profile onLogout={handleLogout} />
+                                <Profile />
                             ) : (
                                 <Navigate to="/login" replace />
                             )

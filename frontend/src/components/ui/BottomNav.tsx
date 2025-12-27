@@ -34,7 +34,7 @@ export const BottomNav: React.FC = () => {
             </NavLink>
 
             <NavLink
-                to="/perfil"
+                to={`/perfil/${user?.username}`}
                 className={({ isActive }) =>
                     "bottomnav__link" +
                     (isActive ? " bottomnav__link--active" : "")
