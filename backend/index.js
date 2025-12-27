@@ -42,5 +42,5 @@ app.use(errorHandler);
 
 app.listen(port, "0.0.0.0", () => {
     console.log("Servidor iniciado » Escuchando en puerto", port);
-    console.log("Accesible desde red local en http://192.168.1.84:" + port);
+    console.log("Accesible desde red local en http://localhost:" + port);
 });
