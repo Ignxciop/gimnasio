@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { MuscleRadarChart } from "../components/MuscleRadarChart";
+import { MuscleMapBody } from "../components/MuscleMapBody";
 import { profileService } from "../services/profileService";
 import { statisticsService } from "../services/statisticsService";
 import { authService } from "../services/authService";
@@ -338,6 +339,10 @@ export const Statistics: React.FC = () => {
                                 }
                             />
                         </div>
+
+                        {radarData.length > 0 && (
+                            <MuscleMapBody muscleData={radarData} />
+                        )}
                     </div>
                 </div>
             </div>
