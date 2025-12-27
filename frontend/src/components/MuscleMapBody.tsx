@@ -1,13 +1,22 @@
 import React from "react";
 import type { MuscleRadarData } from "../types/muscleStimulus.types";
+import { FemaleMuscleMapBody } from "./FemaleMuscleMapBody";
 import { getMuscleColor, getStimulusLiga } from "../types/muscleLiga.types";
 import "./muscleMapBody.css";
 
 interface MuscleMapBodyProps {
     muscleData: MuscleRadarData[];
+    gender: "male" | "female";
 }
 
-export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
+export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({
+    muscleData,
+    gender,
+}) => {
+    if (gender === "female") {
+        return <FemaleMuscleMapBody muscleData={muscleData} />;
+    }
+
     const getMuscleValue = (muscleName: string): number => {
         const muscle = muscleData.find((m) => m.muscle === muscleName);
         return muscle?.value || 0;
@@ -613,6 +622,9 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                                 strokeWidth="1"
                                 opacity="0.95"
                             />
+                            <title>
+                                Hombros: {hombrosValue}% - {hombrosLiga.liga}
+                            </title>
                         </g>
 
                         <g
@@ -738,6 +750,9 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                                 strokeWidth="1"
                                 opacity="0.95"
                             />
+                            <title>
+                                Brazos: {brazosValue}% - {brazosLiga.liga}
+                            </title>
                         </g>
 
                         <g className="muscle-group" data-muscle="zona-lumbar">
@@ -786,6 +801,9 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                                 strokeWidth="1"
                                 opacity="0.95"
                             />
+                            <title>
+                                Piernas: {piernasValue}% - {piernasLiga.liga}
+                            </title>
                         </g>
 
                         <g
@@ -853,6 +871,9 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                                 strokeWidth="1"
                                 opacity="0.95"
                             />
+                            <title>
+                                Piernas: {piernasValue}% - {piernasLiga.liga}
+                            </title>
                         </g>
                     </svg>
                 </div>
