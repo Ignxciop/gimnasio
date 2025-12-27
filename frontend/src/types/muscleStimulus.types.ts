@@ -32,6 +32,12 @@ export interface WeeklyMuscleVolume {
     effectiveSets: number;
 }
 
+export interface MonthlyMuscleVolume {
+    muscle: MuscleGroup;
+    totalVolume: number;
+    effectiveSets: number;
+}
+
 export interface MuscleRadarData {
     muscle: string;
     value: number;

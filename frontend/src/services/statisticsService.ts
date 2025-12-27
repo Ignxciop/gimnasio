@@ -13,22 +13,25 @@ interface ActiveRoutineSetResponse {
     completed: boolean;
 }
 
-interface WeeklySetsResponse {
+interface MonthlySetsResponse {
     success: boolean;
     data: ActiveRoutineSetResponse[];
 }
 
+interface MonthsResponse {
+    success: boolean;
+    data: string[];
+}
+
 export const statisticsService = {
-    async getWeeklySets(
+    async getMonthlySets(
         userId: string,
+        year: number,
+        month: number,
         token: string
     ): Promise<EffectiveSet[]> {
-        const today = new Date();
-        const weekAgo = new Date(today);
-        weekAgo.setDate(today.getDate() - 7);
-
         const response = await fetch(
-            `${API_URL}/statistics/weekly-sets?userId=${userId}&startDate=${weekAgo.toISOString()}&endDate=${today.toISOString()}`,
+            `${API_URL}/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -37,10 +40,10 @@ export const statisticsService = {
         );
 
         if (!response.ok) {
-            throw new Error("Error al obtener sets semanales");
+            throw new Error("Error al obtener sets mensuales");
         }
 
-        const data: WeeklySetsResponse = await response.json();
+        const data: MonthlySetsResponse = await response.json();
 
         return data.data.map((set) => ({
             exerciseId: set.exerciseId,
@@ -49,6 +52,27 @@ export const statisticsService = {
             targetRepsMin: set.targetRepsMin,
             completed: set.completed,
         }));
+    },
+
+    async getMonthsWithWorkouts(
+        userId: string,
+        token: string
+    ): Promise<string[]> {
+        const response = await fetch(
+            `${API_URL}/statistics/months-with-workouts?userId=${userId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Error al obtener meses con entrenamientos");
+        }
+
+        const data: MonthsResponse = await response.json();
+        return data.data;
     },
 
     async getExercises(token: string) {

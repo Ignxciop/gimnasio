@@ -33,12 +33,12 @@ export class MuscleGrowthCalculator {
         return set.weight * set.actualReps;
     }
 
-    calculateWeeklyMuscleVolumes(
-        weeklySets: EffectiveSet[]
+    calculateMonthlyMuscleVolumes(
+        monthlySets: EffectiveSet[]
     ): WeeklyMuscleVolume[] {
         const muscleVolumes = new Map<MuscleGroup, WeeklyMuscleVolume>();
 
-        for (const set of weeklySets) {
+        for (const set of monthlySets) {
             if (!this.isSetEffective(set)) continue;
 
             const mapping = this.exerciseMappings.get(set.exerciseId);
@@ -111,8 +111,8 @@ export class MuscleGrowthCalculator {
         return radarData;
     }
 
-    calculateWeeklyStimulus(weeklySets: EffectiveSet[]): MuscleRadarData[] {
-        const muscleVolumes = this.calculateWeeklyMuscleVolumes(weeklySets);
+    calculateMonthlyStimulus(monthlySets: EffectiveSet[]): MuscleRadarData[] {
+        const muscleVolumes = this.calculateMonthlyMuscleVolumes(monthlySets);
         return this.normalizeForRadarChart(muscleVolumes);
     }
 }

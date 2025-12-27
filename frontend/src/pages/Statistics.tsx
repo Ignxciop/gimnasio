@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, Info } from "lucide-react";
+import {
+    ArrowLeft,
+    Calendar,
+    Info,
+    ChevronLeft,
+    ChevronRight,
+} from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { MuscleRadarChart } from "../components/MuscleRadarChart";
 import { profileService } from "../services/profileService";
@@ -22,6 +28,39 @@ export const Statistics: React.FC = () => {
     const [radarData, setRadarData] = useState<MuscleRadarData[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
     const [showInfo, setShowInfo] = useState(false);
+    const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+    const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(
+        new Date().getMonth() + 1
+    );
+
+    const loadMonthData = async (
+        userId: string,
+        token: string,
+        year: number,
+        month: number
+    ) => {
+        try {
+            const monthlySets = await statisticsService.getMonthlySets(
+                userId,
+                year,
+                month,
+                token
+            );
+
+            const calculatedData =
+                muscleGrowthCalculator.calculateMonthlyStimulus(monthlySets);
+            setRadarData(calculatedData);
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al cargar datos del mes"
+            );
+        }
+    };
 
     useEffect(() => {
         const verifyAccess = async () => {
@@ -54,16 +93,19 @@ export const Statistics: React.FC = () => {
                         buildExerciseMappingsFromBackend(exercises);
                     muscleGrowthCalculator.setExerciseMappings(mappings);
 
-                    const weeklySets = await statisticsService.getWeeklySets(
-                        currentUserId,
-                        token
-                    );
-
-                    const calculatedData =
-                        muscleGrowthCalculator.calculateWeeklyStimulus(
-                            weeklySets
+                    const months =
+                        await statisticsService.getMonthsWithWorkouts(
+                            currentUserId,
+                            token
                         );
-                    setRadarData(calculatedData);
+                    setAvailableMonths(months);
+
+                    if (months.length > 0) {
+                        const [year, month] = months[0].split("-").map(Number);
+                        setSelectedYear(year);
+                        setSelectedMonth(month);
+                        await loadMonthData(currentUserId, token, year, month);
+                    }
                 }
 
                 setLoading(false);
@@ -95,6 +137,62 @@ export const Statistics: React.FC = () => {
 
     const handleRoutinesClick = () => {
         showToast("info", "Funcionalidad próximamente");
+    };
+
+    const handlePreviousMonth = async () => {
+        if (currentMonthIndex < availableMonths.length - 1) {
+            const newIndex = currentMonthIndex + 1;
+            setCurrentMonthIndex(newIndex);
+            const [year, month] = availableMonths[newIndex]
+                .split("-")
+                .map(Number);
+            setSelectedYear(year);
+            setSelectedMonth(month);
+
+            if (userId) {
+                const token = authService.getToken();
+                if (token) {
+                    await loadMonthData(userId, token, year, month);
+                }
+            }
+        }
+    };
+
+    const handleNextMonth = async () => {
+        if (currentMonthIndex > 0) {
+            const newIndex = currentMonthIndex - 1;
+            setCurrentMonthIndex(newIndex);
+            const [year, month] = availableMonths[newIndex]
+                .split("-")
+                .map(Number);
+            setSelectedYear(year);
+            setSelectedMonth(month);
+
+            if (userId) {
+                const token = authService.getToken();
+                if (token) {
+                    await loadMonthData(userId, token, year, month);
+                }
+            }
+        }
+    };
+
+    const getMonthName = (month: number) => {
+        const months = [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre",
+        ];
+        return months[month - 1];
     };
 
     if (loading) {
@@ -156,9 +254,9 @@ export const Statistics: React.FC = () => {
                                 <h3>Cómo funciona este gráfico</h3>
                                 <p>
                                     Este gráfico muestra tu{" "}
-                                    <strong>estímulo semanal</strong> por grupo
-                                    muscular basado en tus entrenamientos de los
-                                    últimos 7 días.
+                                    <strong>estímulo mensual</strong> por grupo
+                                    muscular basado en tus entrenamientos del
+                                    mes seleccionado.
                                 </p>
                                 <ul>
                                     <li>
@@ -186,6 +284,31 @@ export const Statistics: React.FC = () => {
                                 </p>
                             </div>
                         )}
+
+                        <div className="statistics__month-navigation">
+                            <button
+                                onClick={handlePreviousMonth}
+                                disabled={
+                                    currentMonthIndex >=
+                                    availableMonths.length - 1
+                                }
+                                className="statistics__month-btn"
+                                aria-label="Mes anterior"
+                            >
+                                <ChevronLeft size={20} />
+                            </button>
+                            <span className="statistics__current-month">
+                                {getMonthName(selectedMonth)} {selectedYear}
+                            </span>
+                            <button
+                                onClick={handleNextMonth}
+                                disabled={currentMonthIndex <= 0}
+                                className="statistics__month-btn"
+                                aria-label="Mes siguiente"
+                            >
+                                <ChevronRight size={20} />
+                            </button>
+                        </div>
 
                         <div className="statistics__chart-container">
                             <MuscleRadarChart

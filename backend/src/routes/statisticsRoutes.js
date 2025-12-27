@@ -4,7 +4,12 @@ import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/weekly-sets", authenticate, statisticsController.getWeeklySets);
+router.get("/monthly-sets", authenticate, statisticsController.getMonthlySets);
+router.get(
+    "/months-with-workouts",
+    authenticate,
+    statisticsController.getMonthsWithWorkouts
+);
 router.get("/exercises", authenticate, statisticsController.getAllExercises);
 
 export default router;
