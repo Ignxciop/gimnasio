@@ -3,9 +3,16 @@ import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { Calendar } from "../components/Calendar";
 import { RecentWorkouts } from "../components/RecentWorkouts";
+import { WeeklyStreak } from "../components/WeeklyStreak";
+import { MonthlyStats } from "../components/MonthlyStats";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
-import { dashboardService, RecentWorkout } from "../services/dashboardService";
+import {
+    dashboardService,
+    type RecentWorkout,
+    type WeeklyStreak as WeeklyStreakType,
+    type MonthlyStats as MonthlyStatsType,
+} from "../services/dashboardService";
 import "../styles/home.css";
 
 export const Home: React.FC = () => {
@@ -13,6 +20,12 @@ export const Home: React.FC = () => {
     const navigate = useNavigate();
     const [completedDates, setCompletedDates] = useState<number[]>([]);
     const [recentWorkouts, setRecentWorkouts] = useState<RecentWorkout[]>([]);
+    const [weeklyStreak, setWeeklyStreak] = useState<WeeklyStreakType | null>(
+        null
+    );
+    const [monthlyStats, setMonthlyStats] = useState<MonthlyStatsType | null>(
+        null
+    );
     const [loading, setLoading] = useState(true);
 
     const fetchRecentWorkouts = async () => {
@@ -28,6 +41,45 @@ export const Home: React.FC = () => {
                 error instanceof Error
                     ? error.message
                     : "Error al cargar entrenamientos"
+            );
+        }
+    };
+
+    const fetchWeeklyStreak = async () => {
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            const streak = await dashboardService.getWeeklyStreak(token);
+            setWeeklyStreak(streak);
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al cargar racha semanal"
+            );
+        }
+    };
+
+    const fetchMonthlyStats = async () => {
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            const now = new Date();
+            const stats = await dashboardService.getMonthlyStats(
+                now.getFullYear(),
+                now.getMonth() + 1,
+                token
+            );
+            setMonthlyStats(stats);
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al cargar estadísticas mensuales"
             );
         }
     };
@@ -66,7 +118,11 @@ export const Home: React.FC = () => {
     useEffect(() => {
         const loadData = async () => {
             setLoading(true);
-            await fetchRecentWorkouts();
+            await Promise.all([
+                fetchRecentWorkouts(),
+                fetchWeeklyStreak(),
+                fetchMonthlyStats(),
+            ]);
             setLoading(false);
         };
 
@@ -85,6 +141,14 @@ export const Home: React.FC = () => {
         <MainLayout>
             <div className="home-container">
                 <h1 className="home-title">Dashboard</h1>
+                <div className="home-stats-row">
+                    {weeklyStreak && (
+                        <WeeklyStreak
+                            currentStreak={weeklyStreak.currentStreak}
+                        />
+                    )}
+                    {monthlyStats && <MonthlyStats stats={monthlyStats} />}
+                </div>
                 <div className="home-content">
                     <Calendar
                         completedDates={completedDates}

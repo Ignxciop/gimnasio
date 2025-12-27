@@ -10,6 +10,13 @@
     margin: 0 0 2rem 0;
 }
 
+.home-stats-row {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
 .home-content {
     display: flex;
     flex-direction: column;
@@ -28,6 +35,12 @@
 @media (max-width: 768px) {
     .home-title {
         font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .home-stats-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
         margin-bottom: 1.5rem;
     }
 
