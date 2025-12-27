@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
     User,
+    UserRound,
     Mail,
     Shield,
     LogOut,
@@ -74,7 +75,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         <div className="profile-card">
             <div className="profile-card__header">
                 <div className="profile-card__avatar">
-                    <User size={48} />
+                    {profileData.gender === "female" ? (
+                        <UserRound size={48} />
+                    ) : (
+                        <User size={48} />
+                    )}
                 </div>
                 <h2 className="profile-card__name">
                     {profileData.name} {profileData.lastname}
