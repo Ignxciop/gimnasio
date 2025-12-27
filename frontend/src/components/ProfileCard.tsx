@@ -64,7 +64,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 
     const handleLogout = () => {
         authService.removeToken();
-        navigate("/login");
+        window.location.href = "/login";
     };
 
     const handleGoToStats = () => {
