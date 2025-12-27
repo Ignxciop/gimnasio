@@ -58,23 +58,15 @@ export const Statistics: React.FC = () => {
                     );
                 setRadarData(calculatedData);
             } catch (error) {
-                if (
-                    error instanceof Error &&
-                    error.message === "Este perfil es privado"
-                ) {
-                    showToast("error", "Este perfil es privado");
-                    navigate("/inicio");
-                } else {
-                    showToast(
-                        "error",
-                        error instanceof Error
-                            ? error.message
-                            : "Error al cargar datos del mes"
-                    );
-                }
+                showToast(
+                    "error",
+                    error instanceof Error
+                        ? error.message
+                        : "Error al cargar datos del mes"
+                );
             }
         },
-        [navigate, showToast]
+        [showToast]
     );
 
     useEffect(() => {

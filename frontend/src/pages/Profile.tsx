@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "../layouts/MainLayout";
 import { ProfileCard } from "../components/ProfileCard";
 import { profileService, type ProfileData } from "../services/profileService";
@@ -9,6 +9,7 @@ import { getUserFromToken } from "../utils/getUserFromToken";
 
 export const Profile: React.FC = () => {
     const { username } = useParams<{ username: string }>();
+    const navigate = useNavigate();
     const { showToast } = useToast();
     const currentUser = getUserFromToken();
     const [profileData, setProfileData] = useState<ProfileData | null>(null);
@@ -29,19 +30,28 @@ export const Profile: React.FC = () => {
                 setProfileData(data);
                 setIsOwnProfile(currentUser?.username === username);
             } catch (error) {
-                showToast(
-                    "error",
-                    error instanceof Error
-                        ? error.message
-                        : "Error al cargar perfil"
-                );
+                if (
+                    error instanceof Error &&
+                    error.message === "Este perfil es privado"
+                ) {
+                    showToast("error", "Este perfil es privado");
+                    navigate("/inicio");
+                } else {
+                    showToast(
+                        "error",
+                        error instanceof Error
+                            ? error.message
+                            : "Error al cargar perfil"
+                    );
+                    navigate("/inicio");
+                }
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProfile();
-    }, [username, currentUser?.username, showToast]);
+    }, [username, currentUser?.username, showToast, navigate]);
 
     if (loading) {
         return (
