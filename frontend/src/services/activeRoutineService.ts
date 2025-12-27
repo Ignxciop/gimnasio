@@ -155,4 +155,40 @@ export const activeRoutineService = {
             throw new Error(error.message || "Error al cancelar rutina");
         }
     },
+
+    async addSet(exerciseId: number, token: string): Promise<ActiveRoutineSet> {
+        const response = await fetch(`${API_URL}/active-routines/sets`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ exerciseId }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al agregar serie");
+        }
+
+        const data = await response.json();
+        return data.data;
+    },
+
+    async removeSet(setId: number, token: string): Promise<void> {
+        const response = await fetch(
+            `${API_URL}/active-routines/sets/${setId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al eliminar serie");
+        }
+    },
 };
