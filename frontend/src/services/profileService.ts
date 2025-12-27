@@ -55,56 +55,6 @@ export const profileService = {
         return data.data;
     },
 
-    async checkUsernameAvailability(
-        username: string,
-        token: string
-    ): Promise<{ available: boolean }> {
-        const response = await fetch(
-            `${API_URL}/profile/check-username?username=${encodeURIComponent(
-                username
-            )}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(
-                error.message || "Error al verificar disponibilidad"
-            );
-        }
-
-        const data = await response.json();
-        return data.data;
-    },
-
-    async updateUsername(
-        username: string,
-        token: string
-    ): Promise<ProfileData> {
-        const response = await fetch(`${API_URL}/profile/username`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ username }),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(
-                error.message || "Error al actualizar nombre de usuario"
-            );
-        }
-
-        const data = await response.json();
-        return data.data;
-    },
-
     async updatePrivacy(
         isPublic: boolean,
         token: string

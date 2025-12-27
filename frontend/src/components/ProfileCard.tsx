@@ -1,16 +1,5 @@
 import { useState } from "react";
-import {
-    User,
-    Mail,
-    Shield,
-    LogOut,
-    Link,
-    Edit2,
-    Eye,
-    EyeOff,
-    Check,
-    X,
-} from "lucide-react";
+import { User, Mail, Shield, LogOut, Link, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { ProfileData } from "../services/profileService";
 import { profileService } from "../services/profileService";
@@ -29,8 +18,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 }) => {
     const navigate = useNavigate();
     const { showToast } = useToast();
-    const [isEditingUsername, setIsEditingUsername] = useState(false);
-    const [newUsername, setNewUsername] = useState(profileData.username);
     const [isPrivate, setIsPrivate] = useState(!profileData.isProfilePublic);
     const [loading, setLoading] = useState(false);
 
@@ -38,34 +25,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         const profileUrl = `${window.location.origin}/perfil/${profileData.username}`;
         navigator.clipboard.writeText(profileUrl);
         showToast("success", "Link copiado al portapapeles");
-    };
-
-    const handleUpdateUsername = async () => {
-        if (newUsername === profileData.username) {
-            setIsEditingUsername(false);
-            return;
-        }
-
-        setLoading(true);
-        try {
-            const token = authService.getToken();
-            if (!token) throw new Error("No hay token");
-
-            await profileService.updateUsername(newUsername, token);
-            showToast("success", "Nombre de usuario actualizado");
-            setIsEditingUsername(false);
-            navigate(`/perfil/${newUsername}`);
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al actualizar username"
-            );
-            setNewUsername(profileData.username);
-        } finally {
-            setLoading(false);
-        }
     };
 
     const handleTogglePrivacy = async () => {
@@ -107,49 +66,9 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 <h2 className="profile-card__name">
                     {profileData.name} {profileData.lastname}
                 </h2>
-
-                {isOwnProfile && isEditingUsername ? (
-                    <div className="profile-card__username-edit">
-                        <input
-                            type="text"
-                            value={newUsername}
-                            onChange={(e) => setNewUsername(e.target.value)}
-                            className="profile-card__username-input"
-                            disabled={loading}
-                        />
-                        <button
-                            onClick={handleUpdateUsername}
-                            className="profile-card__username-btn"
-                            disabled={loading}
-                        >
-                            <Check size={16} />
-                        </button>
-                        <button
-                            onClick={() => {
-                                setIsEditingUsername(false);
-                                setNewUsername(profileData.username);
-                            }}
-                            className="profile-card__username-btn profile-card__username-btn--cancel"
-                            disabled={loading}
-                        >
-                            <X size={16} />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="profile-card__username-row">
-                        <p className="profile-card__username">
-                            @{profileData.username}
-                        </p>
-                        {isOwnProfile && (
-                            <button
-                                onClick={() => setIsEditingUsername(true)}
-                                className="profile-card__edit-btn"
-                            >
-                                <Edit2 size={14} />
-                            </button>
-                        )}
-                    </div>
-                )}
+                <p className="profile-card__username">
+                    @{profileData.username}
+                </p>
             </div>
 
             <div className="profile-card__info">

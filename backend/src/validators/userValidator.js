@@ -50,32 +50,6 @@ export const registerValidation = [
         .withMessage("El rol debe ser un número válido"),
 ];
 
-export const updateUsernameValidation = [
-    body("username")
-        .trim()
-        .notEmpty()
-        .withMessage("El nombre de usuario es requerido")
-        .isLength({ min: 3, max: 20 })
-        .withMessage("El username debe tener entre 3 y 20 caracteres")
-        .matches(/^[a-zA-Z0-9_-]+$/)
-        .withMessage(
-            "El username solo puede contener letras, números, guiones y guiones bajos"
-        ),
-];
-
-export const checkUsernameValidation = [
-    query("username")
-        .trim()
-        .notEmpty()
-        .withMessage("El nombre de usuario es requerido")
-        .isLength({ min: 3, max: 20 })
-        .withMessage("El username debe tener entre 3 y 20 caracteres")
-        .matches(/^[a-zA-Z0-9_-]+$/)
-        .withMessage(
-            "El username solo puede contener letras, números, guiones y guiones bajos"
-        ),
-];
-
 export const updatePrivacyValidation = [
     body("isPublic")
         .notEmpty()

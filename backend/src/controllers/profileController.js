@@ -35,45 +35,6 @@ class ProfileController {
         }
     }
 
-    async checkUsername(req, res, next) {
-        try {
-            const { username } = req.query;
-            const userId = req.user.userId;
-
-            const availability = await profileService.checkUsernameAvailability(
-                username,
-                userId
-            );
-
-            res.status(200).json({
-                success: true,
-                data: availability,
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async updateUsername(req, res, next) {
-        try {
-            const userId = req.user.userId;
-            const { username } = req.body;
-
-            const updatedUser = await profileService.updateUsername(
-                userId,
-                username
-            );
-
-            res.status(200).json({
-                success: true,
-                message: "Nombre de usuario actualizado exitosamente",
-                data: updatedUser,
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
-
     async updatePrivacy(req, res, next) {
         try {
             const userId = req.user.userId;
