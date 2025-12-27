@@ -57,3 +57,46 @@
 .form__link-text:hover {
     text-decoration: underline;
 }
+
+.form__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.form__radio-group {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-sm) 0;
+}
+
+.form__radio-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.form__radio-label:hover {
+    opacity: 0.8;
+}
+
+.form__radio-input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--accent-mid);
+}
+
+.form__radio-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+}
+
+.form__error-text {
+    font-size: var(--font-size-xs);
+    color: var(--color-danger);
+    margin-top: var(--spacing-xs);
+}
