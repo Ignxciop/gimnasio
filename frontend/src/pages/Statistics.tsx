@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Calendar } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
+import { MuscleRadarChart } from "../components/MuscleRadarChart";
 import { profileService } from "../services/profileService";
 import { authService } from "../services/authService";
 import { useToast } from "../hooks/useToast";
@@ -56,6 +58,14 @@ export const Statistics: React.FC = () => {
         verifyAccess();
     }, [username, navigate, showToast]);
 
+    const handleGoBack = () => {
+        navigate(`/perfil/${username}`);
+    };
+
+    const handleRoutinesClick = () => {
+        showToast("info", "Funcionalidad próximamente");
+    };
+
     if (loading) {
         return (
             <MainLayout>
@@ -70,6 +80,23 @@ export const Statistics: React.FC = () => {
         <MainLayout>
             <div className="statistics">
                 <div className="statistics__header">
+                    <div className="statistics__actions">
+                        <button
+                            onClick={handleGoBack}
+                            className="statistics__btn statistics__btn--back"
+                        >
+                            <ArrowLeft size={20} />
+                            Volver
+                        </button>
+                        <button
+                            onClick={handleRoutinesClick}
+                            className="statistics__btn statistics__btn--routines"
+                        >
+                            <Calendar size={20} />
+                            Rutinas Realizadas
+                        </button>
+                    </div>
+
                     <h1 className="statistics__title">
                         Estadísticas de @{username}
                     </h1>
@@ -79,10 +106,14 @@ export const Statistics: React.FC = () => {
                 </div>
 
                 <div className="statistics__content">
-                    <p className="statistics__placeholder">
-                        Aquí irán los gráficos y estadísticas detalladas del
-                        usuario
-                    </p>
+                    <div className="statistics__section">
+                        <h2 className="statistics__section-title">
+                            Desarrollo Muscular
+                        </h2>
+                        <div className="statistics__chart-container">
+                            <MuscleRadarChart />
+                        </div>
+                    </div>
                 </div>
             </div>
         </MainLayout>

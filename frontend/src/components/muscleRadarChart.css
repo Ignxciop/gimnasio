@@ -1,0 +1,12 @@
+.muscle-radar-chart {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .muscle-radar-chart {
+        padding: 0;
+    }
+}
