@@ -87,6 +87,16 @@
     border-color: rgba(220, 20, 60, 0.3);
 }
 
+.calendar-day--clickable {
+    cursor: pointer;
+}
+
+.calendar-day--clickable:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+}
+
 .calendar-day-number {
     font-size: 0.875rem;
     font-weight: 500;

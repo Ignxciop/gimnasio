@@ -5,11 +5,13 @@ import "./calendar.css";
 interface CalendarProps {
     completedDates: number[];
     onMonthChange: (year: number, month: number) => void;
+    onDayClick: (year: number, month: number, day: number) => void;
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
     completedDates,
     onMonthChange,
+    onDayClick,
 }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -67,7 +69,12 @@ export const Calendar: React.FC<CalendarProps> = ({
             year === today.getFullYear()
         );
     };
+const handleDayClick = (day: number | null) => {
+        if (!day || !completedDates.includes(day)) return;
+        onDayClick(year, month + 1, day);
+    };
 
+    
     return (
         <div className="calendar">
             <div className="calendar-header">
@@ -94,7 +101,12 @@ export const Calendar: React.FC<CalendarProps> = ({
                 <span>Dom</span>
             </div>
             <div className="calendar-days">
-                {days.map((day, index) => (
+                {days.map((day, index) => ( ${
+                            day && completedDates.includes(day)
+                                ? "calendar-day--clickable"
+                                : ""
+                        }`}
+                        onClick={() => handleDayClick(day)
                     <div
                         key={index}
                         className={`calendar-day ${
