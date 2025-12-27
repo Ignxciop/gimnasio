@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { Calendar } from "../components/Calendar";
 import { RecentWorkouts } from "../components/RecentWorkouts";
@@ -9,6 +10,7 @@ import "../styles/home.css";
 
 export const Home: React.FC = () => {
     const { showToast } = useToast();
+    const navigate = useNavigate();
     const [completedDates, setCompletedDates] = useState<number[]>([]);
     const [recentWorkouts, setRecentWorkouts] = useState<RecentWorkout[]>([]);
     const [loading, setLoading] = useState(true);
@@ -54,6 +56,13 @@ export const Home: React.FC = () => {
         [showToast]
     );
 
+    const handleDayClick = useCallback(
+        (year: number, month: number, day: number) => {
+            navigate(`/day/${year}/${month}/${day}`);
+        },
+        [navigate]
+    );
+
     useEffect(() => {
         const loadData = async () => {
             setLoading(true);
@@ -80,6 +89,7 @@ export const Home: React.FC = () => {
                     <Calendar
                         completedDates={completedDates}
                         onMonthChange={handleMonthChange}
+                        onDayClick={handleDayClick}
                     />
                     <RecentWorkouts workouts={recentWorkouts} />
                 </div>
