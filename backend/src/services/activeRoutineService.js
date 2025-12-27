@@ -226,6 +226,118 @@ class ActiveRoutineService {
         return { message: "Orden actualizado exitosamente" };
     }
 
+    async addSet(exerciseId, userId) {
+        const activeRoutine = await this.getActiveByUser(userId);
+
+        if (!activeRoutine) {
+            const error = new Error("No tienes rutina activa");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const exerciseSets = activeRoutine.sets.filter(
+            (s) => s.exerciseId === exerciseId
+        );
+
+        if (exerciseSets.length === 0) {
+            const error = new Error("Ejercicio no encontrado en la rutina");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const lastSet = exerciseSets[exerciseSets.length - 1];
+        const maxOrder = Math.max(...activeRoutine.sets.map((s) => s.order));
+
+        const newSet = await prisma.activeRoutineSet.create({
+            data: {
+                activeRoutineId: activeRoutine.id,
+                exerciseId,
+                setNumber: exerciseSets.length + 1,
+                targetWeight: lastSet.targetWeight,
+                targetRepsMin: lastSet.targetRepsMin,
+                targetRepsMax: lastSet.targetRepsMax,
+                order: maxOrder + 1,
+            },
+            include: {
+                exercise: {
+                    include: {
+                        equipment: true,
+                        muscleGroup: true,
+                    },
+                },
+            },
+        });
+
+        return newSet;
+    }
+
+    async removeSet(setId, userId) {
+        const set = await prisma.activeRoutineSet.findFirst({
+            where: {
+                id: setId,
+                activeRoutine: {
+                    userId,
+                    status: "active",
+                },
+            },
+            include: {
+                activeRoutine: {
+                    include: {
+                        sets: {
+                            where: {
+                                exerciseId:
+                                    prisma.activeRoutineSet.fields.exerciseId,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!set) {
+            const error = new Error("Serie no encontrada");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const exerciseSets = await prisma.activeRoutineSet.findMany({
+            where: {
+                activeRoutineId: set.activeRoutineId,
+                exerciseId: set.exerciseId,
+            },
+        });
+
+        if (exerciseSets.length <= 1) {
+            const error = new Error(
+                "No puedes eliminar la única serie del ejercicio"
+            );
+            error.statusCode = 400;
+            throw error;
+        }
+
+        await prisma.activeRoutineSet.delete({
+            where: { id: setId },
+        });
+
+        const remainingSets = await prisma.activeRoutineSet.findMany({
+            where: {
+                activeRoutineId: set.activeRoutineId,
+            },
+            orderBy: { order: "asc" },
+        });
+
+        const updates = remainingSets.map((s, index) =>
+            prisma.activeRoutineSet.update({
+                where: { id: s.id },
+                data: { order: index },
+            })
+        );
+
+        await prisma.$transaction(updates);
+
+        return { message: "Serie eliminada exitosamente" };
+    }
+
     async complete(activeRoutineId, userId) {
         const activeRoutine = await prisma.activeRoutine.findFirst({
             where: {

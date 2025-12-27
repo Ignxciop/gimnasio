@@ -214,6 +214,42 @@ class ActiveRoutineController {
             next(error);
         }
     }
+
+    async addSet(req, res, next) {
+        try {
+            const { exerciseId } = req.body;
+            const userId = req.user.userId;
+
+            const newSet = await activeRoutineService.addSet(
+                exerciseId,
+                userId
+            );
+
+            res.status(201).json({
+                success: true,
+                message: "Serie agregada exitosamente",
+                data: newSet,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async removeSet(req, res, next) {
+        try {
+            const setId = parseInt(req.params.setId);
+            const userId = req.user.userId;
+
+            const result = await activeRoutineService.removeSet(setId, userId);
+
+            res.status(200).json({
+                success: true,
+                message: result.message,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new ActiveRoutineController();

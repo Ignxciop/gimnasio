@@ -6,6 +6,7 @@ import {
     createActiveRoutineValidation,
     updateSetValidation,
     reorderSetsValidation,
+    addSetValidation,
 } from "../validators/activeRoutineValidator.js";
 
 const router = express.Router();
@@ -53,6 +54,16 @@ router.put(
 router.post("/:id/complete", authenticate, activeRoutineController.complete);
 
 router.delete("/:id/cancel", authenticate, activeRoutineController.cancel);
+
+router.post(
+    "/sets",
+    authenticate,
+    addSetValidation,
+    handleValidationErrors,
+    activeRoutineController.addSet
+);
+
+router.delete("/sets/:setId", authenticate, activeRoutineController.removeSet);
 
 router.get(
     "/completed/dates",

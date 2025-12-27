@@ -32,3 +32,11 @@ export const reorderSetsValidation = [
             return true;
         }),
 ];
+
+export const addSetValidation = [
+    body("exerciseId")
+        .notEmpty()
+        .withMessage("El ID del ejercicio es requerido")
+        .isInt({ min: 1 })
+        .withMessage("El ID del ejercicio debe ser un número entero positivo"),
+];
