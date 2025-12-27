@@ -350,85 +350,98 @@ export default function ActiveRoutine() {
                                     </div>
                                 </div>
                                 <div className="sets-group">
-                                    {sets.map((set) => (
-                                        <div
-                                            key={set.id}
-                                            className={`set-card ${
-                                                set.completed ? "completed" : ""
-                                            } ${set.isPR ? "pr" : ""}`}
-                                            draggable
-                                            onDragStart={() =>
-                                                handleDragStart(set)
-                                            }
-                                            onDragOver={handleDragOver}
-                                            onDrop={(e) => handleDrop(e, set)}
-                                        >
-                                            <GripVertical
-                                                size={16}
-                                                className="drag-handle"
-                                            />
-                                            <div className="set-content">
-                                                <span className="set-number">
-                                                    {set.setNumber}
-                                                </span>
-                                                <div className="input-wrapper">
-                                                    <label className="input-label">
-                                                        KG
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="set-input"
-                                                        value={
-                                                            set.actualWeight ??
-                                                            ""
-                                                        }
-                                                        onChange={(e) =>
-                                                            handleWeightChange(
-                                                                set.id,
-                                                                e.target.value
+                                    {sets
+                                        .sort((a, b) => a.order - b.order)
+                                        .map((set, index) => (
+                                            <div
+                                                key={set.id}
+                                                className={`set-card ${
+                                                    set.completed
+                                                        ? "completed"
+                                                        : ""
+                                                } ${set.isPR ? "pr" : ""}`}
+                                                draggable
+                                                onDragStart={() =>
+                                                    handleDragStart(set)
+                                                }
+                                                onDragOver={handleDragOver}
+                                                onDrop={(e) =>
+                                                    handleDrop(e, set)
+                                                }
+                                            >
+                                                <GripVertical
+                                                    size={16}
+                                                    className="drag-handle"
+                                                />
+                                                <div className="set-content">
+                                                    <span className="set-number">
+                                                        {index + 1}
+                                                    </span>
+                                                    <div className="input-wrapper">
+                                                        <label className="input-label">
+                                                            KG
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="set-input"
+                                                            value={
+                                                                set.actualWeight ??
+                                                                ""
+                                                            }
+                                                            onChange={(e) =>
+                                                                handleWeightChange(
+                                                                    set.id,
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                set.completed
+                                                            }
+                                                            placeholder={
+                                                                set.targetWeight?.toString() ||
+                                                                "0"
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div className="input-wrapper">
+                                                        <label className="input-label">
+                                                            REPS
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            className="set-input"
+                                                            value={
+                                                                set.actualReps ??
+                                                                ""
+                                                            }
+                                                            onChange={(e) =>
+                                                                handleRepsChange(
+                                                                    set.id,
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                set.completed
+                                                            }
+                                                            placeholder={set.targetRepsMax.toString()}
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleCompleteSet(
+                                                                set.id
                                                             )
                                                         }
+                                                        className="btn-complete-set"
                                                         disabled={set.completed}
-                                                        placeholder={
-                                                            set.targetWeight?.toString() ||
-                                                            "0"
-                                                        }
-                                                    />
+                                                    >
+                                                        <Check size={18} />
+                                                    </button>
                                                 </div>
-                                                <div className="input-wrapper">
-                                                    <label className="input-label">
-                                                        REPS
-                                                    </label>
-                                                    <input
-                                                        type="number"
-                                                        className="set-input"
-                                                        value={
-                                                            set.actualReps ?? ""
-                                                        }
-                                                        onChange={(e) =>
-                                                            handleRepsChange(
-                                                                set.id,
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        disabled={set.completed}
-                                                        placeholder={set.targetRepsMax.toString()}
-                                                    />
-                                                </div>
-                                                <button
-                                                    onClick={() =>
-                                                        handleCompleteSet(
-                                                            set.id
-                                                        )
-                                                    }
-                                                    className="btn-complete-set"
-                                                    disabled={set.completed}
-                                                >
-                                                    <Check size={18} />
-                                                </button>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
                                 </div>
                             </div>
                         ))}
