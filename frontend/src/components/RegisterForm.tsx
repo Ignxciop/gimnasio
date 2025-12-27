@@ -221,6 +221,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                     disabled={isLoading}
                     autoComplete="new-password"
                 />
+                {!errors.password && (
+                    <span className="form__help-text">
+                        Mínimo 4 caracteres, debe incluir: mayúscula, minúscula
+                        y número
+                    </span>
+                )}
             </div>
 
             <div className="form__field">

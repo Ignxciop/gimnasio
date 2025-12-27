@@ -100,3 +100,10 @@
     color: var(--color-danger);
     margin-top: var(--spacing-xs);
 }
+
+.form__help-text {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
+    font-style: italic;
+}
