@@ -4,6 +4,7 @@ interface TokenPayload {
     userId: number;
     email: string;
     roleId: number;
+    username: string;
 }
 
 export const getUserFromToken = (): TokenPayload | null => {
