@@ -26,11 +26,6 @@ function App() {
         setIsAuthenticated(true);
     };
 
-    const handleLogout = () => {
-        authService.removeToken();
-        setIsAuthenticated(false);
-    };
-
     return (
         <ToastProvider>
             <BrowserRouter>
@@ -63,7 +58,7 @@ function App() {
                         path="/inicio"
                         element={
                             isAuthenticated ? (
-                                <Home onLogout={handleLogout} />
+                                <Home />
                             ) : (
                                 <Navigate to="/login" replace />
                             )
