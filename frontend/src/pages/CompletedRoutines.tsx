@@ -15,7 +15,7 @@ import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
 
 const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return undefined;
+    if (!videoPath) return null;
     return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
 };
 
@@ -182,36 +182,39 @@ export default function CompletedRoutines() {
                                     className="workout-day-card-header"
                                     onClick={() => toggleWorkout(workout.id)}
                                 >
-                                    <div className="workout-day-card-info">
-                                        <h3 className="workout-day-routine-name">
+                                    <div className="workout-info">
+                                        <h3 className="workout-name">
                                             {workout.routineName}
                                         </h3>
-                                        <div className="workout-day-meta">
-                                            <span className="workout-day-date">
-                                                <Calendar size={16} />
+                                        <div className="workout-meta">
+                                            <Calendar size={14} />
+                                            <span>
                                                 {formatDate(
                                                     workout.endTime || ""
                                                 )}
                                             </span>
-                                            <span className="workout-day-duration">
-                                                <Clock size={16} />
+                                            <span className="meta-separator">
+                                                •
+                                            </span>
+                                            <Clock size={14} />
+                                            <span>
                                                 {formatDuration(
                                                     workout.duration
                                                 )}
                                             </span>
                                         </div>
                                     </div>
-                                    <button className="workout-day-toggle">
+                                    <button className="workout-toggle-btn">
                                         {isExpanded ? (
-                                            <ChevronUp size={24} />
+                                            <ChevronUp size={20} />
                                         ) : (
-                                            <ChevronDown size={24} />
+                                            <ChevronDown size={20} />
                                         )}
                                     </button>
                                 </div>
 
                                 {isExpanded && (
-                                    <div className="workout-day-exercises">
+                                    <div className="workout-day-card-content">
                                         {Object.entries(exerciseGroups)
                                             .sort(
                                                 ([, a], [, b]) =>
@@ -220,60 +223,46 @@ export default function CompletedRoutines() {
                                             .map(
                                                 ([
                                                     exerciseId,
-                                                    exerciseData,
+                                                    { exercise, sets },
                                                 ]) => (
                                                     <div
                                                         key={exerciseId}
-                                                        className="workout-day-exercise"
+                                                        className="exercise-section"
                                                     >
-                                                        <div className="workout-day-exercise-header">
-                                                            {exerciseData
-                                                                .exercise
-                                                                .videoPath && (
-                                                                <video
-                                                                    className="workout-day-exercise-video"
-                                                                    src={getVideoUrl(
-                                                                        exerciseData
-                                                                            .exercise
-                                                                            .videoPath
-                                                                    )}
-                                                                    muted
-                                                                    loop
-                                                                    playsInline
-                                                                    onMouseEnter={(
-                                                                        e
-                                                                    ) =>
-                                                                        e.currentTarget.play()
-                                                                    }
-                                                                    onMouseLeave={(
-                                                                        e
-                                                                    ) => {
-                                                                        e.currentTarget.pause();
-                                                                        e.currentTarget.currentTime = 0;
-                                                                    }}
-                                                                />
+                                                        <div className="exercise-header">
+                                                            {exercise.videoPath && (
+                                                                <div className="exercise-thumbnail">
+                                                                    <video
+                                                                        src={
+                                                                            getVideoUrl(
+                                                                                exercise.videoPath
+                                                                            ) ||
+                                                                            ""
+                                                                        }
+                                                                        className="exercise-thumbnail-video"
+                                                                    />
+                                                                </div>
                                                             )}
-                                                            <div className="workout-day-exercise-info">
-                                                                <h4 className="workout-day-exercise-name">
+                                                            <div className="exercise-details">
+                                                                <h4 className="exercise-name">
                                                                     {
-                                                                        exerciseData
-                                                                            .exercise
-                                                                            .name
+                                                                        exercise.name
                                                                     }
                                                                 </h4>
-                                                                <div className="workout-day-exercise-details">
-                                                                    <span className="workout-day-muscle">
+                                                                <div className="exercise-tags">
+                                                                    <span>
                                                                         {
-                                                                            exerciseData
-                                                                                .exercise
+                                                                            exercise
                                                                                 .muscleGroup
                                                                                 .name
                                                                         }
                                                                     </span>
-                                                                    <span className="workout-day-equipment">
+                                                                    <span>
+                                                                        •
+                                                                    </span>
+                                                                    <span>
                                                                         {
-                                                                            exerciseData
-                                                                                .exercise
+                                                                            exercise
                                                                                 .equipment
                                                                                 .name
                                                                         }
@@ -282,53 +271,46 @@ export default function CompletedRoutines() {
                                                             </div>
                                                         </div>
 
-                                                        <div className="workout-day-sets">
-                                                            {exerciseData.sets
-                                                                .sort(
-                                                                    (a, b) =>
-                                                                        a.order -
-                                                                        b.order
-                                                                )
-                                                                .map((set) => {
-                                                                    const setClass =
+                                                        <div className="sets-list">
+                                                            {sets.map((set) => (
+                                                                <div
+                                                                    key={set.id}
+                                                                    className={`set-item ${
                                                                         set.isPR
                                                                             ? "set-item--pr"
                                                                             : set.completed
                                                                             ? "set-item--completed"
-                                                                            : "set-item--not-completed";
-
-                                                                    return (
-                                                                        <div
-                                                                            key={
-                                                                                set.id
-                                                                            }
-                                                                            className={`workout-day-set-item ${setClass}`}
-                                                                        >
-                                                                            <span className="set-number">
-                                                                                Serie{" "}
-                                                                                {
-                                                                                    set.setNumber
-                                                                                }
-                                                                            </span>
-                                                                            <span className="set-weight">
-                                                                                {
-                                                                                    set.actualWeight
-                                                                                }{" "}
-                                                                                kg
-                                                                                ×{" "}
-                                                                                {
-                                                                                    set.actualReps
-                                                                                }{" "}
-                                                                                reps
-                                                                            </span>
-                                                                            {set.isPR && (
-                                                                                <span className="pr-badge">
-                                                                                    PR
-                                                                                </span>
-                                                                            )}
-                                                                        </div>
-                                                                    );
-                                                                })}
+                                                                            : "set-item--not-completed"
+                                                                    }`}
+                                                                >
+                                                                    <span className="set-number">
+                                                                        Serie{" "}
+                                                                        {
+                                                                            set.setNumber
+                                                                        }
+                                                                    </span>
+                                                                    <div className="set-data">
+                                                                        <span>
+                                                                            {set.actualWeight ||
+                                                                                0}{" "}
+                                                                            kg
+                                                                        </span>
+                                                                        <span>
+                                                                            ×
+                                                                        </span>
+                                                                        <span>
+                                                                            {set.actualReps ||
+                                                                                0}{" "}
+                                                                            reps
+                                                                        </span>
+                                                                    </div>
+                                                                    {set.isPR && (
+                                                                        <span className="pr-badge">
+                                                                            PR
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     </div>
                                                 )
