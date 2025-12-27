@@ -290,6 +290,66 @@ class ActiveRoutineService {
 
         return { success: true, message: "Rutina cancelada" };
     }
+
+    async getCompletedDates(userId, year, month) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59);
+
+        const completedRoutines = await prisma.activeRoutine.findMany({
+            where: {
+                userId,
+                status: "completed",
+                endTime: {
+                    gte: startDate,
+                    lte: endDate,
+                },
+            },
+            select: {
+                endTime: true,
+            },
+        });
+
+        const dates = completedRoutines.map((routine) => {
+            const date = new Date(routine.endTime);
+            return date.getDate();
+        });
+
+        return [...new Set(dates)];
+    }
+
+    async getRecentCompleted(userId, limit = 3) {
+        const completedRoutines = await prisma.activeRoutine.findMany({
+            where: {
+                userId,
+                status: "completed",
+            },
+            include: {
+                routine: true,
+                sets: {
+                    where: {
+                        completed: true,
+                    },
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+            orderBy: {
+                endTime: "desc",
+            },
+            take: limit,
+        });
+
+        return completedRoutines.map((ar) => ({
+            id: ar.id,
+            routineName: ar.routine.name,
+            date: ar.endTime,
+            duration: Math.floor(
+                (new Date(ar.endTime) - new Date(ar.startTime)) / 1000
+            ),
+            completedSets: ar.sets.length,
+        }));
+    }
 }
 
 export default new ActiveRoutineService();

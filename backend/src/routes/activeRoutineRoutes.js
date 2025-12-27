@@ -54,4 +54,16 @@ router.post("/:id/complete", authenticate, activeRoutineController.complete);
 
 router.delete("/:id/cancel", authenticate, activeRoutineController.cancel);
 
+router.get(
+    "/completed/dates",
+    authenticate,
+    activeRoutineController.getCompletedDates
+);
+
+router.get(
+    "/completed/recent",
+    authenticate,
+    activeRoutineController.getRecentCompleted
+);
+
 export default router;

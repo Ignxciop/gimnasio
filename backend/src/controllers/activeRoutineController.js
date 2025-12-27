@@ -117,6 +117,47 @@ class ActiveRoutineController {
             next(error);
         }
     }
+
+    async getCompletedDates(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            const { year, month } = req.query;
+
+            const dates = await activeRoutineService.getCompletedDates(
+                userId,
+                parseInt(year),
+                parseInt(month)
+            );
+
+            res.status(200).json({
+                success: true,
+                data: dates,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getRecentCompleted(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            const limit = req.query.limit
+                ? parseInt(req.query.limit)
+                : undefined;
+
+            const recent = await activeRoutineService.getRecentCompleted(
+                userId,
+                limit
+            );
+
+            res.status(200).json({
+                success: true,
+                data: recent,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new ActiveRoutineController();
