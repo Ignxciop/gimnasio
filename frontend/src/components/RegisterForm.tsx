@@ -17,6 +17,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [gender, setGender] = useState<"male" | "female">("male");
     const [errors, setErrors] = useState<{
         name?: string;
         lastname?: string;
@@ -24,6 +25,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
         username?: string;
         password?: string;
         confirmPassword?: string;
+        gender?: string;
     }>({});
     const [generalError, setGeneralError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -36,12 +38,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             username?: string;
             password?: string;
             confirmPassword?: string;
+            gender?: string;
         } = {};
 
         if (!name.trim()) newErrors.name = "El nombre es requerido";
         if (!lastname.trim()) newErrors.lastname = "El apellido es requerido";
         if (!username.trim())
             newErrors.username = "El nombre de usuario es requerido";
+        if (!gender) newErrors.gender = "El género es requerido";
 
         const emailError = validators.email(email);
         if (emailError) newErrors.email = emailError;
@@ -72,6 +76,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                 email,
                 username,
                 password,
+                gender,
             });
             authService.saveToken(response.data.token);
 
@@ -85,6 +90,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                         email?: string;
                         username?: string;
                         password?: string;
+                        gender?: string;
                     } = {};
                     error.errors.forEach((err) => {
                         const field = err.field as keyof typeof backendErrors;
@@ -165,6 +171,43 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                     disabled={isLoading}
                     autoComplete="username"
                 />
+            </div>
+
+            <div className="form__field">
+                <label className="form__label">Género</label>
+                <div className="form__radio-group">
+                    <label className="form__radio-label">
+                        <input
+                            type="radio"
+                            name="gender"
+                            value="male"
+                            checked={gender === "male"}
+                            onChange={(e) =>
+                                setGender(e.target.value as "male" | "female")
+                            }
+                            disabled={isLoading}
+                            className="form__radio-input"
+                        />
+                        <span className="form__radio-text">Hombre</span>
+                    </label>
+                    <label className="form__radio-label">
+                        <input
+                            type="radio"
+                            name="gender"
+                            value="female"
+                            checked={gender === "female"}
+                            onChange={(e) =>
+                                setGender(e.target.value as "male" | "female")
+                            }
+                            disabled={isLoading}
+                            className="form__radio-input"
+                        />
+                        <span className="form__radio-text">Mujer</span>
+                    </label>
+                </div>
+                {errors.gender && (
+                    <span className="form__error-text">{errors.gender}</span>
+                )}
             </div>
 
             <div className="form__field">
