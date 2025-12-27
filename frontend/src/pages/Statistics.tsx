@@ -28,6 +28,7 @@ export const Statistics: React.FC = () => {
     const [isOwnProfile, setIsOwnProfile] = useState(false);
     const [radarData, setRadarData] = useState<MuscleRadarData[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
+    const [userGender, setUserGender] = useState<"male" | "female">("male");
     const [showInfo, setShowInfo] = useState(false);
     const [availableMonths, setAvailableMonths] = useState<string[]>([]);
     const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -89,6 +90,8 @@ export const Statistics: React.FC = () => {
                     username,
                     token
                 );
+
+                setUserGender(profile.gender || "male");
 
                 let currentUserId = null;
                 if (token) {
@@ -341,7 +344,10 @@ export const Statistics: React.FC = () => {
                         </div>
 
                         {radarData.length > 0 && (
-                            <MuscleMapBody muscleData={radarData} />
+                            <MuscleMapBody
+                                muscleData={radarData}
+                                gender={userGender}
+                            />
                         )}
                     </div>
                 </div>
