@@ -30,6 +30,33 @@ class ProfileService {
         return user;
     }
 
+    async getUserProfileById(userId) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                lastname: true,
+                username: true,
+                isProfilePublic: true,
+                role: {
+                    select: {
+                        id: true,
+                        role: true,
+                    },
+                },
+            },
+        });
+
+        if (!user) {
+            const error = new Error("Usuario no encontrado");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return user;
+    }
+
     async getProfileByUsername(username, requesterId = null) {
         const user = await prisma.user.findUnique({
             where: { username },

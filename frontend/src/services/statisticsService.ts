@@ -28,18 +28,24 @@ export const statisticsService = {
         userId: string,
         year: number,
         month: number,
-        token: string
+        token: string | null
     ): Promise<EffectiveSet[]> {
+        const headers: HeadersInit = {};
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+
         const response = await fetch(
             `${API_URL}/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers,
             }
         );
 
         if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error("Este perfil es privado");
+            }
             throw new Error("Error al obtener sets mensuales");
         }
 
@@ -56,18 +62,24 @@ export const statisticsService = {
 
     async getMonthsWithWorkouts(
         userId: string,
-        token: string
+        token: string | null
     ): Promise<string[]> {
+        const headers: HeadersInit = {};
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+
         const response = await fetch(
             `${API_URL}/statistics/months-with-workouts?userId=${userId}`,
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers,
             }
         );
 
         if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error("Este perfil es privado");
+            }
             throw new Error("Error al obtener meses con entrenamientos");
         }
 

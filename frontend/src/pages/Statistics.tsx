@@ -37,7 +37,7 @@ export const Statistics: React.FC = () => {
 
     const loadMonthData = async (
         userId: string,
-        token: string,
+        token: string | null,
         year: number,
         month: number
     ) => {
@@ -53,12 +53,20 @@ export const Statistics: React.FC = () => {
                 muscleGrowthCalculator.calculateMonthlyStimulus(monthlySets);
             setRadarData(calculatedData);
         } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al cargar datos del mes"
-            );
+            if (
+                error instanceof Error &&
+                error.message === "Este perfil es privado"
+            ) {
+                showToast("error", "Este perfil es privado");
+                navigate("/inicio");
+            } else {
+                showToast(
+                    "error",
+                    error instanceof Error
+                        ? error.message
+                        : "Error al cargar datos del mes"
+                );
+            }
         }
     };
 
@@ -85,27 +93,23 @@ export const Statistics: React.FC = () => {
                     setUserId(currentUserId);
                 }
 
-                if (token && currentUserId) {
-                    const exercises = await statisticsService.getExercises(
-                        token
-                    );
-                    const mappings =
-                        buildExerciseMappingsFromBackend(exercises);
-                    muscleGrowthCalculator.setExerciseMappings(mappings);
+                const exercises = await statisticsService.getExercises(
+                    token || ""
+                );
+                const mappings = buildExerciseMappingsFromBackend(exercises);
+                muscleGrowthCalculator.setExerciseMappings(mappings);
 
-                    const months =
-                        await statisticsService.getMonthsWithWorkouts(
-                            currentUserId,
-                            token
-                        );
-                    setAvailableMonths(months);
+                const months = await statisticsService.getMonthsWithWorkouts(
+                    profile.id,
+                    token
+                );
+                setAvailableMonths(months);
 
-                    if (months.length > 0) {
-                        const [year, month] = months[0].split("-").map(Number);
-                        setSelectedYear(year);
-                        setSelectedMonth(month);
-                        await loadMonthData(currentUserId, token, year, month);
-                    }
+                if (months.length > 0) {
+                    const [year, month] = months[0].split("-").map(Number);
+                    setSelectedYear(year);
+                    setSelectedMonth(month);
+                    await loadMonthData(profile.id, token, year, month);
                 }
 
                 setLoading(false);
@@ -151,9 +155,7 @@ export const Statistics: React.FC = () => {
 
             if (userId) {
                 const token = authService.getToken();
-                if (token) {
-                    await loadMonthData(userId, token, year, month);
-                }
+                await loadMonthData(userId, token, year, month);
             }
         }
     };
@@ -170,11 +172,10 @@ export const Statistics: React.FC = () => {
 
             if (userId) {
                 const token = authService.getToken();
-                if (token) {
-                    await loadMonthData(userId, token, year, month);
-                }
+                await loadMonthData(userId, token, year, month);
             }
         }
+    };
     };
 
     const getMonthName = (month: number) => {

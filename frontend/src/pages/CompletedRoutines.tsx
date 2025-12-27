@@ -72,18 +72,22 @@ export default function CompletedRoutines() {
                     setIsOwnProfile(currentUser?.username === username);
                 }
 
-                if (!token) return;
+                const headers: HeadersInit = {};
+                if (token) {
+                    headers.Authorization = `Bearer ${token}`;
+                }
 
                 const response = await fetch(
                     `http://localhost:3000/api/statistics/all-completed-routines?userId=${profile.id}`,
                     {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
+                        headers,
                     }
                 );
 
                 if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error("Este perfil es privado");
+                    }
                     throw new Error("Error al cargar rutinas");
                 }
 

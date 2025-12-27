@@ -1,4 +1,5 @@
 import statisticsService from "../services/statisticsService.js";
+import profileService from "../services/profileService.js";
 
 class StatisticsController {
     async getMonthlySets(req, res, next) {
@@ -8,6 +9,16 @@ class StatisticsController {
             if (!userId || !year || !month) {
                 const error = new Error("userId, year y month son requeridos");
                 error.statusCode = 400;
+                throw error;
+            }
+
+            const user = await profileService.getUserProfileById(userId);
+            const requesterId = req.user ? req.user.userId : null;
+            const isOwnProfile = requesterId && requesterId === user.id;
+
+            if (!user.isProfilePublic && !isOwnProfile) {
+                const error = new Error("Este perfil es privado");
+                error.statusCode = 403;
                 throw error;
             }
 
@@ -36,6 +47,16 @@ class StatisticsController {
                 throw error;
             }
 
+            const user = await profileService.getUserProfileById(userId);
+            const requesterId = req.user ? req.user.userId : null;
+            const isOwnProfile = requesterId && requesterId === user.id;
+
+            if (!user.isProfilePublic && !isOwnProfile) {
+                const error = new Error("Este perfil es privado");
+                error.statusCode = 403;
+                throw error;
+            }
+
             const months = await statisticsService.getMonthsWithWorkouts(
                 userId
             );
@@ -56,6 +77,16 @@ class StatisticsController {
             if (!userId) {
                 const error = new Error("userId es requerido");
                 error.statusCode = 400;
+                throw error;
+            }
+
+            const user = await profileService.getUserProfileById(userId);
+            const requesterId = req.user ? req.user.userId : null;
+            const isOwnProfile = requesterId && requesterId === user.id;
+
+            if (!user.isProfilePublic && !isOwnProfile) {
+                const error = new Error("Este perfil es privado");
+                error.statusCode = 403;
                 throw error;
             }
 
