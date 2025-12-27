@@ -104,6 +104,26 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.btn-add-set {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 6px;
+    color: #22c55e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-add-set:hover {
+    background-color: rgba(34, 197, 94, 0.15);
+    transform: scale(1.05);
+}
+
 .exercise-thumbnail {
     width: 50px;
     height: 50px;
@@ -153,10 +173,16 @@
     border-radius: 6px;
     padding: 0.75rem;
     transition: all 0.2s ease;
+    touch-action: pan-y;
 }
 
 .set-card:hover {
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+.set-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
 }
 
 .set-card.completed {
@@ -265,6 +291,26 @@
 .btn-complete-set:disabled {
     opacity: 0.3;
     cursor: not-allowed;
+}
+
+.btn-remove-set {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background-color: rgba(220, 20, 60, 0.1);
+    border: 1px solid rgba(220, 20, 60, 0.3);
+    color: var(--accent-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-remove-set:hover {
+    background-color: rgba(220, 20, 60, 0.15);
+    transform: scale(1.05);
 }
 
 @media (max-width: 768px) {

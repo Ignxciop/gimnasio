@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, GripVertical, X } from "lucide-react";
+import { ArrowLeft, Check, GripVertical, X, Plus, Trash2 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
@@ -80,6 +80,8 @@ export default function ActiveRoutine() {
     );
     const [elapsedTime, setElapsedTime] = useState(0);
     const [draggedSet, setDraggedSet] = useState<ActiveRoutineSet | null>(null);
+    const dragStartY = useRef<number>(0);
+    const hasMoved = useRef<boolean>(false);
 
     useEffect(() => {
         const fetchActiveRoutine = async () => {
@@ -182,8 +184,28 @@ export default function ActiveRoutine() {
         }
     };
 
-    const handleDragStart = (set: ActiveRoutineSet) => {
+    const handleDragStart = (
+        e: React.DragEvent | React.TouchEvent,
+        set: ActiveRoutineSet
+    ) => {
         setDraggedSet(set);
+        hasMoved.current = false;
+
+        if ("touches" in e) {
+            dragStartY.current = e.touches[0].clientY;
+        }
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!draggedSet) return;
+
+        const currentY = e.touches[0].clientY;
+        const deltaY = Math.abs(currentY - dragStartY.current);
+
+        if (deltaY > 10) {
+            hasMoved.current = true;
+            e.preventDefault();
+        }
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -228,6 +250,132 @@ export default function ActiveRoutine() {
         }
 
         setDraggedSet(null);
+    };
+
+    const handleTouchEnd = async (
+        e: React.TouchEvent,
+        targetSet: ActiveRoutineSet
+    ) => {
+        if (!hasMoved.current || !draggedSet) {
+            setDraggedSet(null);
+            return;
+        }
+
+        const touch = e.changedTouches[0];
+        const elementBelow = document.elementFromPoint(
+            touch.clientX,
+            touch.clientY
+        );
+
+        const setCard = elementBelow?.closest(".set-card");
+        if (!setCard) {
+            setDraggedSet(null);
+            return;
+        }
+
+        const targetId = parseInt(setCard.getAttribute("data-set-id") || "0");
+        const target = activeRoutine?.sets.find((s) => s.id === targetId);
+
+        if (
+            !target ||
+            !draggedSet ||
+            draggedSet.id === target.id ||
+            !activeRoutine
+        ) {
+            setDraggedSet(null);
+            return;
+        }
+
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            const sets = activeRoutine.sets;
+            const draggedIndex = sets.findIndex((s) => s.id === draggedSet.id);
+            const targetIndex = sets.findIndex((s) => s.id === target.id);
+
+            const reordered = [...sets];
+            reordered.splice(draggedIndex, 1);
+            reordered.splice(targetIndex, 0, draggedSet);
+
+            const setIds = reordered.map((s) => s.id);
+
+            await activeRoutineService.reorderSets(setIds, token);
+
+            setActiveRoutine({
+                ...activeRoutine,
+                sets: reordered,
+            });
+
+            showToast("success", "Orden actualizado");
+        } catch {
+            showToast("error", "Error al actualizar orden");
+        }
+
+        setDraggedSet(null);
+    };
+
+    const handleAddSet = async (exerciseId: number) => {
+        if (!activeRoutine) return;
+
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            const newSet = await activeRoutineService.addSet(exerciseId, token);
+
+            setActiveRoutine({
+                ...activeRoutine,
+                sets: [...activeRoutine.sets, newSet],
+            });
+
+            showToast("success", "Serie agregada");
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al agregar serie"
+            );
+        }
+    };
+
+    const handleRemoveSet = async (setId: number, exerciseId: number) => {
+        if (!activeRoutine) return;
+
+        const exerciseSets = activeRoutine.sets.filter(
+            (s) => s.exerciseId === exerciseId
+        );
+
+        if (exerciseSets.length <= 1) {
+            showToast("error", "No puedes eliminar la única serie");
+            return;
+        }
+
+        try {
+            const token = authService.getToken();
+            if (!token) return;
+
+            await activeRoutineService.removeSet(setId, token);
+
+            const updatedSets = activeRoutine.sets.filter(
+                (s) => s.id !== setId
+            );
+
+            setActiveRoutine({
+                ...activeRoutine,
+                sets: updatedSets,
+            });
+
+            showToast("success", "Serie eliminada");
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al eliminar serie"
+            );
+        }
     };
 
     const handleCompleteWorkout = async () => {
@@ -348,6 +496,15 @@ export default function ActiveRoutine() {
                                             </span>
                                         </div>
                                     </div>
+                                    <button
+                                        onClick={() =>
+                                            handleAddSet(Number(exerciseId))
+                                        }
+                                        className="btn-add-set"
+                                        title="Agregar serie"
+                                    >
+                                        <Plus size={18} />
+                                    </button>
                                 </div>
                                 <div className="sets-group">
                                     {sets
@@ -355,14 +512,26 @@ export default function ActiveRoutine() {
                                         .map((set, index) => (
                                             <div
                                                 key={set.id}
+                                                data-set-id={set.id}
                                                 className={`set-card ${
                                                     set.completed
                                                         ? "completed"
                                                         : ""
-                                                } ${set.isPR ? "pr" : ""}`}
+                                                } ${set.isPR ? "pr" : ""} ${
+                                                    draggedSet?.id === set.id
+                                                        ? "dragging"
+                                                        : ""
+                                                }`}
                                                 draggable
-                                                onDragStart={() =>
-                                                    handleDragStart(set)
+                                                onDragStart={(e) =>
+                                                    handleDragStart(e, set)
+                                                }
+                                                onTouchStart={(e) =>
+                                                    handleDragStart(e, set)
+                                                }
+                                                onTouchMove={handleTouchMove}
+                                                onTouchEnd={(e) =>
+                                                    handleTouchEnd(e, set)
                                                 }
                                                 onDragOver={handleDragOver}
                                                 onDrop={(e) =>
@@ -438,6 +607,18 @@ export default function ActiveRoutine() {
                                                         disabled={set.completed}
                                                     >
                                                         <Check size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleRemoveSet(
+                                                                set.id,
+                                                                set.exerciseId
+                                                            )
+                                                        }
+                                                        className="btn-remove-set"
+                                                        title="Eliminar serie"
+                                                    >
+                                                        <Trash2 size={16} />
                                                     </button>
                                                 </div>
                                             </div>
