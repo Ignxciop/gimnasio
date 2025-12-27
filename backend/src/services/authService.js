@@ -48,6 +48,7 @@ class AuthService {
             userId: user.id,
             email: user.email,
             roleId: user.roleId,
+            username: user.username,
         });
 
         // Retornar datos del usuario sin el password
