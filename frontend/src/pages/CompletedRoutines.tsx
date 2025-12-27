@@ -11,13 +11,11 @@ import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
-import { getUserFromToken } from "../utils/getUserFromToken";
-import { dashboardService } from "../services/dashboardService";
 import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
 
 const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return null;
+    if (!videoPath) return undefined;
     return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
 };
 
@@ -51,7 +49,6 @@ export default function CompletedRoutines() {
         new Set()
     );
     const [loading, setLoading] = useState(true);
-    const [isOwnProfile, setIsOwnProfile] = useState(false);
 
     useEffect(() => {
         const fetchRoutines = async () => {
@@ -66,11 +63,6 @@ export default function CompletedRoutines() {
                     username,
                     token
                 );
-
-                if (token) {
-                    const currentUser = getUserFromToken(token);
-                    setIsOwnProfile(currentUser?.username === username);
-                }
 
                 const headers: HeadersInit = {};
                 if (token) {

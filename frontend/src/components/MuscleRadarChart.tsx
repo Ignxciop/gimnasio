@@ -65,8 +65,8 @@ export const MuscleRadarChart: React.FC<MuscleRadarChartProps> = ({
                             borderRadius: "8px",
                             color: "#fff",
                         }}
-                        formatter={(value: number) => [
-                            `${value}%`,
+                        formatter={(value: number | undefined) => [
+                            `${value ?? 0}%`,
                             "Desarrollo",
                         ]}
                     />

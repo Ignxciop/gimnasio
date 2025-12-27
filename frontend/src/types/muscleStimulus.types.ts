@@ -1,11 +1,13 @@
-export enum MuscleGroup {
-    PECHO = "Pecho",
-    ESPALDA = "Espalda",
-    HOMBROS = "Hombros",
-    BRAZOS = "Brazos",
-    PIERNAS = "Piernas",
-    ABDOMEN = "Abdomen",
-}
+export const MuscleGroup = {
+    PECHO: "Pecho",
+    ESPALDA: "Espalda",
+    HOMBROS: "Hombros",
+    BRAZOS: "Brazos",
+    PIERNAS: "Piernas",
+    ABDOMEN: "Abdomen",
+} as const;
+
+export type MuscleGroup = (typeof MuscleGroup)[keyof typeof MuscleGroup];
 
 export interface MuscleParticipation {
     muscleGroup: MuscleGroup;

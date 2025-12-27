@@ -4,7 +4,6 @@ import type {
     ExerciseMuscleMapping,
     WeeklyMuscleVolume,
     MuscleRadarData,
-    MUSCLE_TARGET_VOLUMES,
 } from "../types/muscleStimulus.types";
 import { MUSCLE_TARGET_VOLUMES as TARGET_VOLUMES } from "../types/muscleStimulus.types";
 

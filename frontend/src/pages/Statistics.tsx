@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     ArrowLeft,
@@ -35,40 +35,45 @@ export const Statistics: React.FC = () => {
         new Date().getMonth() + 1
     );
 
-    const loadMonthData = async (
-        userId: string,
-        token: string | null,
-        year: number,
-        month: number
-    ) => {
-        try {
-            const monthlySets = await statisticsService.getMonthlySets(
-                userId,
-                year,
-                month,
-                token
-            );
-
-            const calculatedData =
-                muscleGrowthCalculator.calculateMonthlyStimulus(monthlySets);
-            setRadarData(calculatedData);
-        } catch (error) {
-            if (
-                error instanceof Error &&
-                error.message === "Este perfil es privado"
-            ) {
-                showToast("error", "Este perfil es privado");
-                navigate("/inicio");
-            } else {
-                showToast(
-                    "error",
-                    error instanceof Error
-                        ? error.message
-                        : "Error al cargar datos del mes"
+    const loadMonthData = useCallback(
+        async (
+            userId: string,
+            token: string | null,
+            year: number,
+            month: number
+        ) => {
+            try {
+                const monthlySets = await statisticsService.getMonthlySets(
+                    userId,
+                    year,
+                    month,
+                    token
                 );
+
+                const calculatedData =
+                    muscleGrowthCalculator.calculateMonthlyStimulus(
+                        monthlySets
+                    );
+                setRadarData(calculatedData);
+            } catch (error) {
+                if (
+                    error instanceof Error &&
+                    error.message === "Este perfil es privado"
+                ) {
+                    showToast("error", "Este perfil es privado");
+                    navigate("/inicio");
+                } else {
+                    showToast(
+                        "error",
+                        error instanceof Error
+                            ? error.message
+                            : "Error al cargar datos del mes"
+                    );
+                }
             }
-        }
-    };
+        },
+        [navigate, showToast]
+    );
 
     useEffect(() => {
         const verifyAccess = async () => {
@@ -86,7 +91,7 @@ export const Statistics: React.FC = () => {
 
                 let currentUserId = null;
                 if (token) {
-                    const currentUser = getUserFromToken(token);
+                    const currentUser = getUserFromToken();
                     const isOwn = currentUser?.username === username;
                     setIsOwnProfile(isOwn);
                     currentUserId = currentUser?.userId.toString() || null;
@@ -133,7 +138,7 @@ export const Statistics: React.FC = () => {
         };
 
         verifyAccess();
-    }, [username, navigate, showToast]);
+    }, [username, navigate, showToast, loadMonthData]);
 
     const handleGoBack = () => {
         navigate(`/perfil/${username}`);
@@ -175,7 +180,6 @@ export const Statistics: React.FC = () => {
                 await loadMonthData(userId, token, year, month);
             }
         }
-    };
     };
 
     const getMonthName = (month: number) => {
