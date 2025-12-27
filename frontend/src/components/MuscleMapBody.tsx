@@ -40,7 +40,7 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                 <div className="muscle-map__body">
                     <h3 className="muscle-map__title">Vista Frontal</h3>
                     <svg
-                        viewBox="0 0 200 400"
+                        viewBox="0 0 200 450"
                         className="muscle-map__svg"
                         xmlns="http://www.w3.org/2000/svg"
                     >
@@ -83,7 +83,7 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             )}
                             {brazosLiga.gradient && (
                                 <linearGradient
-                                    id="brazosGradient"
+                                    id="brazosFrontalGradient"
                                     x1="0%"
                                     y1="0%"
                                     x2="100%"
@@ -119,7 +119,7 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             )}
                             {piernasLiga.gradient && (
                                 <linearGradient
-                                    id="piernasGradient"
+                                    id="piernasFrontalGradient"
                                     x1="0%"
                                     y1="0%"
                                     x2="0%"
@@ -141,11 +141,20 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             <ellipse
                                 cx="100"
                                 cy="30"
-                                rx="20"
-                                ry="25"
-                                fill="#2a2a2a"
-                                stroke="#fff"
+                                rx="22"
+                                ry="28"
+                                fill="#1a1a1a"
+                                stroke="#333"
                                 strokeWidth="1"
+                            />
+                            <ellipse
+                                cx="100"
+                                cy="50"
+                                rx="15"
+                                ry="8"
+                                fill="#0d0d0d"
+                                stroke="#333"
+                                strokeWidth="0.5"
                             />
                         </g>
 
@@ -154,33 +163,55 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-muscle="hombros"
                             data-liga={hombrosLiga.liga}
                         >
-                            <ellipse
-                                cx="60"
-                                cy="75"
-                                rx="18"
-                                ry="12"
+                            <path
+                                d="M 55 70 Q 50 75 52 85 L 58 82 Q 60 75 58 70 Z"
                                 fill={
                                     hombrosLiga.gradient
                                         ? "url(#hombrosGradient)"
                                         : hombrosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <path
+                                d="M 145 70 Q 150 75 148 85 L 142 82 Q 140 75 142 70 Z"
+                                fill={
+                                    hombrosLiga.gradient
+                                        ? "url(#hombrosGradient)"
+                                        : hombrosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <ellipse
-                                cx="140"
-                                cy="75"
-                                rx="18"
-                                ry="12"
+                                cx="62"
+                                cy="78"
+                                rx="20"
+                                ry="14"
                                 fill={
                                     hombrosLiga.gradient
                                         ? "url(#hombrosGradient)"
                                         : hombrosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="138"
+                                cy="78"
+                                rx="20"
+                                ry="14"
+                                fill={
+                                    hombrosLiga.gradient
+                                        ? "url(#hombrosGradient)"
+                                        : hombrosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <title>
                                 Hombros: {hombrosValue}% - {hombrosLiga.liga}
@@ -193,15 +224,24 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-liga={pechoLiga.liga}
                         >
                             <path
-                                d="M 80 65 Q 100 60 120 65 L 115 105 Q 100 110 85 105 Z"
+                                d="M 75 68 Q 82 65 90 68 L 95 90 Q 100 95 100 100 Q 100 95 105 90 L 110 68 Q 118 65 125 68 L 120 110 Q 118 120 115 125 Q 100 132 85 125 Q 82 120 80 110 Z"
                                 fill={
                                     pechoLiga.gradient
                                         ? "url(#pechoGradient)"
                                         : pechoColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <line
+                                x1="100"
+                                y1="75"
+                                x2="100"
+                                y2="115"
+                                stroke="#000"
+                                strokeWidth="0.8"
+                                opacity="0.3"
                             />
                             <title>
                                 Pecho: {pechoValue}% - {pechoLiga.liga}
@@ -214,54 +254,82 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-liga={brazosLiga.liga}
                         >
                             <ellipse
-                                cx="50"
-                                cy="110"
-                                rx="10"
-                                ry="35"
+                                cx="48"
+                                cy="105"
+                                rx="11"
+                                ry="28"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosFrontalGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <ellipse
-                                cx="150"
-                                cy="110"
-                                rx="10"
-                                ry="35"
+                                cx="152"
+                                cy="105"
+                                rx="11"
+                                ry="28"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosFrontalGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 45 145 L 40 185 L 50 185 L 55 145 Z"
+                                d="M 42 133 Q 38 145 40 160 L 42 180 L 48 180 L 50 160 Q 52 145 48 133 Z"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosFrontalGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 155 145 L 160 185 L 150 185 L 145 145 Z"
+                                d="M 158 133 Q 162 145 160 160 L 158 180 L 152 180 L 150 160 Q 148 145 152 133 Z"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosFrontalGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="45"
+                                cy="195"
+                                rx="9"
+                                ry="15"
+                                fill={
+                                    brazosLiga.gradient
+                                        ? "url(#brazosFrontalGradient)"
+                                        : brazosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="155"
+                                cy="195"
+                                rx="9"
+                                ry="15"
+                                fill={
+                                    brazosLiga.gradient
+                                        ? "url(#brazosFrontalGradient)"
+                                        : brazosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <title>
                                 Brazos: {brazosValue}% - {brazosLiga.liga}
@@ -273,37 +341,68 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-muscle="abdomen"
                             data-liga={abdomenLiga.liga}
                         >
-                            <rect
-                                x="80"
-                                y="110"
-                                width="40"
-                                height="60"
-                                rx="5"
+                            <path
+                                d="M 78 128 L 75 175 Q 75 185 78 190 L 85 190 Q 88 185 88 175 L 88 128 Z"
                                 fill={
                                     abdomenLiga.gradient
                                         ? "url(#abdomenGradient)"
                                         : abdomenColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <path
+                                d="M 122 128 L 125 175 Q 125 185 122 190 L 115 190 Q 112 185 112 175 L 112 128 Z"
+                                fill={
+                                    abdomenLiga.gradient
+                                        ? "url(#abdomenGradient)"
+                                        : abdomenColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <rect
+                                x="88"
+                                y="128"
+                                width="24"
+                                height="62"
+                                rx="2"
+                                fill={
+                                    abdomenLiga.gradient
+                                        ? "url(#abdomenGradient)"
+                                        : abdomenColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <line
-                                x1="100"
-                                y1="125"
-                                x2="100"
-                                y2="155"
-                                stroke="#fff"
-                                strokeWidth="0.5"
+                                x1="88"
+                                y1="145"
+                                x2="112"
+                                y2="145"
+                                stroke="#000"
+                                strokeWidth="0.8"
                                 opacity="0.3"
                             />
                             <line
-                                x1="85"
-                                y1="140"
-                                x2="115"
-                                y2="140"
-                                stroke="#fff"
-                                strokeWidth="0.5"
+                                x1="88"
+                                y1="162"
+                                x2="112"
+                                y2="162"
+                                stroke="#000"
+                                strokeWidth="0.8"
+                                opacity="0.3"
+                            />
+                            <line
+                                x1="100"
+                                y1="128"
+                                x2="100"
+                                y2="190"
+                                stroke="#000"
+                                strokeWidth="0.8"
                                 opacity="0.3"
                             />
                             <title>
@@ -317,48 +416,64 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-liga={piernasLiga.liga}
                         >
                             <path
-                                d="M 85 175 L 80 280 Q 82 300 90 300 L 95 180 Z"
+                                d="M 78 195 L 75 245 Q 73 270 75 290 L 78 335 L 85 335 L 88 290 Q 90 270 88 245 L 88 195 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasFrontalGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 115 175 L 120 280 Q 118 300 110 300 L 105 180 Z"
+                                d="M 122 195 L 125 245 Q 127 270 125 290 L 122 335 L 115 335 L 112 290 Q 110 270 112 245 L 112 195 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasFrontalGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 85 300 L 82 360 L 92 360 L 90 300 Z"
+                                d="M 78 335 L 76 390 Q 75 405 78 410 L 85 410 L 88 390 L 88 335 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasFrontalGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 115 300 L 118 360 L 108 360 L 110 300 Z"
+                                d="M 122 335 L 124 390 Q 125 405 122 410 L 115 410 L 112 390 L 112 335 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasFrontalGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="81.5"
+                                cy="245"
+                                rx="7"
+                                ry="12"
+                                fill="#0d0d0d"
+                                opacity="0.3"
+                            />
+                            <ellipse
+                                cx="118.5"
+                                cy="245"
+                                rx="7"
+                                ry="12"
+                                fill="#0d0d0d"
+                                opacity="0.3"
                             />
                             <title>
                                 Piernas: {piernasValue}% - {piernasLiga.liga}
@@ -370,7 +485,7 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                 <div className="muscle-map__body">
                     <h3 className="muscle-map__title">Vista Posterior</h3>
                     <svg
-                        viewBox="0 0 200 400"
+                        viewBox="0 0 200 450"
                         className="muscle-map__svg"
                         xmlns="http://www.w3.org/2000/svg"
                     >
@@ -393,16 +508,52 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                                     />
                                 </linearGradient>
                             )}
+                            {piernasLiga.gradient && (
+                                <linearGradient
+                                    id="piernasPostGradient"
+                                    x1="0%"
+                                    y1="0%"
+                                    x2="0%"
+                                    y2="100%"
+                                >
+                                    <stop
+                                        offset="0%"
+                                        stopColor={piernasLiga.gradient.from}
+                                    />
+                                    <stop
+                                        offset="100%"
+                                        stopColor={piernasLiga.gradient.to}
+                                    />
+                                </linearGradient>
+                            )}
+                            {brazosLiga.gradient && (
+                                <linearGradient
+                                    id="brazosPostGradient"
+                                    x1="0%"
+                                    y1="0%"
+                                    x2="100%"
+                                    y2="0%"
+                                >
+                                    <stop
+                                        offset="0%"
+                                        stopColor={brazosLiga.gradient.from}
+                                    />
+                                    <stop
+                                        offset="100%"
+                                        stopColor={brazosLiga.gradient.to}
+                                    />
+                                </linearGradient>
+                            )}
                         </defs>
 
                         <g className="muscle-group" data-muscle="cabeza">
                             <ellipse
                                 cx="100"
                                 cy="30"
-                                rx="20"
-                                ry="25"
-                                fill="#2a2a2a"
-                                stroke="#fff"
+                                rx="22"
+                                ry="28"
+                                fill="#1a1a1a"
+                                stroke="#333"
                                 strokeWidth="1"
                             />
                         </g>
@@ -412,33 +563,55 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-muscle="hombros"
                             data-liga={hombrosLiga.liga}
                         >
-                            <ellipse
-                                cx="60"
-                                cy="75"
-                                rx="18"
-                                ry="12"
+                            <path
+                                d="M 55 70 Q 50 75 52 85 L 58 82 Q 60 75 58 70 Z"
                                 fill={
                                     hombrosLiga.gradient
                                         ? "url(#hombrosGradient)"
                                         : hombrosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <path
+                                d="M 145 70 Q 150 75 148 85 L 142 82 Q 140 75 142 70 Z"
+                                fill={
+                                    hombrosLiga.gradient
+                                        ? "url(#hombrosGradient)"
+                                        : hombrosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <ellipse
-                                cx="140"
-                                cy="75"
-                                rx="18"
-                                ry="12"
+                                cx="62"
+                                cy="78"
+                                rx="20"
+                                ry="14"
                                 fill={
                                     hombrosLiga.gradient
                                         ? "url(#hombrosGradient)"
                                         : hombrosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="138"
+                                cy="78"
+                                rx="20"
+                                ry="14"
+                                fill={
+                                    hombrosLiga.gradient
+                                        ? "url(#hombrosGradient)"
+                                        : hombrosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                         </g>
 
@@ -448,15 +621,34 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-liga={espaldaLiga.liga}
                         >
                             <path
-                                d="M 70 65 Q 100 60 130 65 L 125 150 Q 100 155 75 150 Z"
+                                d="M 68 68 Q 100 62 132 68 L 130 95 Q 128 110 125 125 L 122 155 Q 120 170 115 180 Q 100 188 85 180 Q 80 170 78 155 L 75 125 Q 72 110 70 95 Z"
                                 fill={
                                     espaldaLiga.gradient
                                         ? "url(#espaldaGradient)"
                                         : espaldaColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <path
+                                d="M 75 75 Q 85 72 95 75 L 90 115 Q 88 125 85 135 Z"
+                                fill="#000"
+                                opacity="0.15"
+                            />
+                            <path
+                                d="M 125 75 Q 115 72 105 75 L 110 115 Q 112 125 115 135 Z"
+                                fill="#000"
+                                opacity="0.15"
+                            />
+                            <line
+                                x1="100"
+                                y1="68"
+                                x2="100"
+                                y2="180"
+                                stroke="#000"
+                                strokeWidth="0.8"
+                                opacity="0.3"
                             />
                             <title>
                                 Espalda: {espaldaValue}% - {espaldaLiga.liga}
@@ -469,68 +661,130 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-liga={brazosLiga.liga}
                         >
                             <ellipse
-                                cx="50"
-                                cy="110"
-                                rx="10"
-                                ry="35"
+                                cx="48"
+                                cy="105"
+                                rx="11"
+                                ry="28"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosPostGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <ellipse
-                                cx="150"
-                                cy="110"
-                                rx="10"
-                                ry="35"
+                                cx="152"
+                                cy="105"
+                                rx="11"
+                                ry="28"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosPostGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 45 145 L 40 185 L 50 185 L 55 145 Z"
+                                d="M 42 133 Q 38 145 40 160 L 42 180 L 48 180 L 50 160 Q 52 145 48 133 Z"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosPostGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 155 145 L 160 185 L 150 185 L 145 145 Z"
+                                d="M 158 133 Q 162 145 160 160 L 158 180 L 152 180 L 150 160 Q 148 145 152 133 Z"
                                 fill={
                                     brazosLiga.gradient
-                                        ? "url(#brazosGradient)"
+                                        ? "url(#brazosPostGradient)"
                                         : brazosColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="45"
+                                cy="195"
+                                rx="9"
+                                ry="15"
+                                fill={
+                                    brazosLiga.gradient
+                                        ? "url(#brazosPostGradient)"
+                                        : brazosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="155"
+                                cy="195"
+                                rx="9"
+                                ry="15"
+                                fill={
+                                    brazosLiga.gradient
+                                        ? "url(#brazosPostGradient)"
+                                        : brazosColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                         </g>
 
                         <g className="muscle-group" data-muscle="zona-lumbar">
-                            <rect
-                                x="80"
-                                y="155"
-                                width="40"
-                                height="20"
-                                rx="3"
-                                fill="#2a2a2a"
-                                stroke="#fff"
+                            <ellipse
+                                cx="100"
+                                cy="185"
+                                rx="22"
+                                ry="15"
+                                fill="#1a1a1a"
+                                stroke="#333"
                                 strokeWidth="1"
-                                opacity="0.5"
+                                opacity="0.6"
+                            />
+                        </g>
+
+                        <g
+                            className="muscle-group"
+                            data-muscle="gluteos"
+                            data-liga={piernasLiga.liga}
+                        >
+                            <ellipse
+                                cx="83"
+                                cy="205"
+                                rx="12"
+                                ry="18"
+                                fill={
+                                    piernasLiga.gradient
+                                        ? "url(#piernasPostGradient)"
+                                        : piernasColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="117"
+                                cy="205"
+                                rx="12"
+                                ry="18"
+                                fill={
+                                    piernasLiga.gradient
+                                        ? "url(#piernasPostGradient)"
+                                        : piernasColor
+                                }
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                         </g>
 
@@ -540,48 +794,64 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                             data-liga={piernasLiga.liga}
                         >
                             <path
-                                d="M 85 175 L 80 280 Q 82 300 90 300 L 95 180 Z"
+                                d="M 78 225 L 75 270 Q 73 290 75 310 L 78 335 L 85 335 L 88 310 Q 90 290 88 270 L 88 225 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasPostGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 115 175 L 120 280 Q 118 300 110 300 L 105 180 Z"
+                                d="M 122 225 L 125 270 Q 127 290 125 310 L 122 335 L 115 335 L 112 310 Q 110 290 112 270 L 112 225 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasPostGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
+                            />
+                            <ellipse
+                                cx="81.5"
+                                cy="265"
+                                rx="7"
+                                ry="12"
+                                fill="#000"
+                                opacity="0.2"
+                            />
+                            <ellipse
+                                cx="118.5"
+                                cy="265"
+                                rx="7"
+                                ry="12"
+                                fill="#000"
+                                opacity="0.2"
                             />
                             <path
-                                d="M 85 300 L 82 360 L 92 360 L 90 300 Z"
+                                d="M 78 335 L 76 390 Q 75 405 78 410 L 85 410 L 88 390 L 88 335 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasPostGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                             <path
-                                d="M 115 300 L 118 360 L 108 360 L 110 300 Z"
+                                d="M 122 335 L 124 390 Q 125 405 122 410 L 115 410 L 112 390 L 112 335 Z"
                                 fill={
                                     piernasLiga.gradient
-                                        ? "url(#piernasGradient)"
+                                        ? "url(#piernasPostGradient)"
                                         : piernasColor
                                 }
-                                stroke="#fff"
-                                strokeWidth="1.5"
-                                opacity="0.9"
+                                stroke="#000"
+                                strokeWidth="1"
+                                opacity="0.95"
                             />
                         </g>
                     </svg>
@@ -594,49 +864,49 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({ muscleData }) => {
                     <div className="muscle-map__legend-item">
                         <span
                             className="muscle-map__legend-color"
-                            style={{ backgroundColor: "#8B4513" }}
+                            style={{ backgroundColor: "#8B5A3C" }}
                         ></span>
                         <span>Bronce (0-30%)</span>
                     </div>
                     <div className="muscle-map__legend-item">
                         <span
                             className="muscle-map__legend-color"
-                            style={{ backgroundColor: "#C0C0C0" }}
+                            style={{ backgroundColor: "#95B8C8" }}
                         ></span>
                         <span>Plata (31-50%)</span>
                     </div>
                     <div className="muscle-map__legend-item">
                         <span
                             className="muscle-map__legend-color"
-                            style={{ backgroundColor: "#FFD700" }}
+                            style={{ backgroundColor: "#F4C542" }}
                         ></span>
                         <span>Oro (51-70%)</span>
                     </div>
                     <div className="muscle-map__legend-item">
                         <span
                             className="muscle-map__legend-color"
-                            style={{ backgroundColor: "#20B2AA" }}
+                            style={{ backgroundColor: "#4ECDC4" }}
                         ></span>
                         <span>Platino (71-85%)</span>
                     </div>
                     <div className="muscle-map__legend-item">
                         <span
                             className="muscle-map__legend-color"
-                            style={{ backgroundColor: "#87CEEB" }}
+                            style={{ backgroundColor: "#5B8FE0" }}
                         ></span>
                         <span>Diamante (86-100%)</span>
                     </div>
                     <div className="muscle-map__legend-item">
                         <span
                             className="muscle-map__legend-color"
-                            style={{ backgroundColor: "#9370DB" }}
+                            style={{ backgroundColor: "#9D4DDD" }}
                         ></span>
                         <span>Maestro (101-110%)</span>
                     </div>
                     <div className="muscle-map__legend-item">
                         <span
                             className="muscle-map__legend-color"
-                            style={{ backgroundColor: "#DC143C" }}
+                            style={{ backgroundColor: "#E74C3C" }}
                         ></span>
                         <span>Gran Maestro (111-120%)</span>
                     </div>
