@@ -47,6 +47,7 @@ describe("POST /api/auth/register", () => {
             username: uniqueUsername,
             email: uniqueEmail,
             password: "Test1234",
+            gender: "male",
             roleId: testRoleId,
         });
 
@@ -89,6 +90,7 @@ describe("POST /api/auth/register", () => {
                 username: username1,
                 email: uniqueEmail,
                 password: "Test1234",
+                gender: "male",
                 roleId: testRoleId,
             });
 
@@ -102,6 +104,7 @@ describe("POST /api/auth/register", () => {
             username: username2,
             email: uniqueEmail,
             password: "Test1234",
+            gender: "female",
             roleId: testRoleId,
         });
 
@@ -122,6 +125,7 @@ describe("POST /api/auth/register", () => {
                 username: uniqueUsername,
                 email: email1,
                 password: "Test1234",
+                gender: "female",
                 roleId: testRoleId,
             });
 
@@ -135,10 +139,81 @@ describe("POST /api/auth/register", () => {
             username: uniqueUsername,
             email: email2,
             password: "Test1234",
+            gender: "male",
             roleId: testRoleId,
         });
 
         expect(response.status).toBe(409);
         expect(response.body.success).toBe(false);
+    });
+
+    it("debería rechazar registro sin gender", async () => {
+        const uniqueEmail = `nogender${Date.now()}@example.com`;
+        const uniqueUsername = `nogender${Date.now()}`;
+
+        const response = await request(app).post("/api/auth/register").send({
+            name: "Test",
+            lastname: "User",
+            username: uniqueUsername,
+            email: uniqueEmail,
+            password: "Test1234",
+            roleId: testRoleId,
+        });
+
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+        expect(response.body.errors).toBeInstanceOf(Array);
+        const genderError = response.body.errors.find(
+            (e) => e.field === "gender"
+        );
+        expect(genderError).toBeDefined();
+    });
+
+    it("debería rechazar gender inválido", async () => {
+        const uniqueEmail = `invalidgender${Date.now()}@example.com`;
+        const uniqueUsername = `invalidgender${Date.now()}`;
+
+        const response = await request(app).post("/api/auth/register").send({
+            name: "Test",
+            lastname: "User",
+            username: uniqueUsername,
+            email: uniqueEmail,
+            password: "Test1234",
+            gender: "other",
+            roleId: testRoleId,
+        });
+
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+        expect(response.body.errors).toBeInstanceOf(Array);
+        const genderError = response.body.errors.find(
+            (e) => e.field === "gender"
+        );
+        expect(genderError).toBeDefined();
+        expect(genderError.message).toContain("male");
+        expect(genderError.message).toContain("female");
+    });
+
+    it("debería registrar usuario femenino correctamente", async () => {
+        const uniqueEmail = `female${Date.now()}@example.com`;
+        const uniqueUsername = `female${Date.now()}`;
+
+        const response = await request(app).post("/api/auth/register").send({
+            name: "Jane",
+            lastname: "Doe",
+            username: uniqueUsername,
+            email: uniqueEmail,
+            password: "Test1234",
+            gender: "female",
+            roleId: testRoleId,
+        });
+
+        expect(response.status).toBe(201);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.gender).toBe("female");
+
+        if (response.body.data?.id) {
+            testUserIds.push(response.body.data.id);
+        }
     });
 });
