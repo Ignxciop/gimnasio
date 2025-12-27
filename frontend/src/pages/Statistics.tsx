@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, Info } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { MuscleRadarChart } from "../components/MuscleRadarChart";
 import { profileService } from "../services/profileService";
@@ -21,6 +21,7 @@ export const Statistics: React.FC = () => {
     const [isOwnProfile, setIsOwnProfile] = useState(false);
     const [radarData, setRadarData] = useState<MuscleRadarData[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
+    const [showInfo, setShowInfo] = useState(false);
 
     useEffect(() => {
         const verifyAccess = async () => {
@@ -137,9 +138,55 @@ export const Statistics: React.FC = () => {
 
                 <div className="statistics__content">
                     <div className="statistics__section">
-                        <h2 className="statistics__section-title">
-                            Desarrollo Muscular
-                        </h2>
+                        <div className="statistics__section-header">
+                            <h2 className="statistics__section-title">
+                                Desarrollo Muscular
+                            </h2>
+                            <button
+                                className="statistics__info-btn"
+                                onClick={() => setShowInfo(!showInfo)}
+                                aria-label="Información sobre el gráfico"
+                            >
+                                <Info size={20} />
+                            </button>
+                        </div>
+
+                        {showInfo && (
+                            <div className="statistics__info-box">
+                                <h3>Cómo funciona este gráfico</h3>
+                                <p>
+                                    Este gráfico muestra tu{" "}
+                                    <strong>estímulo semanal</strong> por grupo
+                                    muscular basado en tus entrenamientos de los
+                                    últimos 7 días.
+                                </p>
+                                <ul>
+                                    <li>
+                                        <strong>
+                                            100% = Objetivo cumplido:
+                                        </strong>{" "}
+                                        Has alcanzado el volumen de
+                                        entrenamiento recomendado para ese
+                                        músculo.
+                                    </li>
+                                    <li>
+                                        <strong>Menos de 100%:</strong> Puedes
+                                        aumentar el volumen (más series o peso).
+                                    </li>
+                                    <li>
+                                        <strong>Más de 100%:</strong> Estás
+                                        superando el objetivo, lo cual puede ser
+                                        bueno para músculos rezagados.
+                                    </li>
+                                </ul>
+                                <p className="statistics__info-note">
+                                    El cálculo considera: peso × repeticiones
+                                    efectivas × participación muscular del
+                                    ejercicio.
+                                </p>
+                            </div>
+                        )}
+
                         <div className="statistics__chart-container">
                             <MuscleRadarChart
                                 data={

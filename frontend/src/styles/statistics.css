@@ -92,11 +92,81 @@
     margin-bottom: 0;
 }
 
+.statistics__section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
 .statistics__section-title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
-    margin: 0 0 var(--spacing-lg);
+    margin: 0;
     color: var(--color-text-primary);
+}
+
+.statistics__info-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-text-secondary);
+}
+
+.statistics__info-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-primary);
+    transform: scale(1.05);
+}
+
+.statistics__info-box {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.statistics__info-box h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.statistics__info-box p {
+    margin: 0 0 var(--spacing-md);
+    line-height: 1.6;
+    color: var(--color-text-primary);
+}
+
+.statistics__info-box ul {
+    margin: 0 0 var(--spacing-md);
+    padding-left: var(--spacing-lg);
+    line-height: 1.8;
+}
+
+.statistics__info-box li {
+    margin-bottom: var(--spacing-sm);
+}
+
+.statistics__info-box strong {
+    color: var(--accent-mid);
+}
+
+.statistics__info-note {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-bottom: 0 !important;
 }
 
 .statistics__chart-container {
@@ -144,6 +214,18 @@
 
     .statistics__content {
         padding: var(--spacing-lg);
+    }
+
+    .statistics__info-box {
+        padding: var(--spacing-md);
+    }
+
+    .statistics__info-box h3 {
+        font-size: var(--font-size-base);
+    }
+
+    .statistics__info-box ul {
+        padding-left: var(--spacing-md);
     }
 
     .statistics__chart-container {
