@@ -258,25 +258,35 @@ export const Statistics: React.FC = () => {
                                     muscular basado en tus entrenamientos del
                                     mes seleccionado.
                                 </p>
-                                <ul>
+
+                                <h4>Interpretación de valores:</h4>
+                                <ul className="statistics__scale-list">
                                     <li>
-                                        <strong>
-                                            100% = Objetivo cumplido:
+                                        <strong className="statistics__scale-low">
+                                            0–40%
                                         </strong>{" "}
-                                        Has alcanzado el volumen de
-                                        entrenamiento recomendado para ese
-                                        músculo.
+                                        → Infraentrenado
                                     </li>
                                     <li>
-                                        <strong>Menos de 100%:</strong> Puedes
-                                        aumentar el volumen (más series o peso).
+                                        <strong className="statistics__scale-maintenance">
+                                            40–70%
+                                        </strong>{" "}
+                                        → Mantenimiento
                                     </li>
                                     <li>
-                                        <strong>Más de 100%:</strong> Estás
-                                        superando el objetivo, lo cual puede ser
-                                        bueno para músculos rezagados.
+                                        <strong className="statistics__scale-optimal">
+                                            70–100%
+                                        </strong>{" "}
+                                        → Óptimo
+                                    </li>
+                                    <li>
+                                        <strong className="statistics__scale-excess">
+                                            100%+
+                                        </strong>{" "}
+                                        → Posible exceso
                                     </li>
                                 </ul>
+
                                 <p className="statistics__info-note">
                                     El cálculo considera: peso × repeticiones
                                     efectivas × participación muscular del

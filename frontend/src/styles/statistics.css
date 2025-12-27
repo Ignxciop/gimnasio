@@ -142,6 +142,13 @@
     color: var(--color-text-primary);
 }
 
+.statistics__info-box h4 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    margin: var(--spacing-md) 0 var(--spacing-sm);
+    color: var(--color-text-primary);
+}
+
 .statistics__info-box p {
     margin: 0 0 var(--spacing-md);
     line-height: 1.6;
@@ -160,6 +167,32 @@
 
 .statistics__info-box strong {
     color: var(--accent-mid);
+}
+
+.statistics__scale-list {
+    margin: var(--spacing-sm) 0 var(--spacing-md) !important;
+    padding-left: var(--spacing-lg);
+    line-height: 2;
+}
+
+.statistics__scale-list li {
+    margin-bottom: var(--spacing-xs);
+}
+
+.statistics__scale-low {
+    color: #ef4444 !important;
+}
+
+.statistics__scale-maintenance {
+    color: #f59e0b !important;
+}
+
+.statistics__scale-optimal {
+    color: #10b981 !important;
+}
+
+.statistics__scale-excess {
+    color: #dc2626 !important;
 }
 
 .statistics__info-note {
