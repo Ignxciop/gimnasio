@@ -11,6 +11,7 @@ import folderRoutes from "./src/routes/folderRoutes.js";
 import routineRoutes from "./src/routes/routineRoutes.js";
 import routineExerciseRoutes from "./src/routes/routineExerciseRoutes.js";
 import activeRoutineRoutes from "./src/routes/activeRoutineRoutes.js";
+import statisticsRoutes from "./src/routes/statisticsRoutes.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const port = config.port;
@@ -37,6 +38,7 @@ app.use("/api/folders", folderRoutes);
 app.use("/api/routines", routineRoutes);
 app.use("/api", routineExerciseRoutes);
 app.use("/api/active-routines", activeRoutineRoutes);
+app.use("/api/statistics", statisticsRoutes);
 
 app.use(errorHandler);
 

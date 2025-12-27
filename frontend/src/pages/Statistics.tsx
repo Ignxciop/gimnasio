@@ -4,9 +4,13 @@ import { ArrowLeft, Calendar } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { MuscleRadarChart } from "../components/MuscleRadarChart";
 import { profileService } from "../services/profileService";
+import { statisticsService } from "../services/statisticsService";
 import { authService } from "../services/authService";
 import { useToast } from "../hooks/useToast";
 import { getUserFromToken } from "../utils/getUserFromToken";
+import { muscleGrowthCalculator } from "../utils/muscleGrowthCalculator";
+import { buildExerciseMappingsFromBackend } from "../utils/exerciseMappings";
+import type { MuscleRadarData } from "../types/muscleStimulus.types";
 import "../styles/statistics.css";
 
 export const Statistics: React.FC = () => {
@@ -15,6 +19,8 @@ export const Statistics: React.FC = () => {
     const { showToast } = useToast();
     const [loading, setLoading] = useState(true);
     const [isOwnProfile, setIsOwnProfile] = useState(false);
+    const [radarData, setRadarData] = useState<MuscleRadarData[]>([]);
+    const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
         const verifyAccess = async () => {
@@ -30,9 +36,33 @@ export const Statistics: React.FC = () => {
                     token
                 );
 
+                let currentUserId = null;
                 if (token) {
                     const currentUser = getUserFromToken(token);
-                    setIsOwnProfile(currentUser?.username === username);
+                    const isOwn = currentUser?.username === username;
+                    setIsOwnProfile(isOwn);
+                    currentUserId = currentUser?.userId.toString() || null;
+                    setUserId(currentUserId);
+                }
+
+                if (token && currentUserId) {
+                    const exercises = await statisticsService.getExercises(
+                        token
+                    );
+                    const mappings =
+                        buildExerciseMappingsFromBackend(exercises);
+                    muscleGrowthCalculator.setExerciseMappings(mappings);
+
+                    const weeklySets = await statisticsService.getWeeklySets(
+                        currentUserId,
+                        token
+                    );
+
+                    const calculatedData =
+                        muscleGrowthCalculator.calculateWeeklyStimulus(
+                            weeklySets
+                        );
+                    setRadarData(calculatedData);
                 }
 
                 setLoading(false);
@@ -111,7 +141,17 @@ export const Statistics: React.FC = () => {
                             Desarrollo Muscular
                         </h2>
                         <div className="statistics__chart-container">
-                            <MuscleRadarChart />
+                            <MuscleRadarChart
+                                data={
+                                    radarData.length > 0
+                                        ? radarData.map((d) => ({
+                                              muscle: d.muscle,
+                                              value: d.value,
+                                              fullMark: 100,
+                                          }))
+                                        : undefined
+                                }
+                            />
                         </div>
                     </div>
                 </div>
