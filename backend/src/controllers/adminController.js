@@ -21,7 +21,7 @@ class AdminController {
             const { roleId } = req.body;
 
             const user = await adminService.updateUserRole(
-                parseInt(id),
+                id,
                 parseInt(roleId)
             );
 
@@ -40,10 +40,7 @@ class AdminController {
             const { id } = req.params;
             const { isActive } = req.body;
 
-            const user = await adminService.updateUserStatus(
-                parseInt(id),
-                isActive
-            );
+            const user = await adminService.updateUserStatus(id, isActive);
 
             res.status(200).json({
                 success: true,

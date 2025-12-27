@@ -1,7 +1,7 @@
 import { body, param } from "express-validator";
 
 export const updateRoleValidation = [
-    param("id").isInt().withMessage("ID de usuario inválido"),
+    param("id").isUUID().withMessage("ID de usuario inválido"),
     body("roleId")
         .notEmpty()
         .withMessage("El rol es requerido")
@@ -12,7 +12,7 @@ export const updateRoleValidation = [
 ];
 
 export const updateStatusValidation = [
-    param("id").isInt().withMessage("ID de usuario inválido"),
+    param("id").isUUID().withMessage("ID de usuario inválido"),
     body("isActive")
         .notEmpty()
         .withMessage("El estado es requerido")
