@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { User, Mail, Shield, LogOut, Link, Eye, EyeOff } from "lucide-react";
+import {
+    User,
+    Mail,
+    Shield,
+    LogOut,
+    Link,
+    Eye,
+    EyeOff,
+    BarChart3,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { ProfileData } from "../services/profileService";
 import { profileService } from "../services/profileService";
@@ -57,6 +66,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         navigate("/login");
     };
 
+    const handleGoToStats = () => {
+        navigate(`/perfil/${profileData.username}/estadisticas`);
+    };
+
     return (
         <div className="profile-card">
             <div className="profile-card__header">
@@ -95,43 +108,53 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 </div>
             </div>
 
-            {isOwnProfile && (
-                <div className="profile-card__actions">
-                    <button
-                        onClick={handleCopyLink}
-                        className="profile-card__action-btn"
-                    >
-                        <Link size={20} />
-                        Copiar link del perfil
-                    </button>
+            <div className="profile-card__actions">
+                <button
+                    onClick={handleGoToStats}
+                    className="profile-card__action-btn profile-card__action-btn--stats"
+                >
+                    <BarChart3 size={20} />
+                    Estadísticas
+                </button>
 
-                    <button
-                        onClick={handleTogglePrivacy}
-                        className="profile-card__action-btn"
-                        disabled={loading}
-                    >
-                        {isPrivate ? (
-                            <>
-                                <EyeOff size={20} />
-                                Perfil privado
-                            </>
-                        ) : (
-                            <>
-                                <Eye size={20} />
-                                Perfil público
-                            </>
-                        )}
-                    </button>
+                {isOwnProfile && (
+                    <>
+                        <button
+                            onClick={handleCopyLink}
+                            className="profile-card__action-btn"
+                        >
+                            <Link size={20} />
+                            Copiar link del perfil
+                        </button>
 
-                    <button
-                        className="profile-card__logout"
-                        onClick={handleLogout}
-                    >
-                        <LogOut size={20} />
-                        Cerrar sesión
-                    </button>
-                </div>
-            )}
+                        <button
+                            onClick={handleTogglePrivacy}
+                            className="profile-card__action-btn"
+                            disabled={loading}
+                        >
+                            {isPrivate ? (
+                                <>
+                                    <EyeOff size={20} />
+                                    Perfil privado
+                                </>
+                            ) : (
+                                <>
+                                    <Eye size={20} />
+                                    Perfil público
+                                </>
+                            )}
+                        </button>
+
+                        <button
+                            className="profile-card__logout"
+                            onClick={handleLogout}
+                        >
+                            <LogOut size={20} />
+                            Cerrar sesión
+                        </button>
+                    </>
+                )}
+            </div>
         </div>
     );
 };

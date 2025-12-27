@@ -4,6 +4,7 @@ import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
+import { Statistics } from "./pages/Statistics";
 import { Admin } from "./pages/Admin";
 import { Gestion } from "./pages/Gestion";
 import Rutinas from "./pages/Rutinas";
@@ -81,6 +82,17 @@ function App() {
                         element={
                             isAuthenticated ? (
                                 <Profile />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/perfil/:username/estadisticas"
+                        element={
+                            isAuthenticated ? (
+                                <Statistics />
                             ) : (
                                 <Navigate to="/login" replace />
                             )

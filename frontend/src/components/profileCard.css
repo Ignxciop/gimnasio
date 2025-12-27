@@ -117,6 +117,19 @@
     cursor: not-allowed;
 }
 
+.profile-card__action-btn--stats {
+    background: var(--gradient-accent);
+    border-color: transparent;
+    color: white;
+    font-weight: var(--font-weight-semibold);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.profile-card__action-btn--stats:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+}
+
 .profile-card__logout {
     margin-top: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-lg);
