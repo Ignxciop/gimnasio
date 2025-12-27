@@ -44,6 +44,12 @@ export const registerValidation = [
             "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
         ),
 
+    body("gender")
+        .notEmpty()
+        .withMessage("El género es requerido")
+        .isIn(["male", "female"])
+        .withMessage("El género debe ser 'male' o 'female'"),
+
     body("roleId")
         .optional()
         .isInt({ min: 1 })
