@@ -1,4 +1,4 @@
-import { body, validationResult } from "express-validator";
+import { body, query, validationResult } from "express-validator";
 
 export const registerValidation = [
     body("name")
@@ -48,6 +48,40 @@ export const registerValidation = [
         .optional()
         .isInt({ min: 1 })
         .withMessage("El rol debe ser un número válido"),
+];
+
+export const updateUsernameValidation = [
+    body("username")
+        .trim()
+        .notEmpty()
+        .withMessage("El nombre de usuario es requerido")
+        .isLength({ min: 3, max: 20 })
+        .withMessage("El username debe tener entre 3 y 20 caracteres")
+        .matches(/^[a-zA-Z0-9_-]+$/)
+        .withMessage(
+            "El username solo puede contener letras, números, guiones y guiones bajos"
+        ),
+];
+
+export const checkUsernameValidation = [
+    query("username")
+        .trim()
+        .notEmpty()
+        .withMessage("El nombre de usuario es requerido")
+        .isLength({ min: 3, max: 20 })
+        .withMessage("El username debe tener entre 3 y 20 caracteres")
+        .matches(/^[a-zA-Z0-9_-]+$/)
+        .withMessage(
+            "El username solo puede contener letras, números, guiones y guiones bajos"
+        ),
+];
+
+export const updatePrivacyValidation = [
+    body("isPublic")
+        .notEmpty()
+        .withMessage("El campo isPublic es requerido")
+        .isBoolean()
+        .withMessage("El campo isPublic debe ser un booleano"),
 ];
 
 export const validate = (req, res, next) => {
