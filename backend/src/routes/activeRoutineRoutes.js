@@ -66,4 +66,10 @@ router.get(
     activeRoutineController.getRecentCompleted
 );
 
+router.get(
+    "/completed/by-date",
+    authenticate,
+    activeRoutineController.getCompletedByDate
+);
+
 export default router;

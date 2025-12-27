@@ -158,6 +158,27 @@ class ActiveRoutineController {
             next(error);
         }
     }
+
+    async getCompletedByDate(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            const { year, month, day } = req.query;
+
+            const workouts = await activeRoutineService.getCompletedByDate(
+                userId,
+                parseInt(year),
+                parseInt(month),
+                parseInt(day)
+            );
+
+            res.status(200).json({
+                success: true,
+                data: workouts,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new ActiveRoutineController();

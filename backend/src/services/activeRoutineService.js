@@ -350,6 +350,57 @@ class ActiveRoutineService {
             completedSets: ar.sets.length,
         }));
     }
+
+    async getCompletedByDate(userId, year, month, day) {
+        const startDate = new Date(year, month - 1, day, 0, 0, 0);
+        const endDate = new Date(year, month - 1, day, 23, 59, 59);
+
+        const completedRoutines = await prisma.activeRoutine.findMany({
+            where: {
+                userId,
+                status: "completed",
+                endTime: {
+                    gte: startDate,
+                    lte: endDate,
+                },
+            },
+            include: {
+                routine: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                    },
+                },
+                sets: {
+                    include: {
+                        exercise: {
+                            include: {
+                                equipment: true,
+                                muscleGroup: true,
+                            },
+                        },
+                    },
+                    orderBy: { order: "asc" },
+                },
+            },
+            orderBy: {
+                endTime: "desc",
+            },
+        });
+
+        return completedRoutines.map((ar) => ({
+            id: ar.id,
+            routineId: ar.routineId,
+            routineName: ar.routine.name,
+            startTime: ar.startTime,
+            endTime: ar.endTime,
+            duration: Math.floor(
+                (new Date(ar.endTime) - new Date(ar.startTime)) / 1000
+            ),
+            sets: ar.sets,
+        }));
+    }
 }
 
 export default new ActiveRoutineService();
