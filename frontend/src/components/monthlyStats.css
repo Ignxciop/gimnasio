@@ -1,0 +1,127 @@
+.monthly-stats {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.monthly-stats:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.monthly-stats-header {
+    margin-bottom: 1.5rem;
+}
+
+.monthly-stats-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.monthly-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.stat-icon {
+    color: var(--accent-mid);
+    display: flex;
+    align-items: center;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.change-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+.change-indicator--positive {
+    color: #22c55e;
+}
+
+.change-indicator--negative {
+    color: #ef4444;
+}
+
+.change-indicator--neutral {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .monthly-stats {
+        padding: 1.25rem;
+    }
+
+    .monthly-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.875rem;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+    }
+
+    .change-indicator {
+        font-size: 0.7rem;
+    }
+}

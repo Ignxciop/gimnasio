@@ -43,6 +43,23 @@ interface DayWorkout {
     sets: WorkoutSet[];
 }
 
+interface WeeklyStreak {
+    currentStreak: number;
+}
+
+interface MonthlyStats {
+    current: {
+        totalWorkouts: number;
+        totalTime: number;
+        totalVolume: number;
+    };
+    comparison: {
+        workouts: number;
+        time: number;
+        volume: number;
+    };
+}
+
 const API_URL = "http://localhost:3000/api";
 
 export const dashboardService = {
@@ -120,6 +137,56 @@ export const dashboardService = {
         const data = await response.json();
         return data.data;
     },
+
+    async getWeeklyStreak(token: string): Promise<WeeklyStreak> {
+        const response = await fetch(
+            `${API_URL}/active-routines/streak/weekly`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al obtener streak semanal");
+        }
+
+        const data = await response.json();
+        return data.data;
+    },
+
+    async getMonthlyStats(
+        year: number,
+        month: number,
+        token: string
+    ): Promise<MonthlyStats> {
+        const response = await fetch(
+            `${API_URL}/active-routines/stats/monthly?year=${year}&month=${month}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(
+                error.message || "Error al obtener estadísticas mensuales"
+            );
+        }
+
+        const data = await response.json();
+        return data.data;
+    },
 };
 
-export type { RecentWorkout, DayWorkout, WorkoutSet };
+export type {
+    RecentWorkout,
+    DayWorkout,
+    WorkoutSet,
+    WeeklyStreak,
+    MonthlyStats,
+};

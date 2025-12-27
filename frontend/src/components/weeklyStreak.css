@@ -1,0 +1,68 @@
+.weekly-streak {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.weekly-streak:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.weekly-streak-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.weekly-streak-icon {
+    color: var(--accent-mid);
+}
+
+.weekly-streak-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.weekly-streak-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.weekly-streak-number {
+    font-size: 3rem;
+    font-weight: 700;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.weekly-streak-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .weekly-streak {
+        padding: 1.25rem;
+    }
+
+    .weekly-streak-number {
+        font-size: 2.5rem;
+    }
+
+    .weekly-streak-label {
+        font-size: 0.8rem;
+    }
+}
