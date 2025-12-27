@@ -24,6 +24,8 @@ export const BottomNav: React.FC = () => {
 
             <NavLink
                 to="/rutinas"
+                end
+                end
                 className={({ isActive }) =>
                     "bottomnav__link" +
                     (isActive ? " bottomnav__link--active" : "")

@@ -18,6 +18,7 @@ export const LeftNav: React.FC = () => {
                 <li>
                     <NavLink
                         to="/inicio"
+                        end
                         className={({ isActive }) =>
                             "leftnav__link" +
                             (isActive ? " leftnav__link--active" : "")

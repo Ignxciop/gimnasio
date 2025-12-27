@@ -53,7 +53,7 @@ class ProfileService {
             throw error;
         }
 
-        const isOwnProfile = requesterId === user.id;
+        const isOwnProfile = requesterId && requesterId === user.id;
 
         if (!user.isProfilePublic && !isOwnProfile) {
             const error = new Error("Este perfil es privado");
