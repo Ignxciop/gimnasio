@@ -17,6 +17,8 @@ export const Profile: React.FC = () => {
     const [isOwnProfile, setIsOwnProfile] = useState(false);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchProfile = async () => {
             if (!username) return;
 
@@ -27,9 +29,14 @@ export const Profile: React.FC = () => {
                     username,
                     token
                 );
+
+                if (!isMounted) return;
+
                 setProfileData(data);
                 setIsOwnProfile(currentUser?.username === username);
             } catch (error) {
+                if (!isMounted) return;
+
                 if (
                     error instanceof Error &&
                     error.message === "Este perfil es privado"
@@ -46,11 +53,17 @@ export const Profile: React.FC = () => {
                     navigate("/inicio");
                 }
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchProfile();
+
+        return () => {
+            isMounted = false;
+        };
     }, [username, currentUser?.username, showToast, navigate]);
 
     if (loading) {
