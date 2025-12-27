@@ -62,6 +62,81 @@ class StatisticsService {
         return Array.from(monthsSet).sort().reverse();
     }
 
+    async getAllCompletedRoutines(userId) {
+        const routines = await prisma.activeRoutine.findMany({
+            where: {
+                userId: userId,
+                status: "completed",
+                endTime: {
+                    not: null,
+                },
+            },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                routine: {
+                    select: {
+                        name: true,
+                    },
+                },
+                sets: {
+                    select: {
+                        id: true,
+                        exerciseId: true,
+                        setNumber: true,
+                        actualWeight: true,
+                        actualReps: true,
+                        completed: true,
+                        isPR: true,
+                        order: true,
+                        exercise: {
+                            select: {
+                                name: true,
+                                videoPath: true,
+                                muscleGroup: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                                equipment: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    orderBy: {
+                        order: "asc",
+                    },
+                },
+            },
+            orderBy: {
+                endTime: "desc",
+            },
+        });
+
+        return routines.map((routine) => {
+            const duration =
+                routine.endTime && routine.startTime
+                    ? Math.floor(
+                          (new Date(routine.endTime).getTime() -
+                              new Date(routine.startTime).getTime()) /
+                              1000
+                      )
+                    : 0;
+
+            return {
+                id: routine.id,
+                routineName: routine.routine.name,
+                endTime: routine.endTime,
+                duration: duration,
+                sets: routine.sets,
+            };
+        });
+    }
+
     async getAllExercises() {
         const exercises = await prisma.exercise.findMany({
             select: {

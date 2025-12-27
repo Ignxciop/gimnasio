@@ -11,6 +11,7 @@ import Rutinas from "./pages/Rutinas";
 import RoutineDetail from "./pages/RoutineDetail";
 import ActiveRoutine from "./pages/ActiveRoutine";
 import WorkoutDay from "./pages/WorkoutDay";
+import CompletedRoutines from "./pages/CompletedRoutines";
 import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
 
@@ -93,6 +94,17 @@ function App() {
                         element={
                             isAuthenticated ? (
                                 <Statistics />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/perfil/:username/rutinas"
+                        element={
+                            isAuthenticated ? (
+                                <CompletedRoutines />
                             ) : (
                                 <Navigate to="/login" replace />
                             )

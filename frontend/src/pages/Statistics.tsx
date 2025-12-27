@@ -136,7 +136,7 @@ export const Statistics: React.FC = () => {
     };
 
     const handleRoutinesClick = () => {
-        showToast("info", "Funcionalidad próximamente");
+        navigate(`/perfil/${username}/rutinas`);
     };
 
     const handlePreviousMonth = async () => {

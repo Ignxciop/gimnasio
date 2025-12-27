@@ -10,6 +10,11 @@ router.get(
     authenticate,
     statisticsController.getMonthsWithWorkouts
 );
+router.get(
+    "/all-completed-routines",
+    authenticate,
+    statisticsController.getAllCompletedRoutines
+);
 router.get("/exercises", authenticate, statisticsController.getAllExercises);
 
 export default router;

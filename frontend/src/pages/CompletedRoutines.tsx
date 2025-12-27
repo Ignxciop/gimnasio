@@ -1,0 +1,349 @@
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+    ArrowLeft,
+    ChevronDown,
+    ChevronUp,
+    Clock,
+    Calendar,
+} from "lucide-react";
+import MainLayout from "../layouts/MainLayout";
+import { useToast } from "../hooks/useToast";
+import { authService } from "../services/authService";
+import { profileService } from "../services/profileService";
+import { getUserFromToken } from "../utils/getUserFromToken";
+import { dashboardService } from "../services/dashboardService";
+import type { DayWorkout } from "../services/dashboardService";
+import "../styles/workoutDay.css";
+
+const getVideoUrl = (videoPath: string | null) => {
+    if (!videoPath) return null;
+    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
+};
+
+const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    };
+    return date.toLocaleDateString("es-ES", options);
+};
+
+const formatDuration = (seconds: number): string => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+
+    if (hrs > 0) {
+        return `${hrs}h ${mins}m`;
+    }
+    return `${mins}m`;
+};
+
+export default function CompletedRoutines() {
+    const { username } = useParams<{ username: string }>();
+    const navigate = useNavigate();
+    const { showToast } = useToast();
+    const [workouts, setWorkouts] = useState<DayWorkout[]>([]);
+    const [expandedWorkouts, setExpandedWorkouts] = useState<Set<number>>(
+        new Set()
+    );
+    const [loading, setLoading] = useState(true);
+    const [isOwnProfile, setIsOwnProfile] = useState(false);
+
+    useEffect(() => {
+        const fetchRoutines = async () => {
+            if (!username) {
+                navigate("/inicio");
+                return;
+            }
+
+            try {
+                const token = authService.getToken();
+                const profile = await profileService.getProfileByUsername(
+                    username,
+                    token
+                );
+
+                if (token) {
+                    const currentUser = getUserFromToken(token);
+                    setIsOwnProfile(currentUser?.username === username);
+                }
+
+                if (!token) return;
+
+                const response = await fetch(
+                    `http://localhost:3000/api/statistics/all-completed-routines?userId=${profile.id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Error al cargar rutinas");
+                }
+
+                const data = await response.json();
+                setWorkouts(data.data);
+            } catch (error) {
+                if (
+                    error instanceof Error &&
+                    error.message === "Este perfil es privado"
+                ) {
+                    showToast("error", "Este perfil es privado");
+                    navigate("/inicio");
+                } else {
+                    showToast(
+                        "error",
+                        error instanceof Error
+                            ? error.message
+                            : "Error al cargar rutinas"
+                    );
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRoutines();
+    }, [username, navigate, showToast]);
+
+    const toggleWorkout = (workoutId: number) => {
+        setExpandedWorkouts((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(workoutId)) {
+                newSet.delete(workoutId);
+            } else {
+                newSet.add(workoutId);
+            }
+            return newSet;
+        });
+    };
+
+    if (loading) {
+        return (
+            <MainLayout>
+                <div className="loading">Cargando...</div>
+            </MainLayout>
+        );
+    }
+
+    return (
+        <MainLayout>
+            <div className="workout-day-container">
+                <button
+                    onClick={() => navigate(`/perfil/${username}/estadisticas`)}
+                    className="btn-back"
+                >
+                    <ArrowLeft size={20} />
+                    Volver a Estadísticas
+                </button>
+
+                <div className="workout-day-header">
+                    <h1 className="workout-day-title">Rutinas Realizadas</h1>
+                    <p className="workout-day-count">
+                        {workouts.length}{" "}
+                        {workouts.length === 1
+                            ? "entrenamiento"
+                            : "entrenamientos"}{" "}
+                        completados
+                    </p>
+                </div>
+
+                <div className="workout-day-list">
+                    {workouts.map((workout) => {
+                        const isExpanded = expandedWorkouts.has(workout.id);
+                        const exerciseGroups = workout.sets.reduce(
+                            (acc, set) => {
+                                const exerciseId = set.exerciseId;
+                                if (!acc[exerciseId]) {
+                                    acc[exerciseId] = {
+                                        exercise: set.exercise,
+                                        sets: [],
+                                        minOrder: set.order,
+                                    };
+                                }
+                                acc[exerciseId].sets.push(set);
+                                return acc;
+                            },
+                            {} as Record<
+                                number,
+                                {
+                                    exercise: (typeof workout.sets)[0]["exercise"];
+                                    sets: typeof workout.sets;
+                                    minOrder: number;
+                                }
+                            >
+                        );
+
+                        return (
+                            <div key={workout.id} className="workout-day-card">
+                                <div
+                                    className="workout-day-card-header"
+                                    onClick={() => toggleWorkout(workout.id)}
+                                >
+                                    <div className="workout-day-card-info">
+                                        <h3 className="workout-day-routine-name">
+                                            {workout.routineName}
+                                        </h3>
+                                        <div className="workout-day-meta">
+                                            <span className="workout-day-date">
+                                                <Calendar size={16} />
+                                                {formatDate(
+                                                    workout.endTime || ""
+                                                )}
+                                            </span>
+                                            <span className="workout-day-duration">
+                                                <Clock size={16} />
+                                                {formatDuration(
+                                                    workout.duration
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button className="workout-day-toggle">
+                                        {isExpanded ? (
+                                            <ChevronUp size={24} />
+                                        ) : (
+                                            <ChevronDown size={24} />
+                                        )}
+                                    </button>
+                                </div>
+
+                                {isExpanded && (
+                                    <div className="workout-day-exercises">
+                                        {Object.entries(exerciseGroups)
+                                            .sort(
+                                                ([, a], [, b]) =>
+                                                    a.minOrder - b.minOrder
+                                            )
+                                            .map(
+                                                ([
+                                                    exerciseId,
+                                                    exerciseData,
+                                                ]) => (
+                                                    <div
+                                                        key={exerciseId}
+                                                        className="workout-day-exercise"
+                                                    >
+                                                        <div className="workout-day-exercise-header">
+                                                            {exerciseData
+                                                                .exercise
+                                                                .videoPath && (
+                                                                <video
+                                                                    className="workout-day-exercise-video"
+                                                                    src={getVideoUrl(
+                                                                        exerciseData
+                                                                            .exercise
+                                                                            .videoPath
+                                                                    )}
+                                                                    muted
+                                                                    loop
+                                                                    playsInline
+                                                                    onMouseEnter={(
+                                                                        e
+                                                                    ) =>
+                                                                        e.currentTarget.play()
+                                                                    }
+                                                                    onMouseLeave={(
+                                                                        e
+                                                                    ) => {
+                                                                        e.currentTarget.pause();
+                                                                        e.currentTarget.currentTime = 0;
+                                                                    }}
+                                                                />
+                                                            )}
+                                                            <div className="workout-day-exercise-info">
+                                                                <h4 className="workout-day-exercise-name">
+                                                                    {
+                                                                        exerciseData
+                                                                            .exercise
+                                                                            .name
+                                                                    }
+                                                                </h4>
+                                                                <div className="workout-day-exercise-details">
+                                                                    <span className="workout-day-muscle">
+                                                                        {
+                                                                            exerciseData
+                                                                                .exercise
+                                                                                .muscleGroup
+                                                                                .name
+                                                                        }
+                                                                    </span>
+                                                                    <span className="workout-day-equipment">
+                                                                        {
+                                                                            exerciseData
+                                                                                .exercise
+                                                                                .equipment
+                                                                                .name
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="workout-day-sets">
+                                                            {exerciseData.sets
+                                                                .sort(
+                                                                    (a, b) =>
+                                                                        a.order -
+                                                                        b.order
+                                                                )
+                                                                .map((set) => {
+                                                                    const setClass =
+                                                                        set.isPR
+                                                                            ? "set-item--pr"
+                                                                            : set.completed
+                                                                            ? "set-item--completed"
+                                                                            : "set-item--not-completed";
+
+                                                                    return (
+                                                                        <div
+                                                                            key={
+                                                                                set.id
+                                                                            }
+                                                                            className={`workout-day-set-item ${setClass}`}
+                                                                        >
+                                                                            <span className="set-number">
+                                                                                Serie{" "}
+                                                                                {
+                                                                                    set.setNumber
+                                                                                }
+                                                                            </span>
+                                                                            <span className="set-weight">
+                                                                                {
+                                                                                    set.actualWeight
+                                                                                }{" "}
+                                                                                kg
+                                                                                ×{" "}
+                                                                                {
+                                                                                    set.actualReps
+                                                                                }{" "}
+                                                                                reps
+                                                                            </span>
+                                                                            {set.isPR && (
+                                                                                <span className="pr-badge">
+                                                                                    PR
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </MainLayout>
+    );
+}

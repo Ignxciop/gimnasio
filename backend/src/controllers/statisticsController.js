@@ -49,6 +49,29 @@ class StatisticsController {
         }
     }
 
+    async getAllCompletedRoutines(req, res, next) {
+        try {
+            const { userId } = req.query;
+
+            if (!userId) {
+                const error = new Error("userId es requerido");
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const routines = await statisticsService.getAllCompletedRoutines(
+                userId
+            );
+
+            res.status(200).json({
+                success: true,
+                data: routines,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getAllExercises(req, res, next) {
         try {
             const exercises = await statisticsService.getAllExercises();
