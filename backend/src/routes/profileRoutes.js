@@ -1,6 +1,6 @@
 import express from "express";
 import profileController from "../controllers/profileController.js";
-import { authenticate } from "../middlewares/authMiddleware.js";
+import { authenticate, optionalAuth } from "../middlewares/authMiddleware.js";
 import {
     updateUsernameValidation,
     checkUsernameValidation,
@@ -36,6 +36,6 @@ router.patch(
     profileController.updatePrivacy
 );
 
-router.get("/:username", profileController.getProfileByUsername);
+router.get("/:username", optionalAuth, profileController.getProfileByUsername);
 
 export default router;

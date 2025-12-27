@@ -40,6 +40,32 @@ export const authenticate = (req, res, next) => {
     }
 };
 
+export const optionalAuth = (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            req.user = null;
+            return next();
+        }
+
+        const parts = authHeader.split(" ");
+        if (parts.length !== 2 || parts[0] !== "Bearer") {
+            req.user = null;
+            return next();
+        }
+
+        const token = parts[1];
+        const decoded = verifyToken(token);
+
+        req.user = decoded || null;
+        next();
+    } catch (error) {
+        req.user = null;
+        next();
+    }
+};
+
 export const authorize = (...allowedRoles) => {
     return async (req, res, next) => {
         try {
