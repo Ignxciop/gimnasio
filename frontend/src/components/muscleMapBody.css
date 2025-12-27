@@ -89,7 +89,7 @@
 }
 
 .muscle-map__legend-color--gradient {
-    background: linear-gradient(135deg, #e8e8e8 0%, #ffd700 100%);
+    background: linear-gradient(135deg, #4ecdc4 0%, #f4c542 100%);
 }
 
 @media (max-width: 768px) {
