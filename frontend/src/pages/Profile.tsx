@@ -103,6 +103,16 @@ export const Profile: React.FC = () => {
                     style={{
                         color: "var(--color-text-primary)",
                         marginBottom: "var(--spacing-xl)",
+                    }}
+                >
+                    {isOwnProfile
+                        ? "Mi Perfil"
+                        : `Perfil de ${profileData.name} ${profileData.lastname}`}
+                </h1>
+                <ProfileCard
+                    profileData={profileData}
+                    isOwnProfile={isOwnProfile}
+                />
 
                 {isOwnProfile && (
                     <div className="profile-actions">
@@ -128,8 +138,12 @@ export const Profile: React.FC = () => {
                             <button
                                 className="profile-action-btn profile-action-btn--donation"
                                 disabled
-                                onMouseEnter={() => setShowDonationTooltip(true)}
-                                onMouseLeave={() => setShowDonationTooltip(false)}
+                                onMouseEnter={() =>
+                                    setShowDonationTooltip(true)
+                                }
+                                onMouseLeave={() =>
+                                    setShowDonationTooltip(false)
+                                }
                                 onClick={() => setShowDonationTooltip(true)}
                                 aria-label="Donación (próximamente)"
                             >
@@ -149,16 +163,6 @@ export const Profile: React.FC = () => {
                     isOpen={feedbackModalOpen}
                     onClose={() => setFeedbackModalOpen(false)}
                     type={feedbackType}
-                />
-                    }}
-                >
-                    {isOwnProfile
-                        ? "Mi Perfil"
-                        : `Perfil de ${profileData.name} ${profileData.lastname}`}
-                </h1>
-                <ProfileCard
-                    profileData={profileData}
-                    isOwnProfile={isOwnProfile}
                 />
             </section>
         </MainLayout>
