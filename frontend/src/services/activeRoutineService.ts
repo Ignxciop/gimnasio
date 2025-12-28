@@ -44,11 +44,14 @@ const API_URL = "http://localhost:3000/api";
 
 export const activeRoutineService = {
     async getActive(token: string): Promise<ActiveRoutine | null> {
-        const response = await fetch(`${API_URL}/active-routines/active`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/active-routines/active`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
         if (!response.ok) {
             const error = await response.json();
@@ -60,14 +63,17 @@ export const activeRoutineService = {
     },
 
     async create(routineId: number, token: string): Promise<ActiveRoutine> {
-        const response = await fetch(`${API_URL}/active-routines`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ routineId }),
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/active-routines`,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ routineId }),
+            }
+        );
 
         if (!response.ok) {
             const error = await response.json();
@@ -85,7 +91,7 @@ export const activeRoutineService = {
         token: string
     ): Promise<ActiveRoutineSet> {
         const response = await fetch(
-            `${API_URL}/active-routines/sets/${setId}`,
+            `${import.meta.env.VITE_API_URL}/active-routines/sets/${setId}`,
             {
                 method: "PUT",
                 headers: {
@@ -106,14 +112,17 @@ export const activeRoutineService = {
     },
 
     async reorderSets(setIds: number[], token: string): Promise<void> {
-        const response = await fetch(`${API_URL}/active-routines/reorder`, {
-            method: "PUT",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ setIds }),
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/active-routines/reorder`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ setIds }),
+            }
+        );
 
         if (!response.ok) {
             const error = await response.json();
@@ -123,7 +132,9 @@ export const activeRoutineService = {
 
     async complete(activeRoutineId: number, token: string): Promise<void> {
         const response = await fetch(
-            `${API_URL}/active-routines/${activeRoutineId}/complete`,
+            `${
+                import.meta.env.VITE_API_URL
+            }/active-routines/${activeRoutineId}/complete`,
             {
                 method: "POST",
                 headers: {
@@ -141,7 +152,9 @@ export const activeRoutineService = {
 
     async cancel(activeRoutineId: number, token: string): Promise<void> {
         const response = await fetch(
-            `${API_URL}/active-routines/${activeRoutineId}/cancel`,
+            `${
+                import.meta.env.VITE_API_URL
+            }/active-routines/${activeRoutineId}/cancel`,
             {
                 method: "DELETE",
                 headers: {
@@ -157,14 +170,17 @@ export const activeRoutineService = {
     },
 
     async addSet(exerciseId: number, token: string): Promise<ActiveRoutineSet> {
-        const response = await fetch(`${API_URL}/active-routines/sets`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ exerciseId }),
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/active-routines/sets`,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ exerciseId }),
+            }
+        );
 
         if (!response.ok) {
             const error = await response.json();
@@ -177,7 +193,7 @@ export const activeRoutineService = {
 
     async removeSet(setId: number, token: string): Promise<void> {
         const response = await fetch(
-            `${API_URL}/active-routines/sets/${setId}`,
+            `${import.meta.env.VITE_API_URL}/active-routines/sets/${setId}`,
             {
                 method: "DELETE",
                 headers: {

@@ -36,7 +36,9 @@ export const statisticsService = {
         }
 
         const response = await fetch(
-            `${API_URL}/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
+            `${
+                import.meta.env.VITE_API_URL
+            }/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
             {
                 headers,
             }
@@ -70,7 +72,9 @@ export const statisticsService = {
         }
 
         const response = await fetch(
-            `${API_URL}/statistics/months-with-workouts?userId=${userId}`,
+            `${
+                import.meta.env.VITE_API_URL
+            }/statistics/months-with-workouts?userId=${userId}`,
             {
                 headers,
             }
@@ -88,11 +92,14 @@ export const statisticsService = {
     },
 
     async getExercises(token: string) {
-        const response = await fetch(`${API_URL}/exercises`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/exercises`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
         if (!response.ok) {
             throw new Error("Error al obtener ejercicios");

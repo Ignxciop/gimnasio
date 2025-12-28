@@ -43,9 +43,12 @@ export const profileService = {
             headers.Authorization = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${API_URL}/profile/${username}`, {
-            headers,
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/profile/${username}`,
+            {
+                headers,
+            }
+        );
 
         if (!response.ok) {
             const error = await response.json();
@@ -60,14 +63,17 @@ export const profileService = {
         isPublic: boolean,
         token: string
     ): Promise<ProfileData> {
-        const response = await fetch(`${API_URL}/profile/privacy`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ isPublic }),
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/profile/privacy`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ isPublic }),
+            }
+        );
 
         if (!response.ok) {
             const error = await response.json();
