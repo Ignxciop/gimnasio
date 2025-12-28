@@ -1,7 +1,7 @@
 import type { Routine, RoutineFormData } from "../types/routine";
 
-const handleError = (error: any, defaultMessage: string): never => {
-    if (error.message) {
+const handleError = (error: unknown, defaultMessage: string): never => {
+    if (error instanceof Error && error.message) {
         throw new Error(error.message);
     }
     throw new Error(defaultMessage);
@@ -70,8 +70,8 @@ export const routineService = {
 
             const data = await response.json();
             return data.data;
-        } catch (error: any) {
-            if (error.message) {
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 throw error;
             }
             throw new Error("No se pudo crear la rutina. Intenta nuevamente");
@@ -170,8 +170,8 @@ export const routineService = {
                     error.message || "No se pudo actualizar el orden"
                 );
             }
-        } catch (error: any) {
-            if (error.message) {
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 throw error;
             }
             throw new Error(
