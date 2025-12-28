@@ -6,6 +6,7 @@ import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { dashboardService } from "../services/dashboardService";
 import { getVideoUrl } from "../config/constants";
+import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
 
@@ -59,7 +60,7 @@ export default function WorkoutDay() {
                     "error",
                     error instanceof Error
                         ? error.message
-                        : "Error al cargar entrenamientos"
+                        : ERROR_MESSAGES.DASHBOARD.WORKOUTS
                 );
             } finally {
                 setLoading(false);
@@ -84,7 +85,7 @@ export default function WorkoutDay() {
     if (loading) {
         return (
             <MainLayout>
-                <div className="loading">Cargando...</div>
+                <div className="loading">{LOADING_MESSAGES.GENERIC}</div>
             </MainLayout>
         );
     }

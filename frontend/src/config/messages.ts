@@ -30,6 +30,10 @@ export const ERROR_MESSAGES = {
         DELETE: "Error al eliminar rutina",
         MOVE: "Error al mover rutina",
         START: "Error al iniciar entrenamiento",
+        ADD_EXERCISE: "Error al agregar ejercicio",
+        UPDATE_EXERCISE: "Error al actualizar ejercicio",
+        DELETE_EXERCISE: "Error al eliminar ejercicio",
+        UPDATE_ORDER: "Error al actualizar el orden",
     },
 
     EXERCISES: {
@@ -88,6 +92,14 @@ export const SUCCESS_MESSAGES = {
     ROLE_UPDATED: "Rol de usuario actualizado correctamente",
     USER_ACTIVATED: "Usuario activado correctamente",
     USER_DEACTIVATED: "Usuario desactivado correctamente",
+
+    ROUTINES: {
+        EXERCISE_ADDED: "Ejercicio agregado exitosamente",
+        EXERCISE_UPDATED: "Ejercicio actualizado exitosamente",
+        EXERCISE_DELETED: "Ejercicio eliminado exitosamente",
+        ORDER_UPDATED: "Orden actualizado exitosamente",
+        WORKOUT_STARTED: "Entrenamiento iniciado",
+    },
 
     FEEDBACK: {
         SUGGESTION_SENT: "Sugerencia enviada correctamente",

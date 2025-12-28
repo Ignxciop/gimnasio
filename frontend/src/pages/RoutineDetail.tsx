@@ -17,6 +17,11 @@ import { routineExerciseService } from "../services/routineExerciseService";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
+import {
+    LOADING_MESSAGES,
+    ERROR_MESSAGES,
+    SUCCESS_MESSAGES,
+} from "../config/messages";
 import "../styles/routineDetail.css";
 import type { Routine } from "../types/routine";
 import type {
@@ -73,7 +78,7 @@ export default function RoutineDetail() {
             if (!token) return;
 
             await routineExerciseService.create(Number(id), data, token);
-            showToast("success", "Ejercicio agregado exitosamente");
+            showToast("success", SUCCESS_MESSAGES.ROUTINES.EXERCISE_ADDED);
             exercisesFetch.execute();
             addExerciseModal.closeModal();
         } catch (error) {
@@ -81,7 +86,7 @@ export default function RoutineDetail() {
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al agregar ejercicio"
+                    : ERROR_MESSAGES.ROUTINES.ADD_EXERCISE
             );
         }
     };
@@ -98,7 +103,7 @@ export default function RoutineDetail() {
                 data,
                 token
             );
-            showToast("success", "Ejercicio actualizado exitosamente");
+            showToast("success", SUCCESS_MESSAGES.ROUTINES.EXERCISE_UPDATED);
             exercisesFetch.execute();
             editExerciseModal.closeModal();
         } catch (error) {
@@ -106,7 +111,7 @@ export default function RoutineDetail() {
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al actualizar ejercicio"
+                    : ERROR_MESSAGES.ROUTINES.UPDATE_EXERCISE
             );
         }
     };
@@ -119,14 +124,14 @@ export default function RoutineDetail() {
             if (!token) return;
 
             await routineExerciseService.delete(exerciseId, token);
-            showToast("success", "Ejercicio eliminado exitosamente");
+            showToast("success", SUCCESS_MESSAGES.ROUTINES.EXERCISE_DELETED);
             exercisesFetch.execute();
         } catch (error) {
             showToast(
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al eliminar ejercicio"
+                    : ERROR_MESSAGES.ROUTINES.DELETE_EXERCISE
             );
         }
     };
@@ -173,9 +178,9 @@ export default function RoutineDetail() {
 
             await routineExerciseService.reorder(updatedExercises, token);
             exercisesFetch.execute();
-            showToast("success", "Orden actualizado exitosamente");
+            showToast("success", SUCCESS_MESSAGES.ROUTINES.ORDER_UPDATED);
         } catch {
-            showToast("error", "Error al actualizar el orden");
+            showToast("error", ERROR_MESSAGES.ROUTINES.UPDATE_ORDER);
         }
 
         setDraggedExercise(null);
@@ -195,14 +200,14 @@ export default function RoutineDetail() {
                 Number(id),
                 token
             );
-            showToast("success", "Entrenamiento iniciado");
+            showToast("success", SUCCESS_MESSAGES.ROUTINES.WORKOUT_STARTED);
             navigate(`/rutinas/${id}/activa/${activeRoutine.id}`);
         } catch (error) {
             showToast(
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al iniciar entrenamiento"
+                    : ERROR_MESSAGES.ACTIVE_ROUTINE.START
             );
         }
     };
@@ -210,7 +215,7 @@ export default function RoutineDetail() {
     if (!routine) {
         return (
             <MainLayout>
-                <div className="loading">Cargando...</div>
+                <div className="loading">{LOADING_MESSAGES.GENERIC}</div>
             </MainLayout>
         );
     }
