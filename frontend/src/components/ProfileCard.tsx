@@ -15,6 +15,7 @@ import type { ProfileData } from "../services/profileService";
 import { profileService } from "../services/profileService";
 import { authService } from "../services/authService";
 import { useToast } from "../hooks/useToast";
+import { GENDERS } from "../config/constants";
 import "./profileCard.css";
 
 interface ProfileCardProps {
@@ -75,7 +76,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         <div className="profile-card">
             <div className="profile-card__header">
                 <div className="profile-card__avatar">
-                    {profileData.gender === "female" ? (
+                    {profileData.gender === GENDERS.FEMALE ? (
                         <UserRound size={48} />
                     ) : (
                         <User size={48} />

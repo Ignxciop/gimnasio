@@ -2,6 +2,7 @@ import React from "react";
 import type { MuscleRadarData } from "../types/muscleStimulus.types";
 import { FemaleMuscleMapBody } from "./FemaleMuscleMapBody";
 import { getMuscleColor, getStimulusLiga } from "../types/muscleLiga.types";
+import { GENDERS } from "../config/constants";
 import "./muscleMapBody.css";
 
 interface MuscleMapBodyProps {
@@ -13,7 +14,7 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({
     muscleData,
     gender,
 }) => {
-    if (gender === "female") {
+    if (gender === GENDERS.FEMALE) {
         return <FemaleMuscleMapBody muscleData={muscleData} />;
     }
 

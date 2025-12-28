@@ -9,6 +9,7 @@ import { profileService, type ProfileData } from "../services/profileService";
 import { authService } from "../services/authService";
 import { useToast } from "../hooks/useToast";
 import { getUserFromToken } from "../utils/getUserFromToken";
+import { FEEDBACK_TYPES } from "../config/constants";
 import "../styles/profile.css";
 
 export const Profile: React.FC = () => {
@@ -22,7 +23,7 @@ export const Profile: React.FC = () => {
     const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
     const [feedbackType, setFeedbackType] = useState<
         "suggestion" | "bug_report"
-    >("suggestion");
+    >(FEEDBACK_TYPES.SUGGESTION);
     const [showDonationTooltip, setShowDonationTooltip] = useState(false);
 
     useEffect(() => {
@@ -76,12 +77,12 @@ export const Profile: React.FC = () => {
     }, [username, currentUser?.username, showToast, navigate]);
 
     const handleOpenSuggestion = () => {
-        setFeedbackType("suggestion");
+        setFeedbackType(FEEDBACK_TYPES.SUGGESTION);
         setFeedbackModalOpen(true);
     };
 
     const handleOpenBugReport = () => {
-        setFeedbackType("bug_report");
+        setFeedbackType(FEEDBACK_TYPES.BUG_REPORT);
         setFeedbackModalOpen(true);
     };
 

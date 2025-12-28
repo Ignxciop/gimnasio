@@ -4,6 +4,7 @@ import { Button } from "./ui/Button";
 import { validators } from "../utils/validators";
 import { authService } from "../services/authService";
 import { ApiError } from "../services/api";
+import { GENDERS } from "../config/constants";
 import "../styles/form.css";
 
 interface RegisterFormProps {
@@ -17,7 +18,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [gender, setGender] = useState<"male" | "female">("male");
+    const [gender, setGender] = useState<"male" | "female">(GENDERS.MALE);
     const [errors, setErrors] = useState<{
         name?: string;
         lastname?: string;
@@ -180,8 +181,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                         <input
                             type="radio"
                             name="gender"
-                            value="male"
-                            checked={gender === "male"}
+                            value={GENDERS.MALE}
+                            checked={gender === GENDERS.MALE}
                             onChange={(e) =>
                                 setGender(e.target.value as "male" | "female")
                             }
@@ -194,8 +195,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                         <input
                             type="radio"
                             name="gender"
-                            value="female"
-                            checked={gender === "female"}
+                            value={GENDERS.FEMALE}
+                            checked={gender === GENDERS.FEMALE}
                             onChange={(e) =>
                                 setGender(e.target.value as "male" | "female")
                             }
