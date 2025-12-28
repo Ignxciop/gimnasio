@@ -100,3 +100,5 @@ export const authorize = (...allowedRoles) => {
         }
     };
 };
+
+export default authenticate;
