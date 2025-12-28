@@ -7,11 +7,10 @@ import { authService } from "../services/authService";
 import { useModal } from "../hooks/useModal";
 import { useDelete } from "../hooks/useDelete";
 import { useFetch } from "../hooks/useFetch";
-import { useToast } from "../hooks/useToast";
+import { useApiCall } from "../hooks/useApiCall";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_TEXTS } from "../config/messages";
 
 export const EquipmentSection: React.FC = () => {
-    const { showToast } = useToast();
-
     const equipmentFetch = useFetch<Equipment[]>({
         fetchFn: equipmentService.getAll,
     });
@@ -20,19 +19,12 @@ export const EquipmentSection: React.FC = () => {
 
     const equipmentDelete = useDelete({
         deleteFn: equipmentService.delete,
-        onSuccess: () => {
-            equipmentFetch.execute();
-            showToast("success", "Equipamiento eliminado correctamente");
-        },
-        onError: (error: unknown) => {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message ||
-                "Error al eliminar el equipamiento";
-            showToast("error", message);
-        },
+        onSuccess: () => equipmentFetch.execute(),
+        onError: () => {},
         confirmTitle: "Eliminar Equipamiento",
-        confirmMessage: "¿Estás seguro de eliminar este equipamiento?",
+        confirmMessage: UI_TEXTS.DELETE_EQUIPMENT_CONFIRM,
+        successMessage: SUCCESS_MESSAGES.EQUIPMENT.DELETED,
+        errorMessage: ERROR_MESSAGES.EQUIPMENT.DELETE,
     });
 
     useEffect(() => {
@@ -40,29 +32,43 @@ export const EquipmentSection: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const createEquipment = useApiCall(
+        (name: string, token: string) => equipmentService.create(name, token),
+        {
+            successMessage: SUCCESS_MESSAGES.EQUIPMENT.CREATED,
+            errorMessage: ERROR_MESSAGES.EQUIPMENT.CREATE,
+            onSuccess: () => {
+                equipmentFetch.execute();
+                equipmentModal.closeModal();
+            },
+        }
+    );
+
+    const updateEquipment = useApiCall(
+        (id: number, name: string, token: string) =>
+            equipmentService.update(id, name, token),
+        {
+            successMessage: SUCCESS_MESSAGES.EQUIPMENT.UPDATED,
+            errorMessage: ERROR_MESSAGES.EQUIPMENT.UPDATE,
+            onSuccess: () => {
+                equipmentFetch.execute();
+                equipmentModal.closeModal();
+            },
+        }
+    );
+
     const handleSubmit = async (name: string) => {
         const token = authService.getToken();
         if (!token) return;
 
-        try {
-            if (equipmentModal.editingItem) {
-                await equipmentService.update(
-                    equipmentModal.editingItem.id,
-                    name,
-                    token
-                );
-                showToast("success", "Equipamiento actualizado correctamente");
-            } else {
-                await equipmentService.create(name, token);
-                showToast("success", "Equipamiento creado correctamente");
-            }
-            await equipmentFetch.execute();
-        } catch (error: unknown) {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message ||
-                "Error al guardar el equipamiento";
-            showToast("error", message);
+        if (equipmentModal.editingItem) {
+            await updateEquipment.execute(
+                equipmentModal.editingItem.id,
+                name,
+                token
+            );
+        } else {
+            await createEquipment.execute(name, token);
         }
     };
 

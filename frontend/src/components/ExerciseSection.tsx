@@ -12,11 +12,10 @@ import { authService } from "../services/authService";
 import { useModal } from "../hooks/useModal";
 import { useDelete } from "../hooks/useDelete";
 import { useFetch } from "../hooks/useFetch";
-import { useToast } from "../hooks/useToast";
+import { useApiCall } from "../hooks/useApiCall";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_TEXTS } from "../config/messages";
 
 export const ExerciseSection: React.FC = () => {
-    const { showToast } = useToast();
-
     const exercisesFetch = useFetch<Exercise[]>({
         fetchFn: exerciseService.getAll,
     });
@@ -33,19 +32,12 @@ export const ExerciseSection: React.FC = () => {
 
     const exerciseDelete = useDelete({
         deleteFn: exerciseService.delete,
-        onSuccess: () => {
-            exercisesFetch.execute();
-            showToast("success", "Ejercicio eliminado correctamente");
-        },
-        onError: (error: unknown) => {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message ||
-                "Error al eliminar el ejercicio";
-            showToast("error", message);
-        },
+        onSuccess: () => exercisesFetch.execute(),
+        onError: () => {},
         confirmTitle: "Eliminar Ejercicio",
-        confirmMessage: "¿Estás seguro de eliminar este ejercicio?",
+        confirmMessage: UI_TEXTS.DELETE_EXERCISE_CONFIRM,
+        successMessage: SUCCESS_MESSAGES.EXERCISES.DELETED,
+        errorMessage: ERROR_MESSAGES.EXERCISES.DELETE,
     });
 
     useEffect(() => {
@@ -54,6 +46,62 @@ export const ExerciseSection: React.FC = () => {
         muscleGroupsFetch.execute();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const createExercise = useApiCall(
+        (
+            name: string,
+            equipmentId: number,
+            muscleGroupId: number,
+            secondaryMuscleGroupIds: number[],
+            token: string,
+            videoFile?: File | null
+        ) =>
+            exerciseService.create(
+                name,
+                equipmentId,
+                muscleGroupId,
+                secondaryMuscleGroupIds,
+                token,
+                videoFile
+            ),
+        {
+            successMessage: SUCCESS_MESSAGES.EXERCISES.CREATED,
+            errorMessage: ERROR_MESSAGES.EXERCISES.SAVE,
+            onSuccess: () => {
+                exercisesFetch.execute();
+                exerciseModal.closeModal();
+            },
+        }
+    );
+
+    const updateExercise = useApiCall(
+        (
+            id: number,
+            name: string,
+            equipmentId: number,
+            muscleGroupId: number,
+            secondaryMuscleGroupIds: number[],
+            token: string,
+            videoFile?: File | null
+        ) =>
+            exerciseService.update(
+                id,
+                name,
+                equipmentId,
+                muscleGroupId,
+                secondaryMuscleGroupIds,
+                token,
+                videoFile
+            ),
+        {
+            successMessage: SUCCESS_MESSAGES.EXERCISES.UPDATED,
+            errorMessage: ERROR_MESSAGES.EXERCISES.SAVE,
+            onSuccess: () => {
+                exercisesFetch.execute();
+                exerciseModal.closeModal();
+            },
+        }
+    );
 
     const handleSubmit = async (
         name: string,
@@ -65,36 +113,25 @@ export const ExerciseSection: React.FC = () => {
         const token = authService.getToken();
         if (!token) return;
 
-        try {
-            if (exerciseModal.editingItem) {
-                await exerciseService.update(
-                    exerciseModal.editingItem.id,
-                    name,
-                    equipmentId,
-                    muscleGroupId,
-                    secondaryMuscleGroupIds,
-                    token,
-                    videoFile
-                );
-                showToast("success", "Ejercicio actualizado correctamente");
-            } else {
-                await exerciseService.create(
-                    name,
-                    equipmentId,
-                    muscleGroupId,
-                    secondaryMuscleGroupIds,
-                    token,
-                    videoFile
-                );
-                showToast("success", "Ejercicio creado correctamente");
-            }
-            await exercisesFetch.execute();
-        } catch (error: unknown) {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message ||
-                "Error al guardar el ejercicio";
-            showToast("error", message);
+        if (exerciseModal.editingItem) {
+            await updateExercise.execute(
+                exerciseModal.editingItem.id,
+                name,
+                equipmentId,
+                muscleGroupId,
+                secondaryMuscleGroupIds,
+                token,
+                videoFile
+            );
+        } else {
+            await createExercise.execute(
+                name,
+                equipmentId,
+                muscleGroupId,
+                secondaryMuscleGroupIds,
+                token,
+                videoFile
+            );
         }
     };
 

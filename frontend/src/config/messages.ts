@@ -91,6 +91,22 @@ export const ERROR_MESSAGES = {
         SAVE: "Error al guardar carpeta",
     },
 
+    MUSCLE_GROUPS: {
+        FETCH: "Error al cargar grupos musculares",
+        CREATE: "Error al crear grupo muscular",
+        UPDATE: "Error al actualizar grupo muscular",
+        DELETE: "Error al eliminar el grupo muscular",
+        SAVE: "Error al guardar el grupo muscular",
+    },
+
+    EQUIPMENT: {
+        FETCH: "Error al cargar equipamientos",
+        CREATE: "Error al crear equipamiento",
+        UPDATE: "Error al actualizar equipamiento",
+        DELETE: "Error al eliminar el equipamiento",
+        SAVE: "Error al guardar el equipamiento",
+    },
+
     FEEDBACK: {
         SEND: "Error al enviar feedback",
         FETCH: "Error al obtener feedbacks",
@@ -126,7 +142,16 @@ export const SUCCESS_MESSAGES = {
         DELETED: "Ejercicio eliminado correctamente",
     },
 
+    MUSCLE_GROUPS: {
+        CREATED: "Grupo muscular creado correctamente",
+        UPDATED: "Grupo muscular actualizado correctamente",
+        DELETED: "Grupo muscular eliminado correctamente",
+    },
+
     EQUIPMENT: {
+        CREATED: "Equipamiento creado correctamente",
+        UPDATED: "Equipamiento actualizado correctamente",
+        DELETED: "Equipamiento eliminado correctamente",
         SAVED: "Equipamiento guardado correctamente",
     },
 

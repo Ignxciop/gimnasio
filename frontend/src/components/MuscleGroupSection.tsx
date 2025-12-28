@@ -10,11 +10,10 @@ import { authService } from "../services/authService";
 import { useModal } from "../hooks/useModal";
 import { useDelete } from "../hooks/useDelete";
 import { useFetch } from "../hooks/useFetch";
-import { useToast } from "../hooks/useToast";
+import { useApiCall } from "../hooks/useApiCall";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_TEXTS } from "../config/messages";
 
 export const MuscleGroupSection: React.FC = () => {
-    const { showToast } = useToast();
-
     const muscleGroupsFetch = useFetch<MuscleGroup[]>({
         fetchFn: muscleGroupService.getAll,
     });
@@ -23,19 +22,12 @@ export const MuscleGroupSection: React.FC = () => {
 
     const muscleGroupDelete = useDelete({
         deleteFn: muscleGroupService.delete,
-        onSuccess: () => {
-            muscleGroupsFetch.execute();
-            showToast("success", "Grupo muscular eliminado correctamente");
-        },
-        onError: (error: unknown) => {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message ||
-                "Error al eliminar el grupo muscular";
-            showToast("error", message);
-        },
+        onSuccess: () => muscleGroupsFetch.execute(),
+        onError: () => {},
         confirmTitle: "Eliminar Grupo Muscular",
-        confirmMessage: "¿Estás seguro de eliminar este grupo muscular?",
+        confirmMessage: UI_TEXTS.DELETE_MUSCLE_GROUP_CONFIRM,
+        successMessage: SUCCESS_MESSAGES.MUSCLE_GROUPS.DELETED,
+        errorMessage: ERROR_MESSAGES.MUSCLE_GROUPS.DELETE,
     });
 
     useEffect(() => {
@@ -43,32 +35,43 @@ export const MuscleGroupSection: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const createMuscleGroup = useApiCall(
+        (name: string, token: string) => muscleGroupService.create(name, token),
+        {
+            successMessage: SUCCESS_MESSAGES.MUSCLE_GROUPS.CREATED,
+            errorMessage: ERROR_MESSAGES.MUSCLE_GROUPS.CREATE,
+            onSuccess: () => {
+                muscleGroupsFetch.execute();
+                muscleGroupModal.closeModal();
+            },
+        }
+    );
+
+    const updateMuscleGroup = useApiCall(
+        (id: number, name: string, token: string) =>
+            muscleGroupService.update(id, name, token),
+        {
+            successMessage: SUCCESS_MESSAGES.MUSCLE_GROUPS.UPDATED,
+            errorMessage: ERROR_MESSAGES.MUSCLE_GROUPS.UPDATE,
+            onSuccess: () => {
+                muscleGroupsFetch.execute();
+                muscleGroupModal.closeModal();
+            },
+        }
+    );
+
     const handleSubmit = async (name: string) => {
         const token = authService.getToken();
         if (!token) return;
 
-        try {
-            if (muscleGroupModal.editingItem) {
-                await muscleGroupService.update(
-                    muscleGroupModal.editingItem.id,
-                    name,
-                    token
-                );
-                showToast(
-                    "success",
-                    "Grupo muscular actualizado correctamente"
-                );
-            } else {
-                await muscleGroupService.create(name, token);
-                showToast("success", "Grupo muscular creado correctamente");
-            }
-            await muscleGroupsFetch.execute();
-        } catch (error: unknown) {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message ||
-                "Error al guardar el grupo muscular";
-            showToast("error", message);
+        if (muscleGroupModal.editingItem) {
+            await updateMuscleGroup.execute(
+                muscleGroupModal.editingItem.id,
+                name,
+                token
+            );
+        } else {
+            await createMuscleGroup.execute(name, token);
         }
     };
 
