@@ -7,6 +7,13 @@ import { adminService } from "../services/adminService";
 import { authService } from "../services/authService";
 import { useFetch } from "../hooks/useFetch";
 import { useToast } from "../hooks/useToast";
+import { ROLE_OPTIONS, STATUS } from "../config/constants";
+import {
+    SUCCESS_MESSAGES,
+    ERROR_MESSAGES,
+    UI_TEXTS,
+    LOADING_MESSAGES,
+} from "../config/messages";
 import type { User } from "../types/auth.types";
 import "../styles/admin.css";
 
@@ -33,9 +40,9 @@ export const Admin: React.FC = () => {
         try {
             await adminService.updateUserRole(userId, newRoleId, token);
             await usersFetch.execute();
-            showToast("success", "Rol de usuario actualizado correctamente");
+            showToast("success", SUCCESS_MESSAGES.ROLE_UPDATED);
         } catch (error) {
-            showToast("error", "Error al actualizar el rol del usuario");
+            showToast("error", ERROR_MESSAGES.ADMIN.ROLE_UPDATE);
         }
     };
 
@@ -51,12 +58,12 @@ export const Admin: React.FC = () => {
             await usersFetch.execute();
             showToast(
                 "success",
-                `Usuario ${
-                    !currentStatus ? "activado" : "desactivado"
-                } correctamente`
+                !currentStatus
+                    ? SUCCESS_MESSAGES.USER_ACTIVATED
+                    : SUCCESS_MESSAGES.USER_DEACTIVATED
             );
         } catch (error) {
-            showToast("error", "Error al actualizar el estado del usuario");
+            showToast("error", ERROR_MESSAGES.ADMIN.STATUS_UPDATE);
         }
     };
 
@@ -98,7 +105,7 @@ export const Admin: React.FC = () => {
                         <SearchInput
                             value={searchTerm}
                             onChange={setSearchTerm}
-                            placeholder="Buscar por nombre o usuario..."
+                            placeholder={UI_TEXTS.SEARCH_PLACEHOLDER}
                             className="admin__search"
                         />
 
@@ -111,10 +118,8 @@ export const Admin: React.FC = () => {
                                     )
                                 }
                                 options={[
-                                    { value: "all", label: "Todos los roles" },
-                                    { value: 1, label: "Administrador" },
-                                    { value: 2, label: "Manager" },
-                                    { value: 3, label: "Usuario" },
+                                    { value: "all", label: UI_TEXTS.ALL_ROLES },
+                                    ...ROLE_OPTIONS,
                                 ]}
                                 className="admin__select"
                             />
@@ -129,10 +134,13 @@ export const Admin: React.FC = () => {
                                 options={[
                                     {
                                         value: "all",
-                                        label: "Todos los estados",
+                                        label: UI_TEXTS.ALL_STATUSES,
                                     },
-                                    { value: "true", label: "Activos" },
-                                    { value: "false", label: "Inactivos" },
+                                    { value: "true", label: UI_TEXTS.ACTIVE },
+                                    {
+                                        value: "false",
+                                        label: UI_TEXTS.INACTIVE,
+                                    },
                                 ]}
                                 className="admin__select"
                             />
@@ -146,7 +154,9 @@ export const Admin: React.FC = () => {
                 </div>
 
                 {usersFetch.loading ? (
-                    <div className="admin__loading">Cargando usuarios...</div>
+                    <div className="admin__loading">
+                        {LOADING_MESSAGES.USERS}
+                    </div>
                 ) : (
                     <UserTable
                         users={filteredUsers}

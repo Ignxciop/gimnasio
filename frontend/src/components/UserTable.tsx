@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Shield, Check, X } from "lucide-react";
 import { Select } from "./ui/Select";
+import { ROLE_OPTIONS } from "../config/constants";
+import { UI_TEXTS } from "../config/messages";
 import type { User } from "../types/auth.types";
 import "./userTable.css";
 
@@ -80,14 +82,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                                                 parseInt(val)
                                             )
                                         }
-                                        options={[
-                                            {
-                                                value: 1,
-                                                label: "Administrador",
-                                            },
-                                            { value: 2, label: "Manager" },
-                                            { value: 3, label: "Usuario" },
-                                        ]}
+                                        options={ROLE_OPTIONS}
                                         disabled={loading === user.id}
                                         className="user-table__select"
                                     />
@@ -102,11 +97,13 @@ export const UserTable: React.FC<UserTableProps> = ({
                                     >
                                         {user.is_active ? (
                                             <>
-                                                <Check size={14} /> Activo
+                                                <Check size={14} />{" "}
+                                                {UI_TEXTS.ACTIVE}
                                             </>
                                         ) : (
                                             <>
-                                                <X size={14} /> Inactivo
+                                                <X size={14} />{" "}
+                                                {UI_TEXTS.INACTIVE}
                                             </>
                                         )}
                                     </span>
@@ -124,8 +121,8 @@ export const UserTable: React.FC<UserTableProps> = ({
                                     >
                                         <Shield size={16} />
                                         {user.is_active
-                                            ? "Desactivar"
-                                            : "Activar"}
+                                            ? UI_TEXTS.DEACTIVATE
+                                            : UI_TEXTS.ACTIVATE}
                                     </button>
                                 </td>
                             </tr>
@@ -157,11 +154,12 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 >
                                     {user.is_active ? (
                                         <>
-                                            <Check size={14} /> Activo
+                                            <Check size={14} />{" "}
+                                            {UI_TEXTS.ACTIVE}
                                         </>
                                     ) : (
                                         <>
-                                            <X size={14} /> Inactivo
+                                            <X size={14} /> {UI_TEXTS.INACTIVE}
                                         </>
                                     )}
                                 </span>
@@ -174,11 +172,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                                     onChange={(val) =>
                                         handleRoleChange(user.id, parseInt(val))
                                     }
-                                    options={[
-                                        { value: 1, label: "Administrador" },
-                                        { value: 2, label: "Manager" },
-                                        { value: 3, label: "Usuario" },
-                                    ]}
+                                    options={ROLE_OPTIONS}
                                     disabled={loading === user.id}
                                     className="user-card__select"
                                 />
@@ -192,7 +186,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 className="user-card__button"
                             >
                                 <Shield size={16} />
-                                {user.is_active ? "Desactivar" : "Activar"}
+                                {user.is_active
+                                    ? UI_TEXTS.DEACTIVATE
+                                    : UI_TEXTS.ACTIVATE}
                             </button>
                         </div>
                     ))}
