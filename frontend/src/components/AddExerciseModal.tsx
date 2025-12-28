@@ -2,16 +2,12 @@ import { useState, useEffect } from "react";
 import { X, Search } from "lucide-react";
 import { useFetch } from "../hooks/useFetch";
 import { exerciseService } from "../services/exerciseService";
+import { getVideoUrl } from "../config/constants";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import type { RoutineExerciseFormData } from "../types/routineExercise";
 import type { Exercise } from "../types/exercise";
 import "./addExerciseModal.css";
-
-const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return null;
-    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
-};
 
 interface AddExerciseModalProps {
     isOpen: boolean;

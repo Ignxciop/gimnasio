@@ -1,12 +1,8 @@
 import React from "react";
 import { Dumbbell, Users, Target } from "lucide-react";
 import { Card, CardList } from "./ui/Card";
+import { getVideoUrl } from "../config/constants";
 import type { Exercise } from "../services/exerciseService";
-
-const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return null;
-    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
-};
 
 interface ExerciseListProps {
     exercises: Exercise[];

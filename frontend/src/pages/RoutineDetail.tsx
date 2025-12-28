@@ -16,6 +16,7 @@ import { routineService } from "../services/routineService";
 import { routineExerciseService } from "../services/routineExerciseService";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
+import { getVideoUrl } from "../config/constants";
 import "../styles/routineDetail.css";
 import type { Routine } from "../types/routine";
 import type {
@@ -24,12 +25,6 @@ import type {
 } from "../types/routineExercise";
 import AddExerciseModal from "../components/AddExerciseModal";
 import EditRoutineExerciseModal from "../components/EditRoutineExerciseModal";
-import "../styles/routineDetail.css";
-
-const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return null;
-    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
-};
 
 export default function RoutineDetail() {
     const { id } = useParams();

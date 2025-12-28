@@ -11,13 +11,9 @@ import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
+import { getVideoUrl, getApiEndpoint } from "../config/constants";
 import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
-
-const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return null;
-    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
-};
 
 const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -70,7 +66,9 @@ export default function CompletedRoutines() {
                 }
 
                 const response = await fetch(
-                    `http://localhost:3000/api/statistics/all-completed-routines?userId=${profile.id}`,
+                    getApiEndpoint(
+                        `/statistics/all-completed-routines?userId=${profile.id}`
+                    ),
                     {
                         headers,
                     }

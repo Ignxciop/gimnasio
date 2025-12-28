@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { getVideoUrl } from "../config/constants";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import type {
@@ -7,11 +8,6 @@ import type {
     RoutineExerciseFormData,
 } from "../types/routineExercise";
 import "./editRoutineExerciseModal.css";
-
-const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return null;
-    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
-};
 
 interface EditRoutineExerciseModalProps {
     isOpen: boolean;

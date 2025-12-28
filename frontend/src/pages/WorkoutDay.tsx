@@ -5,13 +5,9 @@ import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { dashboardService } from "../services/dashboardService";
+import { getVideoUrl } from "../config/constants";
 import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
-
-const getVideoUrl = (videoPath: string | null) => {
-    if (!videoPath) return null;
-    return `http://localhost:3000/resources/examples_exercises/${videoPath}`;
-};
 
 const formatDate = (year: number, month: number, day: number): string => {
     const date = new Date(year, month - 1, day);
