@@ -19,26 +19,30 @@ app.use("/api/auth", authRoutes);
 app.use("/api/active-routines", activeRoutineRoutes);
 app.use(errorHandler);
 
+const E2E_PREFIX = "e2e_test_";
+const TEST_EMAIL = `${E2E_PREFIX}active_${Date.now()}@test.com`;
+const TEST_USERNAME = `${E2E_PREFIX}user_${Date.now()}`;
+
+const createdIds = {
+    userId: null,
+    exerciseId: null,
+    routineId: null,
+    activeRoutineId: null,
+    routineExerciseId: null,
+};
+
 let authToken;
-let userId;
-let routineId;
-let activeRoutineId;
-let exerciseId;
 
 beforeAll(async () => {
-    await prisma.user.deleteMany({
-        where: { email: "testactive@test.com" },
-    });
-
     const role = await prisma.role.findFirst({
         where: { role: "usuario" },
     });
 
     const testUser = {
-        username: `testuser_${Date.now()}`,
-        name: "Test",
-        lastname: "User",
-        email: "testactive@test.com",
+        username: TEST_USERNAME,
+        name: `${E2E_PREFIX}Test`,
+        lastname: `${E2E_PREFIX}User`,
+        email: TEST_EMAIL,
         password: "Test123!",
         gender: "male",
         roleId: role.id,
@@ -49,7 +53,11 @@ beforeAll(async () => {
         .send(testUser);
 
     if (registerResponse.status !== 201) {
-        console.log("Register failed:", registerResponse.body);
+        throw new Error(
+            `Test setup failed - Register: ${JSON.stringify(
+                registerResponse.body
+            )}`
+        );
     }
 
     const loginResponse = await request(app).post("/api/auth/login").send({
@@ -58,34 +66,42 @@ beforeAll(async () => {
     });
 
     if (loginResponse.status !== 200) {
-        console.log("Login failed:", loginResponse.body);
+        throw new Error(
+            `Test setup failed - Login: ${JSON.stringify(loginResponse.body)}`
+        );
     }
 
     authToken = loginResponse.body.data.token;
-    userId = loginResponse.body.data.user.id;
+    createdIds.userId = loginResponse.body.data.user.id;
 
     const equipment = await prisma.equipment.findFirst();
     const muscleGroup = await prisma.muscleGroup.findFirst();
 
+    if (!equipment || !muscleGroup) {
+        throw new Error(
+            "Test setup failed - No equipment or muscle group found in database"
+        );
+    }
+
     const exercise = await prisma.exercise.create({
         data: {
-            name: "Test Exercise",
+            name: `${E2E_PREFIX}Exercise_${Date.now()}`,
             equipmentId: equipment.id,
             muscleGroupId: muscleGroup.id,
         },
     });
-    exerciseId = exercise.id;
+    createdIds.exerciseId = exercise.id;
 
     const routine = await prisma.routine.create({
         data: {
-            userId,
-            name: "Test Routine",
-            description: "Test routine for active tests",
+            userId: createdIds.userId,
+            name: `${E2E_PREFIX}Routine_${Date.now()}`,
+            description: "E2E test routine - safe to delete",
         },
     });
-    routineId = routine.id;
+    createdIds.routineId = routine.id;
 
-    await prisma.routineExercise.create({
+    const routineExercise = await prisma.routineExercise.create({
         data: {
             routineId: routine.id,
             exerciseId: exercise.id,
@@ -97,36 +113,61 @@ beforeAll(async () => {
             order: 0,
         },
     });
+    createdIds.routineExerciseId = routineExercise.id;
 });
 
 afterAll(async () => {
-    await prisma.activeRoutineSet.deleteMany({
-        where: {
-            activeRoutine: { userId },
-        },
-    });
+    try {
+        if (createdIds.activeRoutineId) {
+            await prisma.activeRoutineSet.deleteMany({
+                where: {
+                    activeRoutineId: createdIds.activeRoutineId,
+                },
+            });
 
-    await prisma.activeRoutine.deleteMany({
-        where: { userId },
-    });
+            await prisma.activeRoutine.deleteMany({
+                where: {
+                    id: createdIds.activeRoutineId,
+                },
+            });
+        }
 
-    await prisma.routineExercise.deleteMany({
-        where: { routineId },
-    });
+        if (createdIds.routineExerciseId) {
+            await prisma.routineExercise.deleteMany({
+                where: {
+                    id: createdIds.routineExerciseId,
+                },
+            });
+        }
 
-    await prisma.routine.deleteMany({
-        where: { userId },
-    });
+        if (createdIds.routineId) {
+            await prisma.routine.deleteMany({
+                where: {
+                    id: createdIds.routineId,
+                },
+            });
+        }
 
-    await prisma.exercise.deleteMany({
-        where: { id: exerciseId },
-    });
+        if (createdIds.exerciseId) {
+            await prisma.exercise.deleteMany({
+                where: {
+                    id: createdIds.exerciseId,
+                },
+            });
+        }
 
-    await prisma.user.deleteMany({
-        where: { email: "testactive@test.com" },
-    });
-
-    await prisma.$disconnect();
+        if (createdIds.userId) {
+            await prisma.user.deleteMany({
+                where: {
+                    id: createdIds.userId,
+                },
+            });
+        }
+    } catch (error) {
+        console.error("Error during test cleanup:", error);
+    } finally {
+        await prisma.$disconnect();
+    }
 });
 
 describe("Active Routine - Add/Remove Sets", () => {
@@ -134,31 +175,31 @@ describe("Active Routine - Add/Remove Sets", () => {
         const response = await request(app)
             .post("/api/active-routines")
             .set("Authorization", `Bearer ${authToken}`)
-            .send({ routineId });
+            .send({ routineId: createdIds.routineId });
 
         expect(response.status).toBe(201);
         expect(response.body.success).toBe(true);
         expect(response.body.data.sets).toHaveLength(3);
 
-        activeRoutineId = response.body.data.id;
+        createdIds.activeRoutineId = response.body.data.id;
     });
 
     test("Debe agregar una nueva serie al ejercicio", async () => {
         const response = await request(app)
             .post("/api/active-routines/sets")
             .set("Authorization", `Bearer ${authToken}`)
-            .send({ exerciseId });
+            .send({ exerciseId: createdIds.exerciseId });
 
         expect(response.status).toBe(201);
         expect(response.body.success).toBe(true);
-        expect(response.body.data.exerciseId).toBe(exerciseId);
+        expect(response.body.data.exerciseId).toBe(createdIds.exerciseId);
         expect(Number(response.body.data.targetWeight)).toBe(50);
 
         const activeRoutine = await prisma.activeRoutine.findFirst({
-            where: { id: activeRoutineId },
+            where: { id: createdIds.activeRoutineId },
             include: {
                 sets: {
-                    where: { exerciseId },
+                    where: { exerciseId: createdIds.exerciseId },
                 },
             },
         });
@@ -168,20 +209,20 @@ describe("Active Routine - Add/Remove Sets", () => {
 
     test("No debe agregar serie si no hay rutina activa", async () => {
         await prisma.activeRoutine.updateMany({
-            where: { userId },
+            where: { id: createdIds.activeRoutineId },
             data: { status: "completed" },
         });
 
         const response = await request(app)
             .post("/api/active-routines/sets")
             .set("Authorization", `Bearer ${authToken}`)
-            .send({ exerciseId });
+            .send({ exerciseId: createdIds.exerciseId });
 
         expect(response.status).toBe(404);
         expect(response.body.success).toBe(false);
 
         await prisma.activeRoutine.updateMany({
-            where: { userId },
+            where: { id: createdIds.activeRoutineId },
             data: { status: "active" },
         });
     });
@@ -198,10 +239,10 @@ describe("Active Routine - Add/Remove Sets", () => {
 
     test("Debe eliminar una serie del ejercicio", async () => {
         const activeRoutine = await prisma.activeRoutine.findFirst({
-            where: { id: activeRoutineId },
+            where: { id: createdIds.activeRoutineId },
             include: {
                 sets: {
-                    where: { exerciseId },
+                    where: { exerciseId: createdIds.exerciseId },
                     orderBy: { order: "asc" },
                 },
             },
@@ -217,10 +258,10 @@ describe("Active Routine - Add/Remove Sets", () => {
         expect(response.body.success).toBe(true);
 
         const updatedRoutine = await prisma.activeRoutine.findFirst({
-            where: { id: activeRoutineId },
+            where: { id: createdIds.activeRoutineId },
             include: {
                 sets: {
-                    where: { exerciseId },
+                    where: { exerciseId: createdIds.exerciseId },
                 },
             },
         });
@@ -230,10 +271,10 @@ describe("Active Routine - Add/Remove Sets", () => {
 
     test("No debe eliminar la única serie de un ejercicio", async () => {
         const activeRoutine = await prisma.activeRoutine.findFirst({
-            where: { id: activeRoutineId },
+            where: { id: createdIds.activeRoutineId },
             include: {
                 sets: {
-                    where: { exerciseId },
+                    where: { exerciseId: createdIds.exerciseId },
                 },
             },
         });
@@ -269,10 +310,10 @@ describe("Active Routine - Add/Remove Sets", () => {
 
     test("Debe mantener el orden correcto después de eliminar", async () => {
         const activeRoutine = await prisma.activeRoutine.findFirst({
-            where: { id: activeRoutineId },
+            where: { id: createdIds.activeRoutineId },
             include: {
                 sets: {
-                    where: { exerciseId },
+                    where: { exerciseId: createdIds.exerciseId },
                     orderBy: { order: "asc" },
                 },
             },
@@ -282,19 +323,21 @@ describe("Active Routine - Add/Remove Sets", () => {
             await request(app)
                 .post("/api/active-routines/sets")
                 .set("Authorization", `Bearer ${authToken}`)
-                .send({ exerciseId });
+                .send({ exerciseId: createdIds.exerciseId });
 
             const updated = await prisma.activeRoutine.findFirst({
-                where: { id: activeRoutineId },
-                include: { sets: { where: { exerciseId } } },
+                where: { id: createdIds.activeRoutineId },
+                include: {
+                    sets: { where: { exerciseId: createdIds.exerciseId } },
+                },
             });
             activeRoutine.sets = updated.sets;
         }
 
         const sets = await prisma.activeRoutineSet.findMany({
             where: {
-                activeRoutineId,
-                exerciseId,
+                activeRoutineId: createdIds.activeRoutineId,
+                exerciseId: createdIds.exerciseId,
             },
             orderBy: { order: "asc" },
         });
@@ -307,8 +350,8 @@ describe("Active Routine - Add/Remove Sets", () => {
 
         const updatedSets = await prisma.activeRoutineSet.findMany({
             where: {
-                activeRoutineId,
-                exerciseId,
+                activeRoutineId: createdIds.activeRoutineId,
+                exerciseId: createdIds.exerciseId,
             },
             orderBy: { order: "asc" },
         });
