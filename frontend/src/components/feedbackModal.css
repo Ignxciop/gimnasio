@@ -1,74 +1,22 @@
-.feedback-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.75);
+.feedback-form {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-lg);
 }
 
-.feedback-modal {
-    background: var(--color-surface);
-    border-radius: var(--border-radius);
-    width: 100%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-.feedback-modal__header {
+.feedback-form__field {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    gap: var(--spacing-sm);
 }
 
-.feedback-modal__header h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0;
-}
-
-.feedback-modal__close {
-    background: none;
-    border: none;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    padding: var(--spacing-xs);
-    border-radius: var(--border-radius);
-    transition: all 0.2s;
-}
-
-.feedback-modal__close:hover {
-    background: var(--color-hover);
-    color: var(--color-text-primary);
-}
-
-.feedback-modal__form {
-    padding: var(--spacing-lg);
-}
-
-.feedback-modal__field {
-    margin-bottom: var(--spacing-lg);
-}
-
-.feedback-modal__field label {
-    display: block;
+.feedback-form__field label {
     font-size: 0.95rem;
     font-weight: 500;
     color: var(--color-text-primary);
-    margin-bottom: var(--spacing-sm);
 }
 
-.feedback-modal__optional {
+.feedback-form__optional {
     color: var(--color-text-secondary);
     font-weight: 400;
     font-size: 0.875rem;
@@ -78,8 +26,8 @@
     color: var(--accent-start);
 }
 
-.feedback-modal__field input,
-.feedback-modal__field textarea {
+.feedback-form__field input,
+.feedback-form__field textarea {
     width: 100%;
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--color-background);
@@ -91,34 +39,33 @@
     transition: all 0.2s;
 }
 
-.feedback-modal__field input:focus,
-.feedback-modal__field textarea:focus {
+.feedback-form__field input:focus,
+.feedback-form__field textarea:focus {
     outline: none;
     border-color: var(--accent-mid);
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
-.feedback-modal__field textarea {
+.feedback-form__field textarea {
     resize: vertical;
     min-height: 120px;
 }
 
-.feedback-modal__counter {
+.feedback-form__counter {
     display: block;
     text-align: right;
     font-size: 0.8rem;
     color: var(--color-text-secondary);
-    margin-top: var(--spacing-xs);
 }
 
-.feedback-modal__actions {
+.feedback-form__actions {
     display: flex;
     gap: var(--spacing-md);
     justify-content: flex-end;
-    padding-top: var(--spacing-md);
+    margin-top: var(--spacing-md);
 }
 
-.feedback-modal__btn {
+.feedback-form__btn {
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--border-radius);
     font-size: 0.95rem;
@@ -128,45 +75,39 @@
     border: none;
 }
 
-.feedback-modal__btn--cancel {
+.feedback-form__btn--cancel {
     background: var(--color-surface);
     color: var(--color-text-primary);
     border: 1px solid var(--color-border);
 }
 
-.feedback-modal__btn--cancel:hover:not(:disabled) {
+.feedback-form__btn--cancel:hover:not(:disabled) {
     background: var(--color-hover);
 }
 
-.feedback-modal__btn--submit {
+.feedback-form__btn--submit {
     background: linear-gradient(135deg, var(--accent-start), var(--accent-mid));
     color: white;
     border: none;
 }
 
-.feedback-modal__btn--submit:hover:not(:disabled) {
+.feedback-form__btn--submit:hover:not(:disabled) {
     background: linear-gradient(135deg, var(--accent-mid), var(--accent-end));
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
-.feedback-modal__btn:disabled {
+.feedback-form__btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
-    .feedback-modal {
-        max-width: 100%;
-        max-height: 100vh;
-        border-radius: 0;
-    }
-
-    .feedback-modal__actions {
+    .feedback-form__actions {
         flex-direction: column-reverse;
     }
 
-    .feedback-modal__btn {
+    .feedback-form__btn {
         width: 100%;
     }
 }

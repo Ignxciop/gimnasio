@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { Modal } from "./ui/Modal";
 import { feedbackService } from "../services/feedbackService";
 import { authService } from "../services/authService";
 import { useToast } from "../hooks/useToast";
@@ -70,8 +70,6 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
         }
     };
 
-    if (!isOpen) return null;
-
     const modalTitle =
         type === "suggestion" ? "Enviar Sugerencia" : "Reportar Problema";
     const placeholderDescription =
@@ -80,79 +78,63 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
             : "Describe el problema: ¿Qué sucedió? ¿Qué esperabas que sucediera? ¿Pasos para reproducirlo?";
 
     return (
-        <div className="feedback-modal-overlay" onClick={onClose}>
-            <div
-                className="feedback-modal"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="feedback-modal__header">
-                    <h2>{modalTitle}</h2>
-                    <button
-                        className="feedback-modal__close"
-                        onClick={onClose}
-                        aria-label="Cerrar"
-                    >
-                        <X size={24} />
-                    </button>
+        <Modal isOpen={isOpen} onClose={onClose} title={modalTitle}>
+            <form className="feedback-form" onSubmit={handleSubmit}>
+                <div className="feedback-form__field">
+                    <label htmlFor="title">
+                        Título{" "}
+                        <span className="feedback-form__optional">
+                            (opcional)
+                        </span>
+                    </label>
+                    <input
+                        id="title"
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Resumen breve"
+                        maxLength={200}
+                        disabled={loading}
+                    />
                 </div>
 
-                <form className="feedback-modal__form" onSubmit={handleSubmit}>
-                    <div className="feedback-modal__field">
-                        <label htmlFor="title">
-                            Título{" "}
-                            <span className="feedback-modal__optional">
-                                (opcional)
-                            </span>
-                        </label>
-                        <input
-                            id="title"
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Resumen breve"
-                            maxLength={200}
-                            disabled={loading}
-                        />
-                    </div>
+                <div className="feedback-form__field">
+                    <label htmlFor="description">
+                        Descripción <span className="required">*</span>
+                    </label>
+                    <textarea
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder={placeholderDescription}
+                        rows={8}
+                        maxLength={2000}
+                        required
+                        disabled={loading}
+                    />
+                    <span className="feedback-form__counter">
+                        {description.length}/2000
+                    </span>
+                </div>
 
-                    <div className="feedback-modal__field">
-                        <label htmlFor="description">
-                            Descripción <span className="required">*</span>
-                        </label>
-                        <textarea
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder={placeholderDescription}
-                            rows={8}
-                            maxLength={2000}
-                            required
-                            disabled={loading}
-                        />
-                        <span className="feedback-modal__counter">
-                            {description.length}/2000
-                        </span>
-                    </div>
-
-                    <div className="feedback-modal__actions">
-                        <button
-                            type="button"
-                            className="feedback-modal__btn feedback-modal__btn--cancel"
-                            onClick={onClose}
-                            disabled={loading}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="feedback-modal__btn feedback-modal__btn--submit"
-                            disabled={loading || description.trim().length < 10}
-                        >
-                            {loading ? "Enviando..." : "Enviar"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div className="feedback-form__actions">
+                    <button
+                        type="button"
+                        className="feedback-form__btn feedback-form__btn--cancel"
+                        onClick={onClose}
+                        disabled={loading}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="feedback-form__btn feedback-form__btn--submit"
+                        disabled={loading || description.trim().length < 10}
+                    >
+                        {loading ? "Enviando..." : "Enviar"}
+                    </button>
+                </div>
+            </form>
+        </Modal>
     );
 };
