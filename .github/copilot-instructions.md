@@ -97,12 +97,29 @@ gimnasio/
 -   Usar interfaces para props de componentes
 -   Tipos explícitos para responses de API
 -   Evitar `any`, usar tipos específicos
+-   **Manejo de errores**: Usar `unknown` en lugar de `any` para catch blocks
+    ```typescript
+    try {
+        // código
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            // manejar error
+        }
+    }
+    ```
 
 ### Navegación
 
 -   Usar `react-router-dom` para navegación
 -   `useNavigate()` para redirecciones programáticas
 -   `NavLink` para enlaces de navegación con estado activo
+
+### Variables de Entorno
+
+-   **Vite**: Usar `import.meta.env.VITE_*` para variables de entorno
+-   **NUNCA** hardcodear URLs de API, siempre usar variables
+-   Ejemplo: `const API_URL = import.meta.env.VITE_API_URL;`
+-   Archivo `.env` en la raíz del proyecto frontend
 
 ## Convenciones de Código Backend
 
@@ -113,6 +130,7 @@ gimnasio/
 -   **Validadores**: Usan `express-validator` para validaciones
 -   **Middlewares**: Auth, manejo de errores
 -   **Routes**: Solo definen rutas y aplican middlewares/validadores
+-   **Modules**: Usar ES6 modules (`export`/`import`), NO CommonJS (`module.exports`/`require`)
 
 ### Prisma
 
@@ -150,6 +168,27 @@ gimnasio/
     }
     ```
 
+### Testing
+
+-   **Tests E2E**: Usar prefijo `e2e_test_` para datos de prueba (usuarios, registros, etc.)
+-   **Aislamiento de datos**: Mantener array `createdIds` para rastrear y limpiar datos de prueba
+-   **Imports**: Usar `@jest/globals` para describe, it, expect, beforeAll, afterAll
+-   **Patrón de cleanup**:
+
+    ```javascript
+    const createdIds = { userId: null, itemId: null };
+
+    beforeAll(async () => {
+        // Setup con prefijo e2e_test_
+    });
+
+    afterAll(async () => {
+        // Cleanup de createdIds
+    });
+    ```
+
+-   **Nunca** usar datos reales en tests, siempre datos con prefijo identificable
+
 ## NO Hacer
 
 ### Frontend
@@ -159,6 +198,8 @@ gimnasio/
 -   ❌ Lógica de API dentro de componentes
 -   ❌ Manejar redirecciones en componentes de formulario
 -   ❌ Usar colores azules (paleta vieja)
+-   ❌ **NUNCA hardcodear URLs de API** - Siempre usar `import.meta.env.VITE_API_URL`
+-   ❌ **NUNCA usar `any` en TypeScript** - Usar `unknown` con type guards
 -   ❌ **NUNCA colocar comentarios en el código** - El código debe ser autoexplicativo con nombres descriptivos
 -   ❌ **NUNCA usar emojis** - Usar lucide-react icons en su lugar
 -   ❌ **NUNCA usar emojis en logs** - Los logs deben ser claros y limpios
@@ -177,12 +218,11 @@ gimnasio/
 ### Frontend
 
 -   ✅ Custom hooks para lógica compartida (fetch, modales, autenticación)
--   ✅ Services para manejar API
+-   ✅ Services para manejar API con `import.meta.env.VITE_API_URL`
 -   ✅ Usar variables CSS para colores y espaciado
 -   ✅ Aplicar gradiente acento en botones principales
 -   ✅ **SIEMPRE diseñar responsive** - Todo debe verse bien en desktop y móviles (usar media queries)
--   ✅ Aplicar gradiente acento en botones principales
--   ✅ **SIEMPRE diseñar responsive** - Todo debe verse bien en desktop y móviles (usar media queries)
+-   ✅ Manejo de errores con `error: unknown` y type guards (`instanceof Error`)
 
 ### Backend
 
