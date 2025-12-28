@@ -280,18 +280,6 @@ class ActiveRoutineService {
                     status: "active",
                 },
             },
-            include: {
-                activeRoutine: {
-                    include: {
-                        sets: {
-                            where: {
-                                exerciseId:
-                                    prisma.activeRoutineSet.fields.exerciseId,
-                            },
-                        },
-                    },
-                },
-            },
         });
 
         if (!set) {
