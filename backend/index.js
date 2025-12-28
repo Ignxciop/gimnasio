@@ -19,7 +19,7 @@ const port = config.port;
 const app = express();
 
 const corsOptions = {
-    origin: ["http://localhost:5173", "http://192.168.1.84:5173"],
+    origin: ["http://localhost:5173"],
     credentials: true,
 };
 
