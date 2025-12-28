@@ -1,4 +1,4 @@
-import { API_URL } from "../config";
+const API_URL = "http://localhost:3000/api";
 
 export interface CreateFeedbackRequest {
     type: "suggestion" | "bug_report";
