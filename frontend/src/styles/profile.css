@@ -3,6 +3,9 @@
     gap: var(--spacing-md);
     margin-top: var(--spacing-xl);
     flex-wrap: wrap;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .profile-action-btn-wrapper {
