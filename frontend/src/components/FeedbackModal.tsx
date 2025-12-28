@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal } from "./ui/Modal";
+import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
 import { feedbackService } from "../services/feedbackService";
 import { authService } from "../services/authService";
 import { useToast } from "../hooks/useToast";
@@ -80,23 +82,16 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={modalTitle}>
             <form className="feedback-form" onSubmit={handleSubmit}>
-                <div className="feedback-form__field">
-                    <label htmlFor="title">
-                        Título{" "}
-                        <span className="feedback-form__optional">
-                            (opcional)
-                        </span>
-                    </label>
-                    <input
-                        id="title"
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Resumen breve"
-                        maxLength={200}
-                        disabled={loading}
-                    />
-                </div>
+                <Input
+                    label="Título (opcional)"
+                    id="title"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Resumen breve"
+                    maxLength={200}
+                    disabled={loading}
+                />
 
                 <div className="feedback-form__field">
                     <label htmlFor="description">
@@ -118,21 +113,22 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 </div>
 
                 <div className="feedback-form__actions">
-                    <button
+                    <Button
                         type="button"
-                        className="feedback-form__btn feedback-form__btn--cancel"
+                        variant="secondary"
                         onClick={onClose}
                         disabled={loading}
                     >
                         Cancelar
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="submit"
-                        className="feedback-form__btn feedback-form__btn--submit"
-                        disabled={loading || description.trim().length < 10}
+                        variant="primary"
+                        isLoading={loading}
+                        disabled={description.trim().length < 10}
                     >
-                        {loading ? "Enviando..." : "Enviar"}
-                    </button>
+                        Enviar
+                    </Button>
                 </div>
             </form>
         </Modal>

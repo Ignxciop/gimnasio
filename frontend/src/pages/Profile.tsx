@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Lightbulb, Bug, Heart } from "lucide-react";
 import { MainLayout } from "../layouts/MainLayout";
 import { ProfileCard } from "../components/ProfileCard";
+import { Button } from "../components/ui/Button";
 import { FeedbackModal } from "../components/FeedbackModal";
 import { profileService, type ProfileData } from "../services/profileService";
 import { authService } from "../services/authService";
@@ -116,27 +117,29 @@ export const Profile: React.FC = () => {
 
                 {isOwnProfile && (
                     <div className="profile-actions">
-                        <button
-                            className="profile-action-btn profile-action-btn--suggestion"
+                        <Button
+                            variant="secondary"
                             onClick={handleOpenSuggestion}
                             aria-label="Enviar sugerencia"
+                            className="profile-action-btn--suggestion"
                         >
                             <Lightbulb size={20} />
                             Sugerencias
-                        </button>
+                        </Button>
 
-                        <button
-                            className="profile-action-btn profile-action-btn--report"
+                        <Button
+                            variant="secondary"
                             onClick={handleOpenBugReport}
                             aria-label="Reportar problema"
+                            className="profile-action-btn--report"
                         >
                             <Bug size={20} />
                             Reportes
-                        </button>
+                        </Button>
 
                         <div className="profile-action-btn-wrapper">
-                            <button
-                                className="profile-action-btn profile-action-btn--donation"
+                            <Button
+                                variant="secondary"
                                 disabled
                                 onMouseEnter={() =>
                                     setShowDonationTooltip(true)
@@ -146,10 +149,11 @@ export const Profile: React.FC = () => {
                                 }
                                 onClick={() => setShowDonationTooltip(true)}
                                 aria-label="Donación (próximamente)"
+                                className="profile-action-btn--donation"
                             >
                                 <Heart size={20} />
                                 Donación
-                            </button>
+                            </Button>
                             {showDonationTooltip && (
                                 <span className="profile-action-tooltip">
                                     Próximamente
