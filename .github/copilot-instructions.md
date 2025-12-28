@@ -50,6 +50,38 @@ gimnasio/
 -   Reutilizar componentes UI, NO duplicar lógica
 -   Validaciones en el cliente usando `utils/validators.ts`
 
+### 🚨 REGLA PERMANENTE: Auditoría de Reutilización
+
+**Antes de crear cualquier componente, modal, botón o lógica nueva, SIEMPRE debes:**
+
+1. **Auditoría previa obligatoria**
+
+    - Revisar componentes existentes en `components/ui/`
+    - Identificar si alguno cumple total o parcialmente el requerimiento
+    - Verificar si puede extenderse con props en vez de duplicarse
+
+2. **Prioridad de reutilización**
+
+    - Si existe un componente reutilizable → **DEBES usarlo**
+    - Solo puedes crear uno nuevo si el existente no puede adaptarse razonablemente
+    - Si creas uno nuevo, debes justificarlo explícitamente
+
+3. **Componentes disponibles para reutilizar**
+
+    - `ui/Button` → Botones con variants (primary, secondary, danger), isLoading, fullWidth
+    - `ui/Input` → Inputs con label, error, validación
+    - `ui/Modal` → Modales con backdrop-filter, overlay, header
+    - `ui/ConfirmDialog` → Diálogos de confirmación/cancelación
+    - `ui/Card` → Cards con estilos consistentes
+    - `ui/Select` → Selects dropdown personalizados
+    - `ui/Toast` → Notificaciones toast
+
+4. **Regla de oro**
+    - ❌ NO crear componentes nuevos por comodidad
+    - ✅ Reutilizar primero, extender si es necesario, crear solo como último recurso
+    - ✅ Evitar duplicación de lógica y estilos
+    - ✅ Asegurar consistencia visual y funcional en toda la app
+
 ### Estilos
 
 -   Usar CSS modules o archivos CSS separados por componente
