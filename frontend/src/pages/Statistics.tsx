@@ -17,6 +17,9 @@ import { useToast } from "../hooks/useToast";
 import { getUserFromToken } from "../utils/getUserFromToken";
 import { muscleGrowthCalculator } from "../utils/muscleGrowthCalculator";
 import { buildExerciseMappingsFromBackend } from "../utils/exerciseMappings";
+import { getMonthName } from "../utils/dateHelpers";
+import { GENDERS } from "../config/constants";
+import { LOADING_MESSAGES, ERROR_MESSAGES, UI_TEXTS } from "../config/messages";
 import type { MuscleRadarData } from "../types/muscleStimulus.types";
 import "../styles/statistics.css";
 
@@ -28,7 +31,9 @@ export const Statistics: React.FC = () => {
     const [isOwnProfile, setIsOwnProfile] = useState(false);
     const [radarData, setRadarData] = useState<MuscleRadarData[]>([]);
     const [userId, setUserId] = useState<string | null>(null);
-    const [userGender, setUserGender] = useState<"male" | "female">("male");
+    const [userGender, setUserGender] = useState<"male" | "female">(
+        GENDERS.MALE
+    );
     const [showInfo, setShowInfo] = useState(false);
     const [availableMonths, setAvailableMonths] = useState<string[]>([]);
     const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -62,7 +67,7 @@ export const Statistics: React.FC = () => {
                     "error",
                     error instanceof Error
                         ? error.message
-                        : "Error al cargar datos del mes"
+                        : ERROR_MESSAGES.STATISTICS.MONTH_DATA
                 );
             }
         },
@@ -83,7 +88,7 @@ export const Statistics: React.FC = () => {
                     token
                 );
 
-                setUserGender(profile.gender || "male");
+                setUserGender(profile.gender || GENDERS.MALE);
 
                 let currentUserId = null;
                 if (token) {
@@ -117,16 +122,16 @@ export const Statistics: React.FC = () => {
             } catch (error) {
                 if (
                     error instanceof Error &&
-                    error.message === "Este perfil es privado"
+                    error.message === ERROR_MESSAGES.PROFILE.PRIVATE
                 ) {
-                    showToast("error", "Este perfil es privado");
+                    showToast("error", ERROR_MESSAGES.PROFILE.PRIVATE);
                     navigate("/inicio");
                 } else {
                     showToast(
                         "error",
                         error instanceof Error
                             ? error.message
-                            : "Error al cargar estadísticas"
+                            : ERROR_MESSAGES.STATISTICS.FETCH
                     );
                     navigate("/inicio");
                 }
@@ -178,29 +183,13 @@ export const Statistics: React.FC = () => {
         }
     };
 
-    const getMonthName = (month: number) => {
-        const months = [
-            "Enero",
-            "Febrero",
-            "Marzo",
-            "Abril",
-            "Mayo",
-            "Junio",
-            "Julio",
-            "Agosto",
-            "Septiembre",
-            "Octubre",
-            "Noviembre",
-            "Diciembre",
-        ];
-        return months[month - 1];
-    };
-
     if (loading) {
         return (
             <MainLayout>
                 <div className="statistics">
-                    <div className="statistics__loading">Cargando...</div>
+                    <div className="statistics__loading">
+                        {LOADING_MESSAGES.GENERIC}
+                    </div>
                 </div>
             </MainLayout>
         );
