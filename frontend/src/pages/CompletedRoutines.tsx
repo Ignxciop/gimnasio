@@ -12,6 +12,7 @@ import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
 import { getVideoUrl, getApiEndpoint } from "../config/constants";
+import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
 
@@ -76,9 +77,9 @@ export default function CompletedRoutines() {
 
                 if (!response.ok) {
                     if (response.status === 403) {
-                        throw new Error("Este perfil es privado");
+                        throw new Error(ERROR_MESSAGES.PROFILE.PRIVATE);
                     }
-                    throw new Error("Error al cargar rutinas");
+                    throw new Error(ERROR_MESSAGES.ROUTINES.FETCH);
                 }
 
                 const data = await response.json();
@@ -86,16 +87,16 @@ export default function CompletedRoutines() {
             } catch (error) {
                 if (
                     error instanceof Error &&
-                    error.message === "Este perfil es privado"
+                    error.message === ERROR_MESSAGES.PROFILE.PRIVATE
                 ) {
-                    showToast("error", "Este perfil es privado");
+                    showToast("error", ERROR_MESSAGES.PROFILE.PRIVATE);
                     navigate("/inicio");
                 } else {
                     showToast(
                         "error",
                         error instanceof Error
                             ? error.message
-                            : "Error al cargar rutinas"
+                            : ERROR_MESSAGES.ROUTINES.FETCH
                     );
                 }
             } finally {
@@ -121,7 +122,7 @@ export default function CompletedRoutines() {
     if (loading) {
         return (
             <MainLayout>
-                <div className="loading">Cargando...</div>
+                <div className="loading">{LOADING_MESSAGES.GENERIC}</div>
             </MainLayout>
         );
     }

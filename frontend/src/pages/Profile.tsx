@@ -10,6 +10,7 @@ import { authService } from "../services/authService";
 import { useToast } from "../hooks/useToast";
 import { getUserFromToken } from "../utils/getUserFromToken";
 import { FEEDBACK_TYPES } from "../config/constants";
+import { ERROR_MESSAGES, LOADING_MESSAGES } from "../config/messages";
 import "../styles/profile.css";
 
 export const Profile: React.FC = () => {
@@ -49,16 +50,16 @@ export const Profile: React.FC = () => {
 
                 if (
                     error instanceof Error &&
-                    error.message === "Este perfil es privado"
+                    error.message === ERROR_MESSAGES.PROFILE.PRIVATE
                 ) {
-                    showToast("error", "Este perfil es privado");
+                    showToast("error", ERROR_MESSAGES.PROFILE.PRIVATE);
                     navigate("/inicio");
                 } else {
                     showToast(
                         "error",
                         error instanceof Error
                             ? error.message
-                            : "Error al cargar perfil"
+                            : ERROR_MESSAGES.PROFILE.FETCH
                     );
                     navigate("/inicio");
                 }
@@ -89,7 +90,7 @@ export const Profile: React.FC = () => {
     if (loading) {
         return (
             <MainLayout>
-                <div>Cargando perfil...</div>
+                <div>{LOADING_MESSAGES.PROFILE}</div>
             </MainLayout>
         );
     }

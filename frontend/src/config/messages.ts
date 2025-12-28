@@ -56,8 +56,8 @@ export const ERROR_MESSAGES = {
         WORKOUTS: "Error al cargar entrenamientos",
         RECENT: "Error al obtener entrenamientos recientes",
         DAY: "Error al obtener entrenamientos del día",
-        STREAK: "Error al obtener streak semanal",
-        MONTHLY: "Error al obtener estadísticas mensuales",
+        WEEKLY_STREAK: "Error al cargar racha semanal",
+        MONTHLY_STATS: "Error al cargar estadísticas mensuales",
         COMPLETED_DATES: "Error al obtener fechas completadas",
     },
 

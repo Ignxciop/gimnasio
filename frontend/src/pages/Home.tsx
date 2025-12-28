@@ -13,6 +13,7 @@ import {
     type WeeklyStreak as WeeklyStreakType,
     type MonthlyStats as MonthlyStatsType,
 } from "../services/dashboardService";
+import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import "../styles/home.css";
 
 export const Home: React.FC = () => {
@@ -40,7 +41,7 @@ export const Home: React.FC = () => {
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al cargar entrenamientos"
+                    : ERROR_MESSAGES.DASHBOARD.WORKOUTS
             );
         }
     };
@@ -57,7 +58,7 @@ export const Home: React.FC = () => {
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al cargar racha semanal"
+                    : ERROR_MESSAGES.DASHBOARD.WEEKLY_STREAK
             );
         }
     };
@@ -79,7 +80,7 @@ export const Home: React.FC = () => {
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al cargar estadísticas mensuales"
+                    : ERROR_MESSAGES.DASHBOARD.MONTHLY_STATS
             );
         }
     };
@@ -101,7 +102,7 @@ export const Home: React.FC = () => {
                     "error",
                     error instanceof Error
                         ? error.message
-                        : "Error al cargar calendario"
+                        : ERROR_MESSAGES.DASHBOARD.CALENDAR
                 );
             }
         },
@@ -132,7 +133,7 @@ export const Home: React.FC = () => {
     if (loading) {
         return (
             <MainLayout>
-                <div className="loading">Cargando...</div>
+                <div className="loading">{LOADING_MESSAGES.GENERIC}</div>
             </MainLayout>
         );
     }
