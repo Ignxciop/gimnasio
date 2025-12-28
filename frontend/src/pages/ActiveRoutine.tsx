@@ -9,6 +9,7 @@ import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
 import { formatTime } from "../utils/dateHelpers";
+import { LOADING_MESSAGES, ERROR_MESSAGES, UI_TEXTS } from "../config/messages";
 import "../styles/activeRoutine.css";
 
 interface ActiveRoutineSet {
@@ -82,7 +83,7 @@ export default function ActiveRoutine() {
 
                 setActiveRoutine(data);
             } catch {
-                showToast("error", "Error al cargar rutina activa");
+                showToast("error", ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH);
                 navigate(`/rutinas/${routineId}`);
             }
         };
@@ -163,7 +164,9 @@ export default function ActiveRoutine() {
         } catch (error) {
             showToast(
                 "error",
-                error instanceof Error ? error.message : "Error al actualizar"
+                error instanceof Error
+                    ? error.message
+                    : ERROR_MESSAGES.ACTIVE_ROUTINE.UPDATE
             );
         }
     };
@@ -406,7 +409,7 @@ export default function ActiveRoutine() {
     if (!activeRoutine) {
         return (
             <MainLayout>
-                <div className="loading">Cargando...</div>
+                <div className="loading">{LOADING_MESSAGES.GENERIC}</div>
             </MainLayout>
         );
     }

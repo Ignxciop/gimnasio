@@ -20,6 +20,7 @@ export const ERROR_MESSAGES = {
         FETCH: "Error al cargar perfil",
         PRIVATE: "Este perfil es privado",
         UPDATE: "Error al actualizar privacidad del perfil",
+        UPDATE_PRIVACY: "Error al actualizar privacidad",
     },
 
     ROUTINES: {
@@ -42,6 +43,7 @@ export const ERROR_MESSAGES = {
         UPDATE: "Error al actualizar ejercicio",
         DELETE: "Error al eliminar ejercicio",
         REORDER: "Error al actualizar el orden",
+        SAVE: "Error al guardar el ejercicio",
     },
 
     STATISTICS: {
@@ -67,11 +69,14 @@ export const ERROR_MESSAGES = {
     },
 
     ACTIVE_ROUTINE: {
-        FETCH: "Error al obtener rutina activa",
+        FETCH: "Error al cargar rutina activa",
         CREATE: "Error al crear rutina activa",
+        UPDATE: "Error al actualizar",
         UPDATE_SET: "Error al actualizar serie",
+        UPDATE_ORDER: "Error al actualizar orden",
         REORDER: "Error al reordenar series",
         COMPLETE: "Error al completar rutina",
+        FINISH: "Error al finalizar entrenamiento",
         CANCEL: "Error al cancelar rutina",
         ADD_SET: "Error al agregar serie",
         DELETE_SET: "Error al eliminar serie",
@@ -80,6 +85,10 @@ export const ERROR_MESSAGES = {
     FOLDERS: {
         FETCH: "Error al obtener carpetas",
         GET: "Error al obtener carpeta",
+        CREATE: "Error al crear carpeta",
+        UPDATE: "Error al actualizar carpeta",
+        DELETE: "Error al eliminar carpeta",
+        SAVE: "Error al guardar carpeta",
     },
 
     FEEDBACK: {
@@ -99,6 +108,26 @@ export const SUCCESS_MESSAGES = {
         EXERCISE_DELETED: "Ejercicio eliminado exitosamente",
         ORDER_UPDATED: "Orden actualizado exitosamente",
         WORKOUT_STARTED: "Entrenamiento iniciado",
+        CREATED: "Rutina creada exitosamente",
+        UPDATED: "Rutina actualizada exitosamente",
+        DELETED: "Rutina eliminada exitosamente",
+        MOVED: "Rutina movida exitosamente",
+    },
+
+    FOLDERS: {
+        CREATED: "Carpeta creada exitosamente",
+        UPDATED: "Carpeta actualizada exitosamente",
+        DELETED: "Carpeta eliminada exitosamente",
+    },
+
+    EXERCISES: {
+        CREATED: "Ejercicio creado correctamente",
+        UPDATED: "Ejercicio actualizado correctamente",
+        DELETED: "Ejercicio eliminado correctamente",
+    },
+
+    EQUIPMENT: {
+        SAVED: "Equipamiento guardado correctamente",
     },
 
     FEEDBACK: {
@@ -118,4 +147,19 @@ export const UI_TEXTS = {
     ALL_STATUSES: "Todos los estados",
     MY_PROFILE: "Mi Perfil",
     YOUR_PROFILE: "Tu perfil",
+    CANCEL: "Cancelar",
+    CONFIRM: "Confirmar",
+    CONFIRM_ACTION: "Confirmar acción",
+    YES_CANCEL: "Sí, cancelar",
+    CONFIRM_PASSWORD: "Confirmar Contraseña",
+    CANCEL_ROUTINE: "Cancelar rutina",
+    CANCEL_ROUTINE_MESSAGE:
+        "¿Seguro que deseas cancelar esta rutina? Se perderá todo el progreso.",
+    DELETE_EXERCISE_CONFIRM: "¿Estás seguro de eliminar este ejercicio?",
+    DELETE_EQUIPMENT_CONFIRM: "¿Estás seguro de eliminar este equipamiento?",
+    DELETE_MUSCLE_GROUP_CONFIRM:
+        "¿Estás seguro de eliminar este grupo muscular?",
+    DELETE_ROUTINE_CONFIRM: "¿Estás seguro de eliminar esta rutina?",
+    DELETE_FOLDER_CONFIRM:
+        "¿Estás seguro de eliminar esta carpeta? Las rutinas dentro se moverán a 'Sin carpeta'.",
 } as const;
