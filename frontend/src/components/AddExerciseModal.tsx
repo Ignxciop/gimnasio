@@ -6,7 +6,7 @@ import { getVideoUrl } from "../config/constants";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import type { RoutineExerciseFormData } from "../types/routineExercise";
-import type { Exercise } from "../types/exercise";
+import type { Exercise } from "../services/exerciseService";
 import "./addExerciseModal.css";
 
 interface AddExerciseModalProps {
