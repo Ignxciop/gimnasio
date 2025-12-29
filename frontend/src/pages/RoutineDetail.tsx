@@ -35,7 +35,6 @@ import EditRoutineExerciseModal from "../components/EditRoutineExerciseModal";
 export default function RoutineDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { showToast } = useToast();
     const [routine, setRoutine] = useState<Routine | null>(null);
     const [activeRoutineId, setActiveRoutineId] = useState<number | null>(null);
     const [draggedExercise, setDraggedExercise] =
@@ -100,8 +99,7 @@ export default function RoutineDetail() {
     const startWorkout = useApiCall(activeRoutineService.create, {
         successMessage: SUCCESS_MESSAGES.ROUTINES.WORKOUT_STARTED,
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.START,
-        onSuccess: (activeRoutine) =>
-            navigate(`/rutinas/${id}/activa/${activeRoutine.id}`),
+        onSuccess: (result) => navigate(`/rutinas/${id}/activa/${result.id}`),
     });
 
     useEffect(() => {

@@ -84,8 +84,9 @@ export default function ActiveRoutine() {
 
     const updateSet = useApiCall(activeRoutineService.updateSet, {
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.UPDATE,
-        onSuccess: (updatedSet, [setId]) => {
+        onSuccess: (updatedSet, args) => {
             if (!activeRoutine) return;
+            const setId = args[0];
             setActiveRoutine({
                 ...activeRoutine,
                 sets: activeRoutine.sets.map((s) =>

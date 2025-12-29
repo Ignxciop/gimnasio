@@ -19,7 +19,7 @@ import { muscleGrowthCalculator } from "../utils/muscleGrowthCalculator";
 import { buildExerciseMappingsFromBackend } from "../utils/exerciseMappings";
 import { getMonthName } from "../utils/dateHelpers";
 import { GENDERS } from "../config/constants";
-import { LOADING_MESSAGES, ERROR_MESSAGES, UI_TEXTS } from "../config/messages";
+import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import type { MuscleRadarData } from "../types/muscleStimulus.types";
 import "../styles/statistics.css";
 

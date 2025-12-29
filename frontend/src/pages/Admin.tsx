@@ -117,9 +117,11 @@ export const Admin: React.FC = () => {
                         <div className="admin__filter-group">
                             <Select
                                 value={roleFilter.toString()}
-                                onChange={(val) =>
+                                onChange={(value) =>
                                     setRoleFilter(
-                                        val === "all" ? "all" : parseInt(val)
+                                        value === "all"
+                                            ? "all"
+                                            : parseInt(value)
                                     )
                                 }
                                 options={[
