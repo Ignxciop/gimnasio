@@ -91,7 +91,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Resumen breve"
                     maxLength={200}
-                    disabled={loading}
+                    disabled={createFeedback.loading}
                 />
 
                 <div className="feedback-form__field">
