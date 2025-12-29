@@ -13,10 +13,11 @@ import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
 import { useDelete } from "../hooks/useDelete";
-import { useToast } from "../hooks/useToast";
+import { useApiCall } from "../hooks/useApiCall";
 import { folderService } from "../services/folderService";
 import { routineService } from "../services/routineService";
 import { authService } from "../services/authService";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_TEXTS } from "../config/messages";
 import type {
     Folder,
     Routine,
@@ -26,7 +27,6 @@ import type {
 
 export default function RoutinesManager() {
     const navigate = useNavigate();
-    const { showToast } = useToast();
     const folderModal = useModal<Folder>();
     const routineModal = useModal<Routine>();
     const [draggedFolder, setDraggedFolder] = useState<Folder | null>(null);
@@ -45,33 +45,22 @@ export default function RoutinesManager() {
         onSuccess: () => {
             foldersFetch.execute();
             routinesFetch.execute();
-            showToast("success", "Carpeta eliminada exitosamente");
         },
-        onError: (error: unknown) => {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message || "Error al eliminar carpeta";
-            showToast("error", message);
-        },
+        onError: () => {},
         confirmTitle: "Eliminar Carpeta",
-        confirmMessage:
-            "¿Estás seguro de eliminar esta carpeta? Las rutinas dentro se moverán a 'Sin carpeta'.",
+        confirmMessage: UI_TEXTS.DELETE_FOLDER_CONFIRM,
+        successMessage: SUCCESS_MESSAGES.FOLDERS.DELETED,
+        errorMessage: ERROR_MESSAGES.FOLDERS.DELETE,
     });
 
     const routineDelete = useDelete({
         deleteFn: routineService.delete,
-        onSuccess: () => {
-            routinesFetch.execute();
-            showToast("success", "Rutina eliminada exitosamente");
-        },
-        onError: (error: unknown) => {
-            const message =
-                (error as { response?: { data?: { message?: string } } })
-                    ?.response?.data?.message || "Error al eliminar rutina";
-            showToast("error", message);
-        },
+        onSuccess: () => routinesFetch.execute(),
+        onError: () => {},
         confirmTitle: "Eliminar Rutina",
-        confirmMessage: "¿Estás seguro de eliminar esta rutina?",
+        confirmMessage: UI_TEXTS.DELETE_ROUTINE_CONFIRM,
+        successMessage: SUCCESS_MESSAGES.ROUTINES.DELETED,
+        errorMessage: ERROR_MESSAGES.ROUTINES.DELETE,
     });
 
     useEffect(() => {
@@ -79,6 +68,90 @@ export default function RoutinesManager() {
         routinesFetch.execute();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const createFolder = useApiCall(
+        (data: FolderFormData, token: string) =>
+            folderService.create(data, token),
+        {
+            successMessage: SUCCESS_MESSAGES.FOLDERS.CREATED,
+            errorMessage: ERROR_MESSAGES.FOLDERS.CREATE,
+            onSuccess: () => {
+                foldersFetch.execute();
+                folderModal.closeModal();
+            },
+        }
+    );
+
+    const updateFolder = useApiCall(
+        (id: number, data: FolderFormData, token: string) =>
+            folderService.update(id, data, token),
+        {
+            successMessage: SUCCESS_MESSAGES.FOLDERS.UPDATED,
+            errorMessage: ERROR_MESSAGES.FOLDERS.UPDATE,
+            onSuccess: () => {
+                foldersFetch.execute();
+                folderModal.closeModal();
+            },
+        }
+    );
+
+    const createRoutine = useApiCall(
+        (data: RoutineFormData, token: string) =>
+            routineService.create(data, token),
+        {
+            successMessage: SUCCESS_MESSAGES.ROUTINES.CREATED,
+            errorMessage: ERROR_MESSAGES.ROUTINES.CREATE,
+            onSuccess: () => {
+                routinesFetch.execute();
+                routineModal.closeModal();
+            },
+        }
+    );
+
+    const updateRoutine = useApiCall(
+        (id: number, data: RoutineFormData, token: string) =>
+            routineService.update(id, data, token),
+        {
+            successMessage: SUCCESS_MESSAGES.ROUTINES.UPDATED,
+            errorMessage: ERROR_MESSAGES.ROUTINES.UPDATE,
+            onSuccess: () => {
+                routinesFetch.execute();
+                routineModal.closeModal();
+            },
+        }
+    );
+
+    const reorderFolders = useApiCall(
+        (folders: { id: number; order: number }[], token: string) =>
+            folderService.reorder(folders, token),
+        {
+            successMessage: SUCCESS_MESSAGES.ROUTINES.ORDER_UPDATED,
+            errorMessage: ERROR_MESSAGES.ROUTINES.UPDATE_ORDER,
+            onSuccess: () => foldersFetch.execute(),
+        }
+    );
+
+    const moveRoutine = useApiCall(
+        (
+            routines: { id: number; order: number; folderId: number | null }[],
+            token: string
+        ) => routineService.reorder(routines, token),
+        {
+            successMessage: SUCCESS_MESSAGES.ROUTINES.MOVED,
+            errorMessage: ERROR_MESSAGES.ROUTINES.MOVE,
+            onSuccess: () => routinesFetch.execute(),
+        }
+    );
+
+    const reorderRoutines = useApiCall(
+        (routines: { id: number; order: number }[], token: string) =>
+            routineService.reorder(routines, token),
+        {
+            successMessage: SUCCESS_MESSAGES.ROUTINES.ORDER_UPDATED,
+            errorMessage: ERROR_MESSAGES.ROUTINES.UPDATE_ORDER,
+            onSuccess: () => routinesFetch.execute(),
+        }
+    );
 
     const handleCreateFolder = () => {
         folderModal.openModal();
@@ -101,58 +174,28 @@ export default function RoutinesManager() {
     };
 
     const handleFolderSubmit = async (data: FolderFormData) => {
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            if (folderModal.editingItem) {
-                await folderService.update(
-                    folderModal.editingItem.id,
-                    data,
-                    token
-                );
-                showToast("success", "Carpeta actualizada exitosamente");
-            } else {
-                await folderService.create(data, token);
-                showToast("success", "Carpeta creada exitosamente");
-            }
-            foldersFetch.execute();
-            folderModal.closeModal();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al guardar carpeta"
-            );
+        if (folderModal.editingItem) {
+            await updateFolder.execute(folderModal.editingItem.id, data, token);
+        } else {
+            await createFolder.execute(data, token);
         }
     };
 
     const handleRoutineSubmit = async (data: RoutineFormData) => {
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            if (routineModal.editingItem) {
-                await routineService.update(
-                    routineModal.editingItem.id,
-                    data,
-                    token
-                );
-                showToast("success", "Rutina actualizada exitosamente");
-            } else {
-                await routineService.create(data, token);
-                showToast("success", "Rutina creada exitosamente");
-            }
-            routinesFetch.execute();
-            routineModal.closeModal();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al guardar rutina"
+        if (routineModal.editingItem) {
+            await updateRoutine.execute(
+                routineModal.editingItem.id,
+                data,
+                token
             );
+        } else {
+            await createRoutine.execute(data, token);
         }
     };
 
@@ -196,34 +239,25 @@ export default function RoutinesManager() {
             return;
         }
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            const folders = foldersFetch.data || [];
-            const draggedIndex = folders.findIndex(
-                (f) => f.id === draggedFolder.id
-            );
-            const targetIndex = folders.findIndex(
-                (f) => f.id === targetFolder.id
-            );
+        const folders = foldersFetch.data || [];
+        const draggedIndex = folders.findIndex(
+            (f) => f.id === draggedFolder.id
+        );
+        const targetIndex = folders.findIndex((f) => f.id === targetFolder.id);
 
-            const reorderedFolders = [...folders];
-            reorderedFolders.splice(draggedIndex, 1);
-            reorderedFolders.splice(targetIndex, 0, draggedFolder);
+        const reorderedFolders = [...folders];
+        reorderedFolders.splice(draggedIndex, 1);
+        reorderedFolders.splice(targetIndex, 0, draggedFolder);
 
-            const updatedFolders = reorderedFolders.map((folder, index) => ({
-                id: folder.id,
-                order: index,
-            }));
+        const updatedFolders = reorderedFolders.map((folder, index) => ({
+            id: folder.id,
+            order: index,
+        }));
 
-            await folderService.reorder(updatedFolders, token);
-            foldersFetch.execute();
-            showToast("success", "Orden actualizado exitosamente");
-        } catch {
-            showToast("error", "Error al actualizar el orden");
-        }
-
+        await reorderFolders.execute(updatedFolders, token);
         setDraggedFolder(null);
     };
 
@@ -249,30 +283,23 @@ export default function RoutinesManager() {
             return;
         }
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            const routines = routinesFetch.data || [];
-            const targetRoutines = routines.filter(
-                (r) => r.folderId === targetFolderId
-            );
+        const routines = routinesFetch.data || [];
+        const targetRoutines = routines.filter(
+            (r) => r.folderId === targetFolderId
+        );
 
-            const updatedRoutines = [
-                {
-                    id: draggedRoutine.id,
-                    order: targetRoutines.length,
-                    folderId: targetFolderId,
-                },
-            ];
+        const updatedRoutines = [
+            {
+                id: draggedRoutine.id,
+                order: targetRoutines.length,
+                folderId: targetFolderId,
+            },
+        ];
 
-            await routineService.reorder(updatedRoutines, token);
-            routinesFetch.execute();
-            showToast("success", "Rutina movida exitosamente");
-        } catch {
-            showToast("error", "Error al mover la rutina");
-        }
-
+        await moveRoutine.execute(updatedRoutines, token);
         setDraggedRoutine(null);
     };
 
@@ -288,63 +315,54 @@ export default function RoutinesManager() {
             return;
         }
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            const routines = routinesFetch.data || [];
-            const sameFolder =
-                draggedRoutine.folderId === targetRoutine.folderId;
-            const folderRoutines = routines.filter(
-                (r) => r.folderId === targetRoutine.folderId
+        const routines = routinesFetch.data || [];
+        const sameFolder = draggedRoutine.folderId === targetRoutine.folderId;
+        const folderRoutines = routines.filter(
+            (r) => r.folderId === targetRoutine.folderId
+        );
+
+        let updatedRoutines;
+
+        if (sameFolder) {
+            const draggedIndex = folderRoutines.findIndex(
+                (r) => r.id === draggedRoutine.id
+            );
+            const targetIndex = folderRoutines.findIndex(
+                (r) => r.id === targetRoutine.id
             );
 
-            if (sameFolder) {
-                const draggedIndex = folderRoutines.findIndex(
-                    (r) => r.id === draggedRoutine.id
-                );
-                const targetIndex = folderRoutines.findIndex(
-                    (r) => r.id === targetRoutine.id
-                );
+            const reordered = [...folderRoutines];
+            reordered.splice(draggedIndex, 1);
+            reordered.splice(targetIndex, 0, draggedRoutine);
 
-                const reordered = [...folderRoutines];
-                reordered.splice(draggedIndex, 1);
-                reordered.splice(targetIndex, 0, draggedRoutine);
+            updatedRoutines = reordered.map((routine, index) => ({
+                id: routine.id,
+                order: index,
+                folderId: targetRoutine.folderId ?? null,
+            }));
+        } else {
+            const targetIndex = folderRoutines.findIndex(
+                (r) => r.id === targetRoutine.id
+            );
 
-                const updatedRoutines = reordered.map((routine, index) => ({
-                    id: routine.id,
-                    order: index,
+            updatedRoutines = [
+                {
+                    id: draggedRoutine.id,
+                    order: targetIndex,
                     folderId: targetRoutine.folderId ?? null,
-                }));
-
-                await routineService.reorder(updatedRoutines, token);
-            } else {
-                const targetIndex = folderRoutines.findIndex(
-                    (r) => r.id === targetRoutine.id
-                );
-
-                const updatedRoutines = [
-                    {
-                        id: draggedRoutine.id,
-                        order: targetIndex,
-                        folderId: targetRoutine.folderId ?? null,
-                    },
-                ];
-
-                await routineService.reorder(updatedRoutines, token);
-            }
-
-            routinesFetch.execute();
-            showToast("success", "Orden actualizado exitosamente");
-        } catch {
-            showToast("error", "Error al actualizar el orden");
+                },
+            ];
         }
 
+        await reorderRoutines.execute(updatedRoutines, token);
         setDraggedRoutine(null);
     };
 
     if (foldersFetch.loading || routinesFetch.loading) {
-        return <div className="loading">Cargando...</div>;
+        return <div className="loading">{LOADING_MESSAGES.ROUTINES}</div>;
     }
 
     return (
