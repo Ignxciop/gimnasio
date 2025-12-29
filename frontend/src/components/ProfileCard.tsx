@@ -137,7 +137,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                         <button
                             onClick={handleTogglePrivacy}
                             className="profile-card__action-btn"
-                            disabled={loading}
+                            disabled={updatePrivacy.loading}
                         >
                             {isPrivate ? (
                                 <>
