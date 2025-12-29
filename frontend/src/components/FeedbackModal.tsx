@@ -6,7 +6,7 @@ import { feedbackService } from "../services/feedbackService";
 import { authService } from "../services/authService";
 import { useApiCall } from "../hooks/useApiCall";
 import { useToast } from "../hooks/useToast";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../config/messages";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_TEXTS } from "../config/messages";
 import "./feedbackModal.css";
 
 interface FeedbackModalProps {
