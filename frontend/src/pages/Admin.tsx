@@ -7,6 +7,7 @@ import { adminService } from "../services/adminService";
 import { authService } from "../services/authService";
 import { useFetch } from "../hooks/useFetch";
 import { useToast } from "../hooks/useToast";
+import { useApiCall } from "../hooks/useApiCall";
 import { ROLE_OPTIONS, STATUS } from "../config/constants";
 import {
     SUCCESS_MESSAGES,
@@ -28,22 +29,26 @@ export const Admin: React.FC = () => {
         fetchFn: adminService.getUsers,
     });
 
+    const updateUserRole = useApiCall(adminService.updateUserRole, {
+        successMessage: SUCCESS_MESSAGES.ROLE_UPDATED,
+        errorMessage: ERROR_MESSAGES.ADMIN.ROLE_UPDATE,
+        onSuccess: () => usersFetch.execute(),
+    });
+
+    const updateUserStatus = useApiCall(adminService.updateUserStatus, {
+        errorMessage: ERROR_MESSAGES.ADMIN.STATUS_UPDATE,
+        onSuccess: () => usersFetch.execute(),
+    });
+
     useEffect(() => {
         usersFetch.execute();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleRoleChange = async (userId: number, newRoleId: number) => {
         const token = authService.getToken();
         if (!token) return;
 
-        try {
-            await adminService.updateUserRole(userId, newRoleId, token);
-            await usersFetch.execute();
-            showToast("success", SUCCESS_MESSAGES.ROLE_UPDATED);
-        } catch (error) {
-            showToast("error", ERROR_MESSAGES.ADMIN.ROLE_UPDATE);
-        }
+        await updateUserRole.execute(userId, newRoleId, token);
     };
 
     const handleStatusToggle = async (
@@ -53,17 +58,16 @@ export const Admin: React.FC = () => {
         const token = authService.getToken();
         if (!token) return;
 
-        try {
-            await adminService.updateUserStatus(userId, !currentStatus, token);
-            await usersFetch.execute();
+        const newStatus = !currentStatus;
+        const result = await updateUserStatus.execute(userId, newStatus, token);
+
+        if (result !== undefined) {
             showToast(
                 "success",
-                !currentStatus
+                newStatus
                     ? SUCCESS_MESSAGES.USER_ACTIVATED
                     : SUCCESS_MESSAGES.USER_DEACTIVATED
             );
-        } catch (error) {
-            showToast("error", ERROR_MESSAGES.ADMIN.STATUS_UPDATE);
         }
     };
 
