@@ -4,12 +4,17 @@ import { ArrowLeft, Check, GripVertical, X, Plus, Trash2 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
+import { useApiCall } from "../hooks/useApiCall";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
 import { formatTime } from "../utils/dateHelpers";
-import { LOADING_MESSAGES, ERROR_MESSAGES, UI_TEXTS } from "../config/messages";
+import {
+    LOADING_MESSAGES,
+    ERROR_MESSAGES,
+    SUCCESS_MESSAGES,
+} from "../config/messages";
 import "../styles/activeRoutine.css";
 
 interface ActiveRoutineSet {
@@ -68,28 +73,75 @@ export default function ActiveRoutine() {
     const dragStartY = useRef<number>(0);
     const hasMoved = useRef<boolean>(false);
 
-    useEffect(() => {
-        const fetchActiveRoutine = async () => {
-            try {
-                const token = authService.getToken();
-                if (!token) return;
-
-                const data = await activeRoutineService.getActive(token);
-                if (!data || data.id !== Number(activeId)) {
-                    showToast("error", "Rutina activa no encontrada");
-                    navigate(`/rutinas/${routineId}`);
-                    return;
-                }
-
-                setActiveRoutine(data);
-            } catch {
-                showToast("error", ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH);
+    const fetchActiveRoutine = useApiCall(activeRoutineService.getActive, {
+        errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH,
+        onSuccess: (data) => {
+            if (!data || data.id !== Number(activeId)) {
+                showToast("error", "Rutina activa no encontrada");
                 navigate(`/rutinas/${routineId}`);
+                return;
             }
-        };
+            setActiveRoutine(data);
+        },
+        onError: () => navigate(`/rutinas/${routineId}`),
+    });
 
-        fetchActiveRoutine();
-    }, [activeId, routineId, navigate, showToast]);
+    const updateSet = useApiCall(activeRoutineService.updateSet, {
+        errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.UPDATE,
+        onSuccess: (updatedSet, [setId]) => {
+            if (!activeRoutine) return;
+            setActiveRoutine({
+                ...activeRoutine,
+                sets: activeRoutine.sets.map((s) =>
+                    s.id === setId ? { ...s, ...updatedSet } : s
+                ),
+            });
+            if (updatedSet.isPR) {
+                showToast("success", "¡Nuevo PR! 🏆");
+            }
+        },
+    });
+
+    const reorderSets = useApiCall(activeRoutineService.reorderSets, {
+        successMessage: "Orden actualizado",
+        errorMessage: "Error al actualizar orden",
+    });
+
+    const addSet = useApiCall(activeRoutineService.addSet, {
+        successMessage: "Serie agregada",
+        errorMessage: "Error al agregar serie",
+        onSuccess: (newSet) => {
+            if (!activeRoutine) return;
+            setActiveRoutine({
+                ...activeRoutine,
+                sets: [...activeRoutine.sets, newSet],
+            });
+        },
+    });
+
+    const removeSet = useApiCall(activeRoutineService.removeSet, {
+        successMessage: "Serie eliminada",
+        errorMessage: "Error al eliminar serie",
+    });
+
+    const completeRoutine = useApiCall(activeRoutineService.complete, {
+        successMessage: "¡Entrenamiento completado!",
+        errorMessage: "Error al finalizar entrenamiento",
+        onSuccess: () => navigate(`/rutinas/${routineId}`),
+    });
+
+    const cancelRoutine = useApiCall(activeRoutineService.cancel, {
+        successMessage: "Rutina cancelada",
+        errorMessage: "Error al cancelar rutina",
+        onSuccess: () => navigate(`/rutinas/${routineId}`),
+    });
+
+    useEffect(() => {
+        const token = authService.getToken();
+        if (!token) return;
+
+        fetchActiveRoutine.execute(token);
+    }, [activeId, routineId]);
 
     useEffect(() => {
         if (!activeRoutine) return;
@@ -140,35 +192,10 @@ export default function ActiveRoutine() {
         const set = activeRoutine.sets.find((s) => s.id === setId);
         if (!set) return;
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            const updatedSet = await activeRoutineService.updateSet(
-                setId,
-                set.actualWeight,
-                set.actualReps,
-                token
-            );
-
-            setActiveRoutine({
-                ...activeRoutine,
-                sets: activeRoutine.sets.map((s) =>
-                    s.id === setId ? { ...s, ...updatedSet } : s
-                ),
-            });
-
-            if (updatedSet.isPR) {
-                showToast("success", "¡Nuevo PR! 🏆");
-            }
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : ERROR_MESSAGES.ACTIVE_ROUTINE.UPDATE
-            );
-        }
+        await updateSet.execute(setId, set.actualWeight, set.actualReps, token);
     };
 
     const handleDragStart = (
@@ -210,30 +237,28 @@ export default function ActiveRoutine() {
             return;
         }
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) {
+            setDraggedSet(null);
+            return;
+        }
 
-            const sets = activeRoutine.sets;
-            const draggedIndex = sets.findIndex((s) => s.id === draggedSet.id);
-            const targetIndex = sets.findIndex((s) => s.id === targetSet.id);
+        const sets = activeRoutine.sets;
+        const draggedIndex = sets.findIndex((s) => s.id === draggedSet.id);
+        const targetIndex = sets.findIndex((s) => s.id === targetSet.id);
 
-            const reordered = [...sets];
-            reordered.splice(draggedIndex, 1);
-            reordered.splice(targetIndex, 0, draggedSet);
+        const reordered = [...sets];
+        reordered.splice(draggedIndex, 1);
+        reordered.splice(targetIndex, 0, draggedSet);
 
-            const setIds = reordered.map((s) => s.id);
+        const setIds = reordered.map((s) => s.id);
 
-            await activeRoutineService.reorderSets(setIds, token);
-
+        const result = await reorderSets.execute(setIds, token);
+        if (result !== undefined) {
             setActiveRoutine({
                 ...activeRoutine,
                 sets: reordered,
             });
-
-            showToast("success", "Orden actualizado");
-        } catch {
-            showToast("error", "Error al actualizar orden");
         }
 
         setDraggedSet(null);
@@ -273,30 +298,28 @@ export default function ActiveRoutine() {
             return;
         }
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) {
+            setDraggedSet(null);
+            return;
+        }
 
-            const sets = activeRoutine.sets;
-            const draggedIndex = sets.findIndex((s) => s.id === draggedSet.id);
-            const targetIndex = sets.findIndex((s) => s.id === target.id);
+        const sets = activeRoutine.sets;
+        const draggedIndex = sets.findIndex((s) => s.id === draggedSet.id);
+        const targetIndex = sets.findIndex((s) => s.id === target.id);
 
-            const reordered = [...sets];
-            reordered.splice(draggedIndex, 1);
-            reordered.splice(targetIndex, 0, draggedSet);
+        const reordered = [...sets];
+        reordered.splice(draggedIndex, 1);
+        reordered.splice(targetIndex, 0, draggedSet);
 
-            const setIds = reordered.map((s) => s.id);
+        const setIds = reordered.map((s) => s.id);
 
-            await activeRoutineService.reorderSets(setIds, token);
-
+        const result = await reorderSets.execute(setIds, token);
+        if (result !== undefined) {
             setActiveRoutine({
                 ...activeRoutine,
                 sets: reordered,
             });
-
-            showToast("success", "Orden actualizado");
-        } catch {
-            showToast("error", "Error al actualizar orden");
         }
 
         setDraggedSet(null);
@@ -305,26 +328,10 @@ export default function ActiveRoutine() {
     const handleAddSet = async (exerciseId: number) => {
         if (!activeRoutine) return;
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            const newSet = await activeRoutineService.addSet(exerciseId, token);
-
-            setActiveRoutine({
-                ...activeRoutine,
-                sets: [...activeRoutine.sets, newSet],
-            });
-
-            showToast("success", "Serie agregada");
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al agregar serie"
-            );
-        }
+        await addSet.execute(exerciseId, token);
     };
 
     const handleRemoveSet = async (setId: number, exerciseId: number) => {
@@ -339,12 +346,11 @@ export default function ActiveRoutine() {
             return;
         }
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            await activeRoutineService.removeSet(setId, token);
-
+        const result = await removeSet.execute(setId, token);
+        if (result !== undefined) {
             const updatedSets = activeRoutine.sets.filter(
                 (s) => s.id !== setId
             );
@@ -353,15 +359,6 @@ export default function ActiveRoutine() {
                 ...activeRoutine,
                 sets: updatedSets,
             });
-
-            showToast("success", "Serie eliminada");
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al eliminar serie"
-            );
         }
     };
 
@@ -389,21 +386,10 @@ export default function ActiveRoutine() {
     const confirmCompleteWorkout = async () => {
         if (!activeRoutine) return;
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            await activeRoutineService.complete(activeRoutine.id, token);
-            showToast("success", "¡Entrenamiento completado!");
-            navigate(`/rutinas/${routineId}`);
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al finalizar entrenamiento"
-            );
-        }
+        await completeRoutine.execute(activeRoutine.id, token);
     };
 
     if (!activeRoutine) {
@@ -625,24 +611,10 @@ export default function ActiveRoutine() {
                     isOpen={cancelModal.isOpen}
                     onClose={cancelModal.closeModal}
                     onConfirm={async () => {
-                        try {
-                            const token = authService.getToken();
-                            if (!token || !activeRoutine) return;
+                        const token = authService.getToken();
+                        if (!token || !activeRoutine) return;
 
-                            await activeRoutineService.cancel(
-                                activeRoutine.id,
-                                token
-                            );
-                            showToast("success", "Rutina cancelada");
-                            navigate(`/rutinas/${routineId}`);
-                        } catch (error) {
-                            showToast(
-                                "error",
-                                error instanceof Error
-                                    ? error.message
-                                    : "Error al cancelar rutina"
-                            );
-                        }
+                        await cancelRoutine.execute(activeRoutine.id, token);
                     }}
                     title="Cancelar rutina"
                     message="¿Seguro que deseas cancelar esta rutina? Se perderá todo el progreso."
