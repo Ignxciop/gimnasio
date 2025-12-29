@@ -264,6 +264,9 @@ export default function RoutineDetail() {
                                                     ) || ""
                                                 }
                                                 className="exercise-thumbnail-video"
+                                                preload="metadata"
+                                                muted
+                                                playsInline
                                             />
                                         </div>
                                     )}

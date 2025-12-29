@@ -35,6 +35,9 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({
                             <video
                                 src={getVideoUrl(item.videoPath) || ""}
                                 className="exercise-thumbnail-card"
+                                preload="metadata"
+                                muted
+                                playsInline
                             />
                         </div>
                     )}
