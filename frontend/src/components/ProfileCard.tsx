@@ -14,8 +14,10 @@ import { useNavigate } from "react-router-dom";
 import type { ProfileData } from "../services/profileService";
 import { profileService } from "../services/profileService";
 import { authService } from "../services/authService";
+import { useApiCall } from "../hooks/useApiCall";
 import { useToast } from "../hooks/useToast";
 import { GENDERS } from "../config/constants";
+import { ERROR_MESSAGES } from "../config/messages";
 import "./profileCard.css";
 
 interface ProfileCardProps {
@@ -30,7 +32,15 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     const navigate = useNavigate();
     const { showToast } = useToast();
     const [isPrivate, setIsPrivate] = useState(!profileData.isProfilePublic);
-    const [loading, setLoading] = useState(false);
+
+    const updatePrivacy = useApiCall(
+        (isPrivate: boolean, token: string) =>
+            profileService.updatePrivacy(isPrivate, token),
+        {
+            errorMessage: ERROR_MESSAGES.PROFILE.UPDATE_PRIVACY,
+            showErrorToast: true,
+        }
+    );
 
     const handleCopyLink = () => {
         const profileUrl = `${window.location.origin}/perfil/${profileData.username}`;
@@ -39,27 +49,18 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     };
 
     const handleTogglePrivacy = async () => {
-        setLoading(true);
-        try {
-            const token = authService.getToken();
-            if (!token) throw new Error("No hay token");
+        const token = authService.getToken();
+        if (!token) return;
 
-            const newIsPublic = !isPrivate;
-            await profileService.updatePrivacy(!newIsPublic, token);
+        const newIsPublic = !isPrivate;
+        const result = await updatePrivacy.execute(!newIsPublic, token);
+
+        if (result !== undefined) {
             setIsPrivate(newIsPublic);
             showToast(
                 "success",
                 `Perfil ${newIsPublic ? "privado" : "público"} ahora`
             );
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : "Error al actualizar privacidad"
-            );
-        } finally {
-            setLoading(false);
         }
     };
 

@@ -4,7 +4,9 @@ import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { feedbackService } from "../services/feedbackService";
 import { authService } from "../services/authService";
+import { useApiCall } from "../hooks/useApiCall";
 import { useToast } from "../hooks/useToast";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../config/messages";
 import "./feedbackModal.css";
 
 interface FeedbackModalProps {
@@ -21,7 +23,21 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     const { showToast } = useToast();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [loading, setLoading] = useState(false);
+
+    const createFeedback = useApiCall(
+        (
+            data: { type: string; title?: string; description: string },
+            token: string
+        ) => feedbackService.createFeedback(data, token),
+        {
+            successMessage:
+                type === "suggestion"
+                    ? SUCCESS_MESSAGES.FEEDBACK.SUGGESTION_SENT
+                    : SUCCESS_MESSAGES.FEEDBACK.REPORT_SENT,
+            errorMessage: ERROR_MESSAGES.FEEDBACK.SEND,
+            onSuccess: () => onClose(),
+        }
+    );
 
     useEffect(() => {
         if (!isOpen) {
@@ -41,35 +57,20 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
             return;
         }
 
-        setLoading(true);
-        try {
-            const token = authService.getToken();
-            if (!token) throw new Error("No hay sesión activa");
-
-            await feedbackService.createFeedback(
-                {
-                    type,
-                    title: title.trim() || undefined,
-                    description: description.trim(),
-                },
-                token
-            );
-
-            showToast(
-                "success",
-                type === "suggestion"
-                    ? "Sugerencia enviada correctamente"
-                    : "Reporte enviado correctamente"
-            );
-            onClose();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error ? error.message : "Error al enviar"
-            );
-        } finally {
-            setLoading(false);
+        const token = authService.getToken();
+        if (!token) {
+            showToast("error", "No hay sesión activa");
+            return;
         }
+
+        await createFeedback.execute(
+            {
+                type,
+                title: title.trim() || undefined,
+                description: description.trim(),
+            },
+            token
+        );
     };
 
     const modalTitle =
@@ -105,7 +106,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                         rows={8}
                         maxLength={2000}
                         required
-                        disabled={loading}
+                        disabled={createFeedback.loading}
                     />
                     <span className="feedback-form__counter">
                         {description.length}/2000
@@ -117,14 +118,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                         type="button"
                         variant="secondary"
                         onClick={onClose}
-                        disabled={loading}
+                        disabled={createFeedback.loading}
                     >
-                        Cancelar
+                        {UI_TEXTS.CANCEL}
                     </Button>
                     <Button
                         type="submit"
                         variant="primary"
-                        isLoading={loading}
+                        isLoading={createFeedback.loading}
                         disabled={description.trim().length < 10}
                     >
                         Enviar
