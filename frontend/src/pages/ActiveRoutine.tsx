@@ -10,11 +10,7 @@ import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
 import { formatTime } from "../utils/dateHelpers";
-import {
-    LOADING_MESSAGES,
-    ERROR_MESSAGES,
-    SUCCESS_MESSAGES,
-} from "../config/messages";
+import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import "../styles/activeRoutine.css";
 
 interface ActiveRoutineSet {
@@ -141,6 +137,7 @@ export default function ActiveRoutine() {
         if (!token) return;
 
         fetchActiveRoutine.execute(token);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeId, routineId]);
 
     useEffect(() => {
@@ -264,10 +261,7 @@ export default function ActiveRoutine() {
         setDraggedSet(null);
     };
 
-    const handleTouchEnd = async (
-        e: React.TouchEvent,
-        targetSet: ActiveRoutineSet
-    ) => {
+    const handleTouchEnd = async (e: React.TouchEvent) => {
         if (!hasMoved.current || !draggedSet) {
             setDraggedSet(null);
             return;
@@ -503,9 +497,7 @@ export default function ActiveRoutine() {
                                                     handleDragStart(e, set)
                                                 }
                                                 onTouchMove={handleTouchMove}
-                                                onTouchEnd={(e) =>
-                                                    handleTouchEnd(e, set)
-                                                }
+                                                onTouchEnd={handleTouchEnd}
                                                 onDragOver={handleDragOver}
                                                 onDrop={(e) =>
                                                     handleDrop(e, set)

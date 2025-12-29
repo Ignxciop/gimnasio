@@ -110,6 +110,7 @@ export default function RoutineDetail() {
 
         fetchRoutineAndActive.execute(token);
         exercisesFetch.execute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const handleAddExercise = async (data: RoutineExerciseFormData) => {

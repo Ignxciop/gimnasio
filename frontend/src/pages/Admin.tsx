@@ -8,7 +8,7 @@ import { authService } from "../services/authService";
 import { useFetch } from "../hooks/useFetch";
 import { useToast } from "../hooks/useToast";
 import { useApiCall } from "../hooks/useApiCall";
-import { ROLE_OPTIONS, STATUS } from "../config/constants";
+import { ROLE_OPTIONS } from "../config/constants";
 import {
     SUCCESS_MESSAGES,
     ERROR_MESSAGES,
@@ -42,6 +42,7 @@ export const Admin: React.FC = () => {
 
     useEffect(() => {
         usersFetch.execute();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleRoleChange = async (userId: number, newRoleId: number) => {
