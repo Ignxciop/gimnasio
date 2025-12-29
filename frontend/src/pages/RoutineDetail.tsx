@@ -12,6 +12,7 @@ import MainLayout from "../layouts/MainLayout";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
+import { useApiCall } from "../hooks/useApiCall";
 import { routineService } from "../services/routineService";
 import { routineExerciseService } from "../services/routineExerciseService";
 import { activeRoutineService } from "../services/activeRoutineService";
@@ -48,92 +49,96 @@ export default function RoutineDetail() {
             routineExerciseService.getAllByRoutine(Number(id), token),
     });
 
-    useEffect(() => {
-        const fetchRoutine = async () => {
-            try {
-                const token = authService.getToken();
-                if (!token) return;
-
-                const data = await routineService.getById(Number(id), token);
-                setRoutine(data);
-
-                const active = await activeRoutineService.getActive(token);
+    const fetchRoutineAndActive = useApiCall(
+        async (token: string) => {
+            const data = await routineService.getById(Number(id), token);
+            const active = await activeRoutineService.getActive(token);
+            return { routine: data, active };
+        },
+        {
+            errorMessage: "No se pudo cargar la rutina",
+            onSuccess: ({ routine, active }) => {
+                setRoutine(routine);
                 if (active && active.routineId === Number(id)) {
                     setActiveRoutineId(active.id);
                 }
-            } catch {
-                showToast("error", "No se pudo cargar la rutina");
-                navigate("/rutinas");
-            }
-        };
+            },
+            onError: () => navigate("/rutinas"),
+        }
+    );
 
-        fetchRoutine();
-        exercisesFetch.execute();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, navigate, showToast]);
-
-    const handleAddExercise = async (data: RoutineExerciseFormData) => {
-        try {
-            const token = authService.getToken();
-            if (!token) return;
-
-            await routineExerciseService.create(Number(id), data, token);
-            showToast("success", SUCCESS_MESSAGES.ROUTINES.EXERCISE_ADDED);
+    const addExercise = useApiCall(routineExerciseService.create, {
+        successMessage: SUCCESS_MESSAGES.ROUTINES.EXERCISE_ADDED,
+        errorMessage: ERROR_MESSAGES.ROUTINES.ADD_EXERCISE,
+        onSuccess: () => {
             exercisesFetch.execute();
             addExerciseModal.closeModal();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : ERROR_MESSAGES.ROUTINES.ADD_EXERCISE
-            );
-        }
+        },
+    });
+
+    const updateExercise = useApiCall(routineExerciseService.update, {
+        successMessage: SUCCESS_MESSAGES.ROUTINES.EXERCISE_UPDATED,
+        errorMessage: ERROR_MESSAGES.ROUTINES.UPDATE_EXERCISE,
+        onSuccess: () => {
+            exercisesFetch.execute();
+            editExerciseModal.closeModal();
+        },
+    });
+
+    const deleteExercise = useApiCall(routineExerciseService.delete, {
+        successMessage: SUCCESS_MESSAGES.ROUTINES.EXERCISE_DELETED,
+        errorMessage: ERROR_MESSAGES.ROUTINES.DELETE_EXERCISE,
+        onSuccess: () => exercisesFetch.execute(),
+    });
+
+    const reorderExercises = useApiCall(routineExerciseService.reorder, {
+        successMessage: SUCCESS_MESSAGES.ROUTINES.ORDER_UPDATED,
+        errorMessage: ERROR_MESSAGES.ROUTINES.UPDATE_ORDER,
+        onSuccess: () => exercisesFetch.execute(),
+    });
+
+    const startWorkout = useApiCall(activeRoutineService.create, {
+        successMessage: SUCCESS_MESSAGES.ROUTINES.WORKOUT_STARTED,
+        errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.START,
+        onSuccess: (activeRoutine) =>
+            navigate(`/rutinas/${id}/activa/${activeRoutine.id}`),
+    });
+
+    useEffect(() => {
+        const token = authService.getToken();
+        if (!token) return;
+
+        fetchRoutineAndActive.execute(token);
+        exercisesFetch.execute();
+    }, [id]);
+
+    const handleAddExercise = async (data: RoutineExerciseFormData) => {
+        const token = authService.getToken();
+        if (!token) return;
+
+        await addExercise.execute(Number(id), data, token);
     };
 
     const handleEditExercise = async (
         data: Omit<RoutineExerciseFormData, "exerciseId">
     ) => {
-        try {
-            const token = authService.getToken();
-            if (!token || !editExerciseModal.editingItem) return;
+        const token = authService.getToken();
+        if (!token || !editExerciseModal.editingItem) return;
 
-            await routineExerciseService.update(
-                editExerciseModal.editingItem.id,
-                data,
-                token
-            );
-            showToast("success", SUCCESS_MESSAGES.ROUTINES.EXERCISE_UPDATED);
-            exercisesFetch.execute();
-            editExerciseModal.closeModal();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : ERROR_MESSAGES.ROUTINES.UPDATE_EXERCISE
-            );
-        }
+        await updateExercise.execute(
+            editExerciseModal.editingItem.id,
+            data,
+            token
+        );
     };
 
     const handleDeleteExercise = async (exerciseId: number) => {
         if (!confirm("¿Estás seguro de eliminar este ejercicio?")) return;
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
+        const token = authService.getToken();
+        if (!token) return;
 
-            await routineExerciseService.delete(exerciseId, token);
-            showToast("success", SUCCESS_MESSAGES.ROUTINES.EXERCISE_DELETED);
-            exercisesFetch.execute();
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : ERROR_MESSAGES.ROUTINES.DELETE_EXERCISE
-            );
-        }
+        await deleteExercise.execute(exerciseId, token);
     };
 
     const handleDragStart = (exercise: RoutineExercise) => {
@@ -155,61 +160,43 @@ export default function RoutineDetail() {
             return;
         }
 
-        try {
-            const token = authService.getToken();
-            if (!token) return;
-
-            const exercises = exercisesFetch.data || [];
-            const draggedIndex = exercises.findIndex(
-                (ex) => ex.id === draggedExercise.id
-            );
-            const targetIndex = exercises.findIndex(
-                (ex) => ex.id === targetExercise.id
-            );
-
-            const reordered = [...exercises];
-            reordered.splice(draggedIndex, 1);
-            reordered.splice(targetIndex, 0, draggedExercise);
-
-            const updatedExercises = reordered.map((exercise, index) => ({
-                id: exercise.id,
-                order: index,
-            }));
-
-            await routineExerciseService.reorder(updatedExercises, token);
-            exercisesFetch.execute();
-            showToast("success", SUCCESS_MESSAGES.ROUTINES.ORDER_UPDATED);
-        } catch {
-            showToast("error", ERROR_MESSAGES.ROUTINES.UPDATE_ORDER);
+        const token = authService.getToken();
+        if (!token) {
+            setDraggedExercise(null);
+            return;
         }
 
+        const exercises = exercisesFetch.data || [];
+        const draggedIndex = exercises.findIndex(
+            (ex) => ex.id === draggedExercise.id
+        );
+        const targetIndex = exercises.findIndex(
+            (ex) => ex.id === targetExercise.id
+        );
+
+        const reordered = [...exercises];
+        reordered.splice(draggedIndex, 1);
+        reordered.splice(targetIndex, 0, draggedExercise);
+
+        const updatedExercises = reordered.map((exercise, index) => ({
+            id: exercise.id,
+            order: index,
+        }));
+
+        await reorderExercises.execute(updatedExercises, token);
         setDraggedExercise(null);
     };
 
     const handleStartWorkout = async () => {
-        try {
-            const token = authService.getToken();
-            if (!token || !id) return;
+        const token = authService.getToken();
+        if (!token || !id) return;
 
-            if (activeRoutineId) {
-                navigate(`/rutinas/${id}/activa/${activeRoutineId}`);
-                return;
-            }
-
-            const activeRoutine = await activeRoutineService.create(
-                Number(id),
-                token
-            );
-            showToast("success", SUCCESS_MESSAGES.ROUTINES.WORKOUT_STARTED);
-            navigate(`/rutinas/${id}/activa/${activeRoutine.id}`);
-        } catch (error) {
-            showToast(
-                "error",
-                error instanceof Error
-                    ? error.message
-                    : ERROR_MESSAGES.ACTIVE_ROUTINE.START
-            );
+        if (activeRoutineId) {
+            navigate(`/rutinas/${id}/activa/${activeRoutineId}`);
+            return;
         }
+
+        await startWorkout.execute(Number(id), token);
     };
 
     if (!routine) {
