@@ -34,7 +34,7 @@ export const STATUS = {
 
 export const getVideoUrl = (videoPath: string | null): string | null => {
     if (!videoPath) return null;
-    return `${API_BASE_URL}${PATHS.RESOURCES}/${videoPath}`;
+    return `${API_BASE_URL}${PATHS.RESOURCES}/${videoPath}#t=0.1`;
 };
 
 export const getApiEndpoint = (path: string): string => {

@@ -448,7 +448,7 @@ export default function ActiveRoutine() {
                                                     ) || ""
                                                 }
                                                 className="exercise-thumbnail-video"
-                                                preload="metadata"
+                                                preload="auto"
                                                 muted
                                                 playsInline
                                             />
