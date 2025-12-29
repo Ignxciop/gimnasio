@@ -12,6 +12,7 @@ import MainLayout from "../layouts/MainLayout";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
 import { useApiCall } from "../hooks/useApiCall";
+import { VideoThumbnail } from "../components/ui/VideoThumbnail";
 import { routineService } from "../services/routineService";
 import { routineExerciseService } from "../services/routineExerciseService";
 import { activeRoutineService } from "../services/activeRoutineService";
@@ -256,7 +257,7 @@ export default function RoutineDetail() {
                                     />
                                     {routineExercise.exercise?.videoPath && (
                                         <div className="exercise-thumbnail">
-                                            <video
+                                            <VideoThumbnail
                                                 src={
                                                     getVideoUrl(
                                                         routineExercise.exercise
@@ -264,9 +265,6 @@ export default function RoutineDetail() {
                                                     ) || ""
                                                 }
                                                 className="exercise-thumbnail-video"
-                                                preload="auto"
-                                                muted
-                                                playsInline
                                             />
                                         </div>
                                     )}

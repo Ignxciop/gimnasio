@@ -6,6 +6,7 @@ import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
 import { useApiCall } from "../hooks/useApiCall";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { VideoThumbnail } from "../components/ui/VideoThumbnail";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
@@ -441,16 +442,13 @@ export default function ActiveRoutine() {
                                 <div className="exercise-group-header">
                                     {exercise.videoPath && (
                                         <div className="exercise-thumbnail">
-                                            <video
+                                            <VideoThumbnail
                                                 src={
                                                     getVideoUrl(
                                                         exercise.videoPath
                                                     ) || ""
                                                 }
                                                 className="exercise-thumbnail-video"
-                                                preload="auto"
-                                                muted
-                                                playsInline
                                             />
                                         </div>
                                     )}

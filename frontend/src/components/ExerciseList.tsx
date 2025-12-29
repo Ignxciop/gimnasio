@@ -1,6 +1,7 @@
 import React from "react";
 import { Dumbbell, Users, Target } from "lucide-react";
 import { Card, CardList } from "./ui/Card";
+import { VideoThumbnail } from "./ui/VideoThumbnail";
 import { getVideoUrl } from "../config/constants";
 import type { Exercise } from "../services/exerciseService";
 
@@ -32,12 +33,9 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({
                 >
                     {item.videoPath && (
                         <div className="exercise-thumbnail-wrapper">
-                            <video
+                            <VideoThumbnail
                                 src={getVideoUrl(item.videoPath) || ""}
                                 className="exercise-thumbnail-card"
-                                preload="auto"
-                                muted
-                                playsInline
                             />
                         </div>
                     )}
