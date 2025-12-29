@@ -11,7 +11,6 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
-import { useToast } from "../hooks/useToast";
 import { useApiCall } from "../hooks/useApiCall";
 import { routineService } from "../services/routineService";
 import { routineExerciseService } from "../services/routineExerciseService";
@@ -98,8 +97,8 @@ export default function RoutineDetail() {
 
     const startWorkout = useApiCall(activeRoutineService.create, {
         successMessage: SUCCESS_MESSAGES.ROUTINES.WORKOUT_STARTED,
-        errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.START,
-        onSuccess: (result) => navigate(`/rutinas/${id}/activa/${result.id}`),
+        errorMessage: ERROR_MESSAGES.ROUTINES.START,
+        onSuccess: (_result) => navigate(`/rutinas/${id}/activa/${_result.id}`),
     });
 
     useEffect(() => {

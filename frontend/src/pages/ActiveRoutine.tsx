@@ -84,13 +84,12 @@ export default function ActiveRoutine() {
 
     const updateSet = useApiCall(activeRoutineService.updateSet, {
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.UPDATE,
-        onSuccess: (updatedSet, args) => {
+        onSuccess: (updatedSet) => {
             if (!activeRoutine) return;
-            const setId = args[0];
             setActiveRoutine({
                 ...activeRoutine,
                 sets: activeRoutine.sets.map((s) =>
-                    s.id === setId ? { ...s, ...updatedSet } : s
+                    s.id === updatedSet.id ? { ...s, ...updatedSet } : s
                 ),
             });
             if (updatedSet.isPR) {

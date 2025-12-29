@@ -117,13 +117,14 @@ export const Admin: React.FC = () => {
                         <div className="admin__filter-group">
                             <Select
                                 value={roleFilter.toString()}
-                                onChange={(value) =>
+                                onChange={(value) => {
+                                    if (Array.isArray(value)) return;
                                     setRoleFilter(
                                         value === "all"
                                             ? "all"
                                             : parseInt(value)
-                                    )
-                                }
+                                    );
+                                }}
                                 options={[
                                     { value: "all", label: UI_TEXTS.ALL_ROLES },
                                     ...ROLE_OPTIONS,
@@ -133,9 +134,11 @@ export const Admin: React.FC = () => {
 
                             <Select
                                 value={statusFilter.toString()}
-                                onChange={(val) =>
+                                onChange={(value) =>
                                     setStatusFilter(
-                                        val === "all" ? "all" : val === "true"
+                                        value === "all"
+                                            ? "all"
+                                            : value === "true"
                                     )
                                 }
                                 options={[
