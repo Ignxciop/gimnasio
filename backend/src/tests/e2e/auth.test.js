@@ -12,6 +12,7 @@ app.use(errorHandler);
 
 describe("POST /api/auth/register", () => {
     const testUserIds = [];
+    const E2E_PREFIX = "e2e_test_";
     let testRoleId;
 
     beforeAll(async () => {
@@ -38,8 +39,9 @@ describe("POST /api/auth/register", () => {
     });
 
     it("debería registrar un usuario correctamente", async () => {
-        const uniqueEmail = `test${Date.now()}@example.com`;
-        const uniqueUsername = `testuser${Date.now()}`;
+        const timestamp = Date.now();
+        const uniqueEmail = `${E2E_PREFIX}${timestamp}@example.com`;
+        const uniqueUsername = `${E2E_PREFIX}${timestamp}`;
 
         const response = await request(app).post("/api/auth/register").send({
             name: "Test",
@@ -78,9 +80,10 @@ describe("POST /api/auth/register", () => {
     });
 
     it("debería rechazar email duplicado", async () => {
-        const uniqueEmail = `duplicate${Date.now()}@example.com`;
-        const username1 = `user1${Date.now()}`;
-        const username2 = `user2${Date.now()}`;
+        const timestamp = Date.now();
+        const uniqueEmail = `${E2E_PREFIX}duplicate_${timestamp}@example.com`;
+        const username1 = `${E2E_PREFIX}user1_${timestamp}`;
+        const username2 = `${E2E_PREFIX}user2_${timestamp}`;
 
         const firstResponse = await request(app)
             .post("/api/auth/register")
@@ -113,9 +116,10 @@ describe("POST /api/auth/register", () => {
     });
 
     it("debería rechazar username duplicado", async () => {
-        const uniqueUsername = `duplicate${Date.now()}`;
-        const email1 = `user1${Date.now()}@example.com`;
-        const email2 = `user2${Date.now()}@example.com`;
+        const timestamp = Date.now();
+        const uniqueUsername = `${E2E_PREFIX}duplicate_${timestamp}`;
+        const email1 = `${E2E_PREFIX}user1_${timestamp}@example.com`;
+        const email2 = `${E2E_PREFIX}user2_${timestamp}@example.com`;
 
         const firstResponse = await request(app)
             .post("/api/auth/register")

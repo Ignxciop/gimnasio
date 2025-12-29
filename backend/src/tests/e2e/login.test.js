@@ -13,14 +13,17 @@ app.use(errorHandler);
 
 const prisma = new PrismaClient();
 
+const E2E_PREFIX = "e2e_test_";
+
 describe("POST /api/auth/login", () => {
     let testUserId;
     let testRoleId;
+    const timestamp = Date.now();
     const testUserData = {
         name: "Test",
         lastname: "User",
-        username: "testlogin",
-        email: "testlogin@example.com",
+        username: `${E2E_PREFIX}login_${timestamp}`,
+        email: `${E2E_PREFIX}login_${timestamp}@example.com`,
         password: "Test1234",
     };
 
