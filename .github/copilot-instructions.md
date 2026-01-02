@@ -170,24 +170,209 @@ gimnasio/
 
 ### Testing
 
--   **Tests E2E**: Usar prefijo `e2e_test_` para datos de prueba (usuarios, registros, etc.)
--   **Aislamiento de datos**: Mantener array `createdIds` para rastrear y limpiar datos de prueba
--   **Imports**: Usar `@jest/globals` para describe, it, expect, beforeAll, afterAll
--   **Patrón de cleanup**:
+#### 🚨 REGLA DE ORO: Aislamiento Total de Datos
+
+**Los tests E2E NUNCA deben tocar datos reales del usuario.**
+
+#### ✅ Principios Fundamentales
+
+1. **Usar Prefijos Únicos**
+
+    - Todos los datos de prueba deben tener prefijo `e2e_test_`
+    - Ejemplo: `const E2E_PREFIX = "e2e_test_";`
+    - Emails: `${E2E_PREFIX}user_${Date.now()}@test.com`
+    - Nombres: `${E2E_PREFIX}Exercise_${Date.now()}`
+
+2. **Timestamps para Unicidad**
+
+    - Usar `Date.now()` o UUIDs para evitar colisiones entre tests
+    - Nunca reutilizar nombres estáticos
+
+3. **Rastrear IDs Creados**
+
+    - Mantener objeto `createdIds` con todos los IDs de recursos creados
 
     ```javascript
-    const createdIds = { userId: null, itemId: null };
-
-    beforeAll(async () => {
-        // Setup con prefijo e2e_test_
-    });
-
-    afterAll(async () => {
-        // Cleanup de createdIds
-    });
+    const createdIds = {
+        userId: null,
+        exerciseId: null,
+        routineId: null,
+    };
     ```
 
--   **Nunca** usar datos reales en tests, siempre datos con prefijo identificable
+4. **Limpieza Segura en afterAll**
+    - Eliminar SOLO los datos creados por el test usando IDs específicos
+    - NUNCA usar `deleteMany({})` sin where
+    - NUNCA usar condiciones amplias como `{ email: { contains: "@test.com" } }`
+    - Usar `try-catch-finally` para garantizar cleanup y desconexión
+
+#### ❌ Prácticas PROHIBIDAS
+
+```javascript
+// ❌ NUNCA - Elimina TODOS los usuarios
+await prisma.user.deleteMany({
+    where: { email: { contains: "@test.com" } },
+});
+
+// ❌ NUNCA - Elimina TODO
+await prisma.exercise.deleteMany({});
+
+// ❌ NUNCA - Asumir base de datos vacía
+const exercise = await prisma.exercise.findFirst();
+exerciseId = exercise.id;
+
+// ❌ NUNCA - Eliminar datos en beforeAll
+beforeAll(async () => {
+    await prisma.user.deleteMany({
+        where: { email: "test@test.com" },
+    });
+});
+```
+
+#### ✅ Patrón Completo Recomendado
+
+```javascript
+import { beforeAll, afterAll, describe, test, expect } from "@jest/globals";
+import { prisma } from "../../config/prisma.js";
+
+const E2E_PREFIX = "e2e_test_";
+const TEST_EMAIL = `${E2E_PREFIX}user_${Date.now()}@test.com`;
+const TEST_USERNAME = `${E2E_PREFIX}user_${Date.now()}`;
+
+const createdIds = {
+    userId: null,
+    exerciseId: null,
+    routineId: null,
+};
+
+let authToken;
+
+beforeAll(async () => {
+    const role = await prisma.role.findFirst({
+        where: { role: "usuario" },
+    });
+
+    const testUser = {
+        username: TEST_USERNAME,
+        name: `${E2E_PREFIX}Test`,
+        lastname: `${E2E_PREFIX}User`,
+        email: TEST_EMAIL,
+        password: "Test123!",
+        gender: "male",
+        roleId: role.id,
+    };
+
+    const registerResponse = await request(app)
+        .post("/api/auth/register")
+        .send(testUser);
+
+    const loginResponse = await request(app).post("/api/auth/login").send({
+        email: testUser.email,
+        password: testUser.password,
+    });
+
+    authToken = loginResponse.body.data.token;
+    createdIds.userId = loginResponse.body.data.user.id;
+
+    const equipment = await prisma.equipment.findFirst();
+    const muscleGroup = await prisma.muscleGroup.findFirst();
+
+    const exercise = await prisma.exercise.create({
+        data: {
+            name: `${E2E_PREFIX}Exercise_${Date.now()}`,
+            equipmentId: equipment.id,
+            muscleGroupId: muscleGroup.id,
+        },
+    });
+    createdIds.exerciseId = exercise.id;
+});
+
+afterAll(async () => {
+    try {
+        if (createdIds.exerciseId) {
+            await prisma.exercise.deleteMany({
+                where: { id: createdIds.exerciseId },
+            });
+        }
+
+        if (createdIds.userId) {
+            await prisma.user.deleteMany({
+                where: { id: createdIds.userId },
+            });
+        }
+    } catch (error) {
+        console.error("Error during test cleanup:", error);
+    } finally {
+        await prisma.$disconnect();
+    }
+});
+
+describe("Feature Tests", () => {
+    test("Test example", async () => {
+        // Tests aquí
+    });
+});
+```
+
+#### 🔍 Checklist Pre-Commit de Tests
+
+Antes de hacer commit de tests E2E, verificar:
+
+-   [ ] ¿Usa prefijo `e2e_test_` o similar?
+-   [ ] ¿Usa timestamps para unicidad?
+-   [ ] ¿Rastrea todos los IDs creados?
+-   [ ] ¿Elimina SOLO datos creados por el test?
+-   [ ] ¿Usa IDs específicos en `deleteMany`?
+-   [ ] ¿Nunca usa `deleteMany({})` sin where?
+-   [ ] ¿Maneja errores en afterAll?
+-   [ ] ¿Desconecta Prisma en finally?
+
+#### 📊 Orden de Limpieza (Foreign Keys)
+
+```javascript
+afterAll(async () => {
+    try {
+        // Orden inverso respetando foreign keys
+        if (createdIds.routineExerciseId) {
+            await prisma.routineExercise.deleteMany({
+                where: { id: createdIds.routineExerciseId },
+            });
+        }
+
+        if (createdIds.routineId) {
+            await prisma.routine.deleteMany({
+                where: { id: createdIds.routineId },
+            });
+        }
+
+        if (createdIds.exerciseId) {
+            await prisma.exercise.deleteMany({
+                where: { id: createdIds.exerciseId },
+            });
+        }
+
+        if (createdIds.userId) {
+            await prisma.user.deleteMany({
+                where: { id: createdIds.userId },
+            });
+        }
+    } catch (error) {
+        console.error("Error during test cleanup:", error);
+    } finally {
+        await prisma.$disconnect();
+    }
+});
+```
+
+#### 🎯 Objetivo de los Tests E2E
+
+Los tests E2E deben ser:
+
+1. **Seguros**: Nunca afectan datos reales
+2. **Idempotentes**: Pueden ejecutarse múltiples veces
+3. **Aislados**: No dependen de datos externos
+4. **Limpios**: Eliminan todo lo que crearon
+5. **Rastreables**: Nombres con prefijos identificables
 
 ## NO Hacer
 
