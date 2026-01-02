@@ -9,6 +9,7 @@ import {
     Trash2,
 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
@@ -50,6 +51,10 @@ export default function CompletedRoutines() {
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [workoutToDelete, setWorkoutToDelete] = useState<{
+        id: number;
+        userId: string;
+    } | null>(null);
 
     useEffect(() => {
         const fetchRoutines = async () => {
@@ -65,7 +70,8 @@ export default function CompletedRoutines() {
                     token
                 );
 
-                setCurrentUserId(profile.id);
+                const loggedUserId = authService.getUserIdFromToken();
+                setCurrentUserId(loggedUserId);
 
                 const headers: HeadersInit = {};
                 if (token) {
@@ -129,27 +135,29 @@ export default function CompletedRoutines() {
         workoutId: number,
         workoutUserId: string
     ) => {
-        const token = authService.getToken();
-        const currentUser = authService.getToken();
-        if (!currentUser || workoutUserId !== currentUserId) {
+        if (!currentUserId || workoutUserId !== currentUserId) {
             showToast("error", "No tienes permisos para eliminar esta rutina");
             return;
         }
 
-        if (
-            !confirm(
-                "¿Estás seguro de eliminar esta rutina completada? Esta acción no se puede deshacer."
-            )
-        ) {
-            return;
-        }
+        setWorkoutToDelete({ id: workoutId, userId: workoutUserId });
+    };
+
+    const confirmDelete = async () => {
+        if (!workoutToDelete) return;
 
         try {
-            setDeletingId(workoutId);
+            setDeletingId(workoutToDelete.id);
+            const token = authService.getToken();
             if (!token) return;
 
-            await activeRoutineService.deleteCompleted(workoutId, token);
-            setWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
+            await activeRoutineService.deleteCompleted(
+                workoutToDelete.id,
+                token
+            );
+            setWorkouts((prev) =>
+                prev.filter((w) => w.id !== workoutToDelete.id)
+            );
             showToast("success", "Rutina eliminada exitosamente");
         } catch (error) {
             showToast(
@@ -160,6 +168,7 @@ export default function CompletedRoutines() {
             );
         } finally {
             setDeletingId(null);
+            setWorkoutToDelete(null);
         }
     };
 
@@ -385,6 +394,16 @@ export default function CompletedRoutines() {
                         );
                     })}
                 </div>
+
+                <ConfirmDialog
+                    isOpen={workoutToDelete !== null}
+                    onClose={() => setWorkoutToDelete(null)}
+                    onConfirm={confirmDelete}
+                    title="Eliminar rutina completada"
+                    message="¿Estás seguro de eliminar esta rutina completada? Esta acción no se puede deshacer."
+                    confirmText="Eliminar"
+                    variant="danger"
+                />
             </div>
         </MainLayout>
     );
