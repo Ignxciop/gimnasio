@@ -1,3 +1,5 @@
+import { fetchWithAuth } from "./apiInterceptor";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export class ApiError extends Error {
@@ -40,7 +42,7 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
             headers,
             body: JSON.stringify(data),
@@ -68,7 +70,7 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
             method: "GET",
             headers,
         });
@@ -99,7 +101,7 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
             method: "PUT",
             headers,
             body: JSON.stringify(data),
@@ -127,7 +129,7 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
             method: "DELETE",
             headers,
         });
