@@ -61,4 +61,17 @@ export const authService = {
     removeToken(): void {
         sessionStorage.removeItem("access_token");
     },
+
+    getUserIdFromToken(): string | null {
+        const token = this.getToken();
+        if (!token) return null;
+
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return payload.userId || null;
+        } catch (error) {
+            console.error("Error decoding token:", error);
+            return null;
+        }
+    },
 };
