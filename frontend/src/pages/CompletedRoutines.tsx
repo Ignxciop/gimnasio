@@ -224,7 +224,9 @@ export default function CompletedRoutines() {
                                 <div className="workout-day-card-header">
                                     <div
                                         className="workout-info"
-                                        onClick={() => toggleWorkout(workout.id)}
+                                        onClick={() =>
+                                            toggleWorkout(workout.id)
+                                        }
                                         style={{ flex: 1, cursor: "pointer" }}
                                     >
                                         <h3 className="workout-name">
@@ -262,30 +264,11 @@ export default function CompletedRoutines() {
                                         </button>
                                     )}
                                     <button
-                                        onClick={() => toggleWorkout(workout.id)}
+                                        onClick={() =>
+                                            toggleWorkout(workout.id)
+                                        }
                                         className="workout-toggle-btn"
                                     >
-                                        {isExpanded ? (
-                                            <ChevronUp size={20} />
-                                        ) : (
-                                            <ChevronDown size={20} />
-                                        )}
-                                    </button>
-                                </div>
-                                                )}
-                                            </span>
-                                            <span className="meta-separator">
-                                                •
-                                            </span>
-                                            <Clock size={14} />
-                                            <span>
-                                                {formatDuration(
-                                                    workout.duration
-                                                )}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <button className="workout-toggle-btn">
                                         {isExpanded ? (
                                             <ChevronUp size={20} />
                                         ) : (
