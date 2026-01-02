@@ -134,7 +134,7 @@ export const activeRoutineService = {
         const response = await fetch(
             `${
                 import.meta.env.VITE_API_URL
-            }/active-routines/${activeRoutineId}/complete`,
+            }/api/active-routines/${activeRoutineId}/complete`,
             {
                 method: "POST",
                 headers: {
@@ -154,7 +154,7 @@ export const activeRoutineService = {
         const response = await fetch(
             `${
                 import.meta.env.VITE_API_URL
-            }/active-routines/${activeRoutineId}/cancel`,
+            }/api/active-routines/${activeRoutineId}/cancel`,
             {
                 method: "DELETE",
                 headers: {
