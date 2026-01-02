@@ -73,6 +73,7 @@ class StatisticsService {
             },
             select: {
                 id: true,
+                userId: true,
                 startTime: true,
                 endTime: true,
                 routine: {
