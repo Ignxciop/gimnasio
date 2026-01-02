@@ -86,6 +86,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = ({
                 preload="metadata"
                 muted
                 playsInline
+                crossOrigin="anonymous"
                 style={{ display: isLoaded ? "block" : "none" }}
             />
         </>
