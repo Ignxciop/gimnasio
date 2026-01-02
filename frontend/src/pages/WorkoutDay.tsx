@@ -6,6 +6,7 @@ import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { dashboardService } from "../services/dashboardService";
 import { activeRoutineService } from "../services/activeRoutineService";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { getVideoUrl } from "../config/constants";
 import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import type { DayWorkout } from "../services/dashboardService";
@@ -42,6 +43,7 @@ export default function WorkoutDay() {
     );
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [workoutToDelete, setWorkoutToDelete] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchWorkouts = async () => {
@@ -85,21 +87,19 @@ export default function WorkoutDay() {
     };
 
     const handleDeleteWorkout = async (workoutId: number) => {
-        if (
-            !confirm(
-                "¿Estás seguro de eliminar esta rutina completada? Esta acción no se puede deshacer."
-            )
-        ) {
-            return;
-        }
+        setWorkoutToDelete(workoutId);
+    };
+
+    const confirmDelete = async () => {
+        if (!workoutToDelete) return;
 
         try {
-            setDeletingId(workoutId);
+            setDeletingId(workoutToDelete);
             const token = authService.getToken();
             if (!token) return;
 
-            await activeRoutineService.deleteCompleted(workoutId, token);
-            setWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
+            await activeRoutineService.deleteCompleted(workoutToDelete, token);
+            setWorkouts((prev) => prev.filter((w) => w.id !== workoutToDelete));
             showToast("success", "Rutina eliminada exitosamente");
         } catch (error) {
             showToast(
@@ -110,6 +110,7 @@ export default function WorkoutDay() {
             );
         } finally {
             setDeletingId(null);
+            setWorkoutToDelete(null);
         }
     };
 
@@ -326,6 +327,16 @@ export default function WorkoutDay() {
                         );
                     })}
                 </div>
+
+                <ConfirmDialog
+                    isOpen={workoutToDelete !== null}
+                    onClose={() => setWorkoutToDelete(null)}
+                    onConfirm={confirmDelete}
+                    title="Eliminar rutina completada"
+                    message="¿Estás seguro de eliminar esta rutina completada? Esta acción no se puede deshacer."
+                    confirmText="Eliminar"
+                    variant="danger"
+                />
             </div>
         </MainLayout>
     );
