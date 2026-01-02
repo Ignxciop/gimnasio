@@ -36,6 +36,19 @@ model User{
   routines Routine[]
   activeRoutines ActiveRoutine[]
   feedbacks Feedback[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken{
+  id String @id @default(uuid())
+  tokenHash String
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([tokenHash])
 }
 
 model Equipment{

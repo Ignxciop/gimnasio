@@ -1,6 +1,7 @@
 import express from "express";
 import { config } from "./src/config/config.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/authRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";
@@ -25,6 +26,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/resources", express.static("resources"));
@@ -46,5 +48,4 @@ app.use(errorHandler);
 
 app.listen(port, "0.0.0.0", () => {
     console.log("Servidor iniciado » Escuchando en puerto", port);
-    console.log("Accesible desde red local en http://localhost:" + port);
 });
