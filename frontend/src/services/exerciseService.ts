@@ -66,7 +66,7 @@ export const exerciseService = {
         }
 
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/exercises`,
+            `${import.meta.env.VITE_API_URL}/api/exercises`,
             {
                 method: "POST",
                 headers: {
@@ -107,7 +107,7 @@ export const exerciseService = {
         }
 
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/exercises/${id}`,
+            `${import.meta.env.VITE_API_URL}/api/exercises/${id}`,
             {
                 method: "PUT",
                 headers: {

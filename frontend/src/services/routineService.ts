@@ -10,7 +10,7 @@ const handleError = (error: unknown, defaultMessage: string): never => {
 export const routineService = {
     async getAll(token: string): Promise<Routine[]> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/routines`,
+            `${import.meta.env.VITE_API_URL}/api/routines`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -52,7 +52,7 @@ export const routineService = {
     ): Promise<Routine> {
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/routines`,
+                `${import.meta.env.VITE_API_URL}/api/routines`,
                 {
                     method: "POST",
                     headers: {
@@ -110,7 +110,7 @@ export const routineService = {
         token: string
     ): Promise<Routine> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/routines/${id}/move`,
+            `${import.meta.env.VITE_API_URL}/api/routines/${id}/move`,
             {
                 method: "PATCH",
                 headers: {
@@ -153,7 +153,7 @@ export const routineService = {
     ): Promise<void> {
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/routines/reorder`,
+                `${import.meta.env.VITE_API_URL}/api/routines/reorder`,
                 {
                     method: "PATCH",
                     headers: {

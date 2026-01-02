@@ -1,6 +1,7 @@
 import { fetchWithAuth } from "./apiInterceptor";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_PREFIX = "/api";
 
 export class ApiError extends Error {
     statusCode: number;
@@ -42,11 +43,14 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
+        const response = await fetchWithAuth(
+            `${API_BASE_URL}${API_PREFIX}${endpoint}`,
+            {
+                method: "POST",
+                headers,
+                body: JSON.stringify(data),
+            }
+        );
 
         const json = await response.json();
 
@@ -70,10 +74,13 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
-            method: "GET",
-            headers,
-        });
+        const response = await fetchWithAuth(
+            `${API_BASE_URL}${API_PREFIX}${endpoint}`,
+            {
+                method: "GET",
+                headers,
+            }
+        );
 
         const json = await response.json();
 
@@ -101,11 +108,14 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(data),
-        });
+        const response = await fetchWithAuth(
+            `${API_BASE_URL}${API_PREFIX}${endpoint}`,
+            {
+                method: "PUT",
+                headers,
+                body: JSON.stringify(data),
+            }
+        );
 
         const json = await response.json();
 
@@ -129,10 +139,13 @@ export const api = {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        const response = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, {
-            method: "DELETE",
-            headers,
-        });
+        const response = await fetchWithAuth(
+            `${API_BASE_URL}${API_PREFIX}${endpoint}`,
+            {
+                method: "DELETE",
+                headers,
+            }
+        );
 
         const json = await response.json();
 
