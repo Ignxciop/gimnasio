@@ -29,7 +29,7 @@ export const routineService = {
 
     async getById(id: number, token: string): Promise<Routine> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/routines/${id}`,
+            `${import.meta.env.VITE_API_URL}/api/routines/${id}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ export const routineService = {
         token: string
     ): Promise<Routine> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/routines/${id}`,
+            `${import.meta.env.VITE_API_URL}/api/routines/${id}`,
             {
                 method: "PUT",
                 headers: {
@@ -132,7 +132,7 @@ export const routineService = {
 
     async delete(id: number, token: string): Promise<void> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/routines/${id}`,
+            `${import.meta.env.VITE_API_URL}/api/routines/${id}`,
             {
                 method: "DELETE",
                 headers: {
