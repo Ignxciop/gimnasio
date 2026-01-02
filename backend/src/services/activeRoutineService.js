@@ -391,6 +391,32 @@ class ActiveRoutineService {
         return { success: true, message: "Rutina cancelada" };
     }
 
+    async deleteCompleted(activeRoutineId, userId) {
+        const activeRoutine = await prisma.activeRoutine.findFirst({
+            where: {
+                id: activeRoutineId,
+                userId,
+                status: "completed",
+            },
+        });
+
+        if (!activeRoutine) {
+            const error = new Error("Rutina completada no encontrada");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        await prisma.activeRoutineSet.deleteMany({
+            where: { activeRoutineId },
+        });
+
+        await prisma.activeRoutine.delete({
+            where: { id: activeRoutineId },
+        });
+
+        return { success: true, message: "Rutina completada eliminada" };
+    }
+
     async getCompletedDates(userId, year, month) {
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0, 23, 59, 59);

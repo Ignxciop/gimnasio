@@ -55,6 +55,12 @@ router.post("/:id/complete", authenticate, activeRoutineController.complete);
 
 router.delete("/:id/cancel", authenticate, activeRoutineController.cancel);
 
+router.delete(
+    "/completed/:id",
+    authenticate,
+    activeRoutineController.deleteCompleted
+);
+
 router.post(
     "/sets",
     authenticate,

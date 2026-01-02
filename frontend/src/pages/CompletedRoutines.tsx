@@ -6,11 +6,13 @@ import {
     ChevronUp,
     Clock,
     Calendar,
+    Trash2,
 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
+import { activeRoutineService } from "../services/activeRoutineService";
 import { getVideoUrl, getApiEndpoint } from "../config/constants";
 import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import type { DayWorkout } from "../services/dashboardService";
@@ -46,6 +48,8 @@ export default function CompletedRoutines() {
         new Set()
     );
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchRoutines = async () => {
@@ -60,6 +64,8 @@ export default function CompletedRoutines() {
                     username,
                     token
                 );
+
+                setCurrentUserId(profile.id);
 
                 const headers: HeadersInit = {};
                 if (token) {
@@ -116,6 +122,48 @@ export default function CompletedRoutines() {
                 newSet.add(workoutId);
             }
             return newSet;
+        });
+    };
+
+    const handleDeleteWorkout = async (
+        workoutId: number,
+        workoutUserId: string
+    ) => {
+        const token = authService.getToken();
+        const currentUser = authService.getToken();
+        if (!currentUser || workoutUserId !== currentUserId) {
+            showToast("error", "No tienes permisos para eliminar esta rutina");
+            return;
+        }
+
+        if (
+            !confirm(
+                "¿Estás seguro de eliminar esta rutina completada? Esta acción no se puede deshacer."
+            )
+        ) {
+            return;
+        }
+
+        try {
+            setDeletingId(workoutId);
+            if (!token) return;
+
+            await activeRoutineService.deleteCompleted(workoutId, token);
+            setWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
+            showToast("success", "Rutina eliminada exitosamente");
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al eliminar rutina"
+            );
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    if (loading) {
         });
     };
 
@@ -177,11 +225,12 @@ export default function CompletedRoutines() {
 
                         return (
                             <div key={workout.id} className="workout-day-card">
-                                <div
-                                    className="workout-day-card-header"
-                                    onClick={() => toggleWorkout(workout.id)}
-                                >
-                                    <div className="workout-info">
+                                <div className="workout-day-card-header">
+                                    <div
+                                        className="workout-info"
+                                        onClick={() => toggleWorkout(workout.id)}
+                                        style={{ flex: 1, cursor: "pointer" }}
+                                    >
                                         <h3 className="workout-name">
                                             {workout.routineName}
                                         </h3>
@@ -190,6 +239,43 @@ export default function CompletedRoutines() {
                                             <span>
                                                 {formatDate(
                                                     workout.endTime || ""
+                                                )}
+                                            </span>
+                                            <Clock size={14} />
+                                            <span>
+                                                {formatDuration(
+                                                    workout.duration
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {currentUserId === workout.userId && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteWorkout(
+                                                    workout.id,
+                                                    workout.userId
+                                                );
+                                            }}
+                                            className="btn-delete-workout"
+                                            disabled={deletingId === workout.id}
+                                            title="Eliminar rutina"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => toggleWorkout(workout.id)}
+                                        className="workout-toggle-btn"
+                                    >
+                                        {isExpanded ? (
+                                            <ChevronUp size={20} />
+                                        ) : (
+                                            <ChevronDown size={20} />
+                                        )}
+                                    </button>
+                                </div>
                                                 )}
                                             </span>
                                             <span className="meta-separator">

@@ -250,6 +250,22 @@ class ActiveRoutineController {
             next(error);
         }
     }
+
+    async deleteCompleted(req, res, next) {
+        try {
+            const activeRoutineId = parseInt(req.params.id);
+            const userId = req.user.userId;
+
+            await activeRoutineService.deleteCompleted(activeRoutineId, userId);
+
+            res.status(200).json({
+                success: true,
+                message: "Rutina completada eliminada exitosamente",
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new ActiveRoutineController();

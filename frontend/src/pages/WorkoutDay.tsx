@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronDown, ChevronUp, Clock } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Clock, Trash2 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { authService } from "../services/authService";
 import { dashboardService } from "../services/dashboardService";
+import { activeRoutineService } from "../services/activeRoutineService";
 import { getVideoUrl } from "../config/constants";
 import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import type { DayWorkout } from "../services/dashboardService";
@@ -40,6 +41,7 @@ export default function WorkoutDay() {
         new Set()
     );
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchWorkouts = async () => {
@@ -80,6 +82,35 @@ export default function WorkoutDay() {
             }
             return newSet;
         });
+    };
+
+    const handleDeleteWorkout = async (workoutId: number) => {
+        if (
+            !confirm(
+                "¿Estás seguro de eliminar esta rutina completada? Esta acción no se puede deshacer."
+            )
+        ) {
+            return;
+        }
+
+        try {
+            setDeletingId(workoutId);
+            const token = authService.getToken();
+            if (!token) return;
+
+            await activeRoutineService.deleteCompleted(workoutId, token);
+            setWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
+            showToast("success", "Rutina eliminada exitosamente");
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al eliminar rutina"
+            );
+        } finally {
+            setDeletingId(null);
+        }
     };
 
     if (loading) {
@@ -142,11 +173,14 @@ export default function WorkoutDay() {
 
                         return (
                             <div key={workout.id} className="workout-day-card">
-                                <div
-                                    className="workout-day-card-header"
-                                    onClick={() => toggleWorkout(workout.id)}
-                                >
-                                    <div className="workout-info">
+                                <div className="workout-day-card-header">
+                                    <div
+                                        className="workout-info"
+                                        onClick={() =>
+                                            toggleWorkout(workout.id)
+                                        }
+                                        style={{ flex: 1, cursor: "pointer" }}
+                                    >
                                         <h3 className="workout-name">
                                             {workout.routineName}
                                         </h3>
@@ -159,7 +193,23 @@ export default function WorkoutDay() {
                                             </span>
                                         </div>
                                     </div>
-                                    <button className="workout-toggle-btn">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteWorkout(workout.id);
+                                        }}
+                                        className="btn-delete-workout"
+                                        disabled={deletingId === workout.id}
+                                        title="Eliminar rutina"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            toggleWorkout(workout.id)
+                                        }
+                                        className="workout-toggle-btn"
+                                    >
                                         {isExpanded ? (
                                             <ChevronUp size={20} />
                                         ) : (

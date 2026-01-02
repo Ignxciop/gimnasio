@@ -207,4 +207,28 @@ export const activeRoutineService = {
             throw new Error(error.message || "Error al eliminar serie");
         }
     },
+
+    async deleteCompleted(
+        activeRoutineId: number,
+        token: string
+    ): Promise<void> {
+        const response = await fetch(
+            `${
+                import.meta.env.VITE_API_URL
+            }/api/active-routines/completed/${activeRoutineId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(
+                error.message || "Error al eliminar rutina completada"
+            );
+        }
+    },
 };
