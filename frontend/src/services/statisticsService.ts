@@ -38,7 +38,7 @@ export const statisticsService = {
         const response = await fetch(
             `${
                 import.meta.env.VITE_API_URL
-            }/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
+            }/api/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
             {
                 headers,
             }
@@ -74,7 +74,7 @@ export const statisticsService = {
         const response = await fetch(
             `${
                 import.meta.env.VITE_API_URL
-            }/statistics/months-with-workouts?userId=${userId}`,
+            }/api/statistics/months-with-workouts?userId=${userId}`,
             {
                 headers,
             }
@@ -93,7 +93,7 @@ export const statisticsService = {
 
     async getExercises(token: string) {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/exercises`,
+            `${import.meta.env.VITE_API_URL}/api/exercises`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,

@@ -45,7 +45,7 @@ const API_URL = "http://localhost:3000/api";
 export const activeRoutineService = {
     async getActive(token: string): Promise<ActiveRoutine | null> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/active-routines/active`,
+            `${import.meta.env.VITE_API_URL}/api/active-routines/active`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ export const activeRoutineService = {
 
     async create(routineId: number, token: string): Promise<ActiveRoutine> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/active-routines`,
+            `${import.meta.env.VITE_API_URL}/api/active-routines`,
             {
                 method: "POST",
                 headers: {
@@ -113,7 +113,7 @@ export const activeRoutineService = {
 
     async reorderSets(setIds: number[], token: string): Promise<void> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/active-routines/reorder`,
+            `${import.meta.env.VITE_API_URL}/api/active-routines/reorder`,
             {
                 method: "PUT",
                 headers: {
@@ -171,7 +171,7 @@ export const activeRoutineService = {
 
     async addSet(exerciseId: number, token: string): Promise<ActiveRoutineSet> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/active-routines/sets`,
+            `${import.meta.env.VITE_API_URL}/api/active-routines/sets`,
             {
                 method: "POST",
                 headers: {

@@ -44,7 +44,7 @@ export const profileService = {
         }
 
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/profile/${username}`,
+            `${import.meta.env.VITE_API_URL}/api/profile/${username}`,
             {
                 headers,
             }
@@ -64,7 +64,7 @@ export const profileService = {
         token: string
     ): Promise<ProfileData> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/profile/privacy`,
+            `${import.meta.env.VITE_API_URL}/api/profile/privacy`,
             {
                 method: "PATCH",
                 headers: {

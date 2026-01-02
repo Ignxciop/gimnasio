@@ -24,14 +24,17 @@ const createFeedback = async (
     feedbackData: CreateFeedbackRequest,
     token: string
 ): Promise<Feedback> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/feedback`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(feedbackData),
-    });
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/feedback`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(feedbackData),
+        }
+    );
 
     const data: FeedbackResponse = await response.json();
 
@@ -44,7 +47,7 @@ const createFeedback = async (
 
 const getUserFeedbacks = async (token: string): Promise<Feedback[]> => {
     const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/feedback/my-feedbacks`,
+        `${import.meta.env.VITE_API_URL}/api/feedback/my-feedbacks`,
         {
             method: "GET",
             headers: {
