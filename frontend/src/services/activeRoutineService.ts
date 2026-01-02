@@ -91,7 +91,7 @@ export const activeRoutineService = {
         token: string
     ): Promise<ActiveRoutineSet> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/active-routines/sets/${setId}`,
+            `${import.meta.env.VITE_API_URL}/api/active-routines/sets/${setId}`,
             {
                 method: "PUT",
                 headers: {
