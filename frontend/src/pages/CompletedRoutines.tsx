@@ -164,10 +164,6 @@ export default function CompletedRoutines() {
     };
 
     if (loading) {
-        });
-    };
-
-    if (loading) {
         return (
             <MainLayout>
                 <div className="loading">{LOADING_MESSAGES.GENERIC}</div>
