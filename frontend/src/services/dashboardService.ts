@@ -35,6 +35,7 @@ interface WorkoutSet {
 
 interface DayWorkout {
     id: number;
+    userId: string;
     routineId: number;
     routineName: string;
     startTime: string;
