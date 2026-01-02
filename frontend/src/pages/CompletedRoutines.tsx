@@ -256,6 +256,7 @@ export default function CompletedRoutines() {
                                             </span>
                                         </div>
                                     </div>
+
                                     {currentUserId === workout.userId && (
                                         <button
                                             onClick={(e) => {
