@@ -130,6 +130,7 @@ class StatisticsService {
 
             return {
                 id: routine.id,
+                userId: routine.userId,
                 routineName: routine.routine.name,
                 endTime: routine.endTime,
                 duration: duration,
