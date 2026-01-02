@@ -168,7 +168,7 @@ model ActiveRoutineSet{
   isPR Boolean @default(false)
   order Int @default(0)
   activeRoutine ActiveRoutine @relation(fields: [activeRoutineId], references: [id], onDelete: Cascade)
-  exercise Exercise @relation(fields: [exerciseId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
