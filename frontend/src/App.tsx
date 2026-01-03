@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
@@ -35,6 +35,14 @@ function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         return !!authService.getToken();
     });
+
+    useEffect(() => {
+        const token = authService.getToken();
+        if (token && !authService.isTokenValid()) {
+            authService.clearAuth();
+            setIsAuthenticated(false);
+        }
+    }, []);
 
     const handleLoginSuccess = () => {
         setIsAuthenticated(true);
