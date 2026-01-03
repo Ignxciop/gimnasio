@@ -37,11 +37,13 @@ export const registerValidation = [
     body("password")
         .notEmpty()
         .withMessage("La contraseña es requerida")
-        .isLength({ min: 4 })
-        .withMessage("La contraseña debe tener al menos 4 caracteres")
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        .isLength({ min: 12, max: 128 })
+        .withMessage("La contraseña debe tener entre 12 y 128 caracteres")
+        .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/~`])/
+        )
         .withMessage(
-            "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
+            "La contraseña debe contener al menos: una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&#, etc.)"
         ),
 
     body("gender")
