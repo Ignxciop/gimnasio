@@ -7,7 +7,7 @@ RUN npm install -g pnpm@10.25.0
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod=false
 
-COPY prisma ./prisma/
+COPY prisma .backend/prisma/
 RUN pnpm prisma generate
 
 COPY . .
