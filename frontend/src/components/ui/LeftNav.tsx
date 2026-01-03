@@ -38,17 +38,19 @@ export const LeftNav: React.FC = () => {
                         Rutinas
                     </NavLink>
                 </li>
-                <li>
-                    <NavLink
-                        to={`/perfil/${user?.username}`}
-                        className={({ isActive }) =>
-                            "leftnav__link" +
-                            (isActive ? " leftnav__link--active" : "")
-                        }
-                    >
-                        Perfil
-                    </NavLink>
-                </li>
+                {user && (
+                    <li>
+                        <NavLink
+                            to={`/perfil/${user.username}`}
+                            className={({ isActive }) =>
+                                "leftnav__link" +
+                                (isActive ? " leftnav__link--active" : "")
+                            }
+                        >
+                            Perfil
+                        </NavLink>
+                    </li>
+                )}
                 {canManage && (
                     <li>
                         <NavLink
