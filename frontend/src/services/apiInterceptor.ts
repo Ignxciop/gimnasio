@@ -1,3 +1,5 @@
+import { tokenStorage } from "./tokenStorage";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 let isRefreshing = false;
@@ -36,7 +38,7 @@ export const fetchWithAuth = async (
     url: string,
     options: RequestInit = {}
 ): Promise<Response> => {
-    const token = sessionStorage.getItem("access_token");
+    const token = tokenStorage.getToken();
 
     const headers = new Headers(options.headers);
     if (token) {
@@ -53,7 +55,7 @@ export const fetchWithAuth = async (
         credentials: "include",
     });
 
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
         if (isRefreshing) {
             return new Promise((resolve, reject) => {
                 failedQueue.push({
@@ -76,7 +78,7 @@ export const fetchWithAuth = async (
 
         try {
             const newToken = await refreshAccessToken();
-            sessionStorage.setItem("access_token", newToken);
+            tokenStorage.setToken(newToken);
             processQueue(null, newToken);
 
             headers.set("Authorization", `Bearer ${newToken}`);
@@ -87,8 +89,13 @@ export const fetchWithAuth = async (
             });
         } catch (error) {
             processQueue(error as Error, null);
-            sessionStorage.removeItem("access_token");
-            window.location.href = "/login";
+            tokenStorage.removeToken();
+            if (
+                window.location.pathname !== "/login" &&
+                window.location.pathname !== "/register"
+            ) {
+                window.location.href = "/login";
+            }
             throw error;
         } finally {
             isRefreshing = false;
