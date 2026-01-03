@@ -1,7 +1,9 @@
 import React from "react";
 import type { MuscleRadarData } from "../types/muscleStimulus.types";
 import { FemaleMuscleMapBody } from "./FemaleMuscleMapBody";
-import { getMuscleColor, getStimulusLiga } from "../types/muscleLiga.types";
+import { MaleFrontMap } from "./muscle-maps/MaleFrontMap";
+import { MaleBackMap } from "./muscle-maps/MaleBackMap";
+import { processMuscleData } from "../utils/muscleMappingHelpers";
 import { GENDERS } from "../config/constants";
 import "./muscleMapBody.css";
 
@@ -18,38 +20,50 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({
         return <FemaleMuscleMapBody muscleData={muscleData} />;
     }
 
-    const getMuscleValue = (muscleName: string): number => {
-        const muscle = muscleData.find((m) => m.muscle === muscleName);
-        return muscle?.value || 0;
-    };
-
-    const pechoValue = getMuscleValue("Pecho");
-    const espaldaValue = getMuscleValue("Espalda");
-    const hombrosValue = getMuscleValue("Hombros");
-    const brazosValue = getMuscleValue("Brazos");
-    const piernasValue = getMuscleValue("Piernas");
-    const abdomenValue = getMuscleValue("Abdomen");
-
-    const pechoColor = getMuscleColor(pechoValue);
-    const espaldaColor = getMuscleColor(espaldaValue);
-    const hombrosColor = getMuscleColor(hombrosValue);
-    const brazosColor = getMuscleColor(brazosValue);
-    const piernasColor = getMuscleColor(piernasValue);
-    const abdomenColor = getMuscleColor(abdomenValue);
-
-    const pechoLiga = getStimulusLiga(pechoValue);
-    const espaldaLiga = getStimulusLiga(espaldaValue);
-    const hombrosLiga = getStimulusLiga(hombrosValue);
-    const brazosLiga = getStimulusLiga(brazosValue);
-    const piernasLiga = getStimulusLiga(piernasValue);
-    const abdomenLiga = getStimulusLiga(abdomenValue);
+    const {
+        pechoValue,
+        espaldaValue,
+        hombrosValue,
+        brazosValue,
+        piernasValue,
+        abdomenValue,
+        pechoColor,
+        espaldaColor,
+        hombrosColor,
+        brazosColor,
+        piernasColor,
+        abdomenColor,
+        pechoLiga,
+        espaldaLiga,
+        hombrosLiga,
+        brazosLiga,
+        piernasLiga,
+        abdomenLiga,
+    } = processMuscleData(muscleData);
 
     return (
         <div className="muscle-map">
             <div className="muscle-map__bodies">
                 <div className="muscle-map__body">
                     <h3 className="muscle-map__title">Vista Frontal</h3>
-                    <svg
+                    <MaleFrontMap
+                        pechoColor={pechoColor}
+                        pechoLiga={pechoLiga}
+                        pechoValue={pechoValue}
+                        hombrosColor={hombrosColor}
+                        hombrosLiga={hombrosLiga}
+                        hombrosValue={hombrosValue}
+                        brazosColor={brazosColor}
+                        brazosLiga={brazosLiga}
+                        brazosValue={brazosValue}
+                        abdomenColor={abdomenColor}
+                        abdomenLiga={abdomenLiga}
+                        abdomenValue={abdomenValue}
+                        piernasColor={piernasColor}
+                        piernasLiga={piernasLiga}
+                        piernasValue={piernasValue}
+                    />
+                    {/* <svg
                         viewBox="0 0 200 450"
                         className="muscle-map__svg"
                         xmlns="http://www.w3.org/2000/svg"
@@ -489,12 +503,26 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({
                                 Piernas: {piernasValue}% - {piernasLiga.liga}
                             </title>
                         </g>
-                    </svg>
+                    </svg> */}
                 </div>
 
                 <div className="muscle-map__body">
                     <h3 className="muscle-map__title">Vista Posterior</h3>
-                    <svg
+                    <MaleBackMap
+                        espaldaColor={espaldaColor}
+                        espaldaLiga={espaldaLiga}
+                        espaldaValue={espaldaValue}
+                        hombrosColor={hombrosColor}
+                        hombrosLiga={hombrosLiga}
+                        hombrosValue={hombrosValue}
+                        brazosColor={brazosColor}
+                        brazosLiga={brazosLiga}
+                        brazosValue={brazosValue}
+                        piernasColor={piernasColor}
+                        piernasLiga={piernasLiga}
+                        piernasValue={piernasValue}
+                    />
+                    {/* <svg
                         viewBox="0 0 200 450"
                         className="muscle-map__svg"
                         xmlns="http://www.w3.org/2000/svg"
@@ -876,7 +904,7 @@ export const MuscleMapBody: React.FC<MuscleMapBodyProps> = ({
                                 Piernas: {piernasValue}% - {piernasLiga.liga}
                             </title>
                         </g>
-                    </svg>
+                    </svg> */}
                 </div>
             </div>
 
