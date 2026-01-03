@@ -26,7 +26,11 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
 
     const createFeedback = useApiCall(
         (
-            data: { type: string; title?: string; description: string },
+            data: {
+                type: "suggestion" | "bug_report";
+                title?: string;
+                description: string;
+            },
             token: string
         ) => feedbackService.createFeedback(data, token),
         {
