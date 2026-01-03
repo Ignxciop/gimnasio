@@ -1,7 +1,5 @@
 import { useState } from "react";
 import {
-    User,
-    UserRound,
     Mail,
     Shield,
     LogOut,
@@ -16,8 +14,8 @@ import { profileService } from "../services/profileService";
 import { authService } from "../services/authService";
 import { useApiCall } from "../hooks/useApiCall";
 import { useToast } from "../hooks/useToast";
-import { GENDERS } from "../config/constants";
 import { ERROR_MESSAGES } from "../config/messages";
+import { GenderAwareUserIcon } from "./ui/GenderAwareUserIcon";
 import "./profileCard.css";
 
 interface ProfileCardProps {
@@ -77,11 +75,10 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         <div className="profile-card">
             <div className="profile-card__header">
                 <div className="profile-card__avatar">
-                    {profileData.gender === GENDERS.FEMALE ? (
-                        <UserRound size={48} />
-                    ) : (
-                        <User size={48} />
-                    )}
+                    <GenderAwareUserIcon
+                        gender={profileData.gender}
+                        size={48}
+                    />
                 </div>
                 <h2 className="profile-card__name">
                     {profileData.name} {profileData.lastname}
