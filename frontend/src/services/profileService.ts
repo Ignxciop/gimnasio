@@ -21,8 +21,6 @@ interface ProfileData {
     };
 }
 
-const API_URL = "http://localhost:3000/api";
-
 export const profileService = {
     async getProfile(): Promise<User> {
         const token = authService.getToken();

@@ -40,8 +40,6 @@ interface ActiveRoutine {
     sets: ActiveRoutineSet[];
 }
 
-const API_URL = "http://localhost:3000/api";
-
 export const activeRoutineService = {
     async getActive(token: string): Promise<ActiveRoutine | null> {
         const response = await fetch(

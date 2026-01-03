@@ -1,7 +1,5 @@
 import type { EffectiveSet } from "../types/muscleStimulus.types";
 
-const API_URL = "http://localhost:3000/api";
-
 interface ActiveRoutineSetResponse {
     id: number;
     exerciseId: number;
