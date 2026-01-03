@@ -79,7 +79,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                 password,
                 gender,
             });
-            authService.saveToken(response.data.token);
+            if (response.data.accessToken) {
+                authService.saveToken(response.data.accessToken);
+            }
 
             onSuccess?.();
         } catch (error) {

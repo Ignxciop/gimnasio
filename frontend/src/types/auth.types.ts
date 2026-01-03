@@ -17,7 +17,7 @@ export interface RegisterResponse {
     message: string;
     data: {
         user: User;
-        token: string;
+        accessToken: string;
     };
 }
 
@@ -41,7 +41,7 @@ export interface LoginResponse {
     message: string;
     data: {
         user: User;
-        token: string;
+        accessToken: string;
     };
 }
 

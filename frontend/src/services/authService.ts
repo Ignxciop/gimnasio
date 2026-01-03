@@ -13,8 +13,8 @@ export const authService = {
             "/auth/login",
             credentials
         );
-        if (response.data.token) {
-            this.saveToken(response.data.token);
+        if (response.data.accessToken) {
+            this.saveToken(response.data.accessToken);
         }
         return response;
     },
