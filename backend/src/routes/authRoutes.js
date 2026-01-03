@@ -8,20 +8,38 @@ import {
     loginValidation,
     validate as validateLogin,
 } from "../validators/authValidator.js";
+import {
+    loginLimiter,
+    refreshLimiter,
+    registerLimiter,
+} from "../config/rateLimiter.js";
+import { doubleCsrfProtection } from "../config/csrf.js";
 
 const router = express.Router();
 
 router.post(
     "/register",
+    registerLimiter,
     registerValidation,
     validateRegister,
     authController.register
 );
 
-router.post("/login", loginValidation, validateLogin, authController.login);
+router.post(
+    "/login",
+    loginLimiter,
+    loginValidation,
+    validateLogin,
+    authController.login
+);
 
-router.post("/refresh", authController.refresh);
+router.post(
+    "/refresh",
+    refreshLimiter,
+    doubleCsrfProtection,
+    authController.refresh
+);
 
-router.post("/logout", authController.logout);
+router.post("/logout", doubleCsrfProtection, authController.logout);
 
 export default router;

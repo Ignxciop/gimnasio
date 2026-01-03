@@ -2,6 +2,7 @@ import { Router } from "express";
 import exerciseController from "../controllers/exerciseController.js";
 import { authenticate, authorize } from "../middlewares/authMiddleware.js";
 import { upload } from "../config/multer.js";
+import { uploadLimiter } from "../config/rateLimiter.js";
 import {
     createExerciseValidation,
     updateExerciseValidation,
@@ -65,6 +66,7 @@ router.post(
     "/",
     authenticate,
     authorize("administrador", "manager"),
+    uploadLimiter,
     upload.single("video"),
     parseFormData,
     createExerciseValidation,
@@ -76,6 +78,7 @@ router.put(
     "/:id",
     authenticate,
     authorize("administrador", "manager"),
+    uploadLimiter,
     upload.single("video"),
     parseFormData,
     updateExerciseValidation,
