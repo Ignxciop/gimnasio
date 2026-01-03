@@ -1,4 +1,4 @@
-import { Exercise } from "../services/exerciseService";
+import type { Exercise } from "../services/exerciseService";
 
 export interface RoutineExercise {
     id: number;
