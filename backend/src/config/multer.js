@@ -26,16 +26,26 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === "video/mp4") {
-        cb(null, true);
-    } else {
-        cb(
+    if (file.mimetype !== "video/mp4") {
+        return cb(
             new Error(
                 "Formato de archivo no válido. Solo se permiten archivos .mp4"
             ),
             false
         );
     }
+
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext !== ".mp4") {
+        return cb(
+            new Error(
+                "Extensión de archivo no válida. Solo se permiten archivos .mp4"
+            ),
+            false
+        );
+    }
+
+    cb(null, true);
 };
 
 const upload = multer({
