@@ -49,12 +49,14 @@
 }
 
 .form__link-text {
-    color: var(--color-primary);
+    color: var(--accent-mid);
     text-decoration: none;
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
+    transition: color var(--transition-fast);
 }
 
 .form__link-text:hover {
+    color: var(--accent-end);
     text-decoration: underline;
 }
 
