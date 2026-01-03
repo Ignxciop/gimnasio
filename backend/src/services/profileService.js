@@ -67,6 +67,7 @@ class ProfileService {
                 name: true,
                 lastname: true,
                 username: true,
+                gender: true,
                 isProfilePublic: true,
                 role: {
                     select: {
