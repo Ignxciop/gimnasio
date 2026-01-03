@@ -8,8 +8,17 @@ export const validators = {
 
     password: (value: string): string | undefined => {
         if (!value) return "La contraseña es requerida";
-        if (value.length < 4)
-            return "La contraseña debe tener al menos 4 caracteres";
+        if (value.length < 12)
+            return "La contraseña debe tener al menos 12 caracteres";
+        if (value.length > 128)
+            return "La contraseña no puede exceder 128 caracteres";
+        if (!/(?=.*[a-z])/.test(value))
+            return "Debe contener al menos una minúscula";
+        if (!/(?=.*[A-Z])/.test(value))
+            return "Debe contener al menos una mayúscula";
+        if (!/(?=.*\d)/.test(value)) return "Debe contener al menos un número";
+        if (!/(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/~`])/.test(value))
+            return "Debe contener al menos un carácter especial (@$!%*?&#, etc.)";
         return undefined;
     },
 
