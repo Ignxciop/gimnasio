@@ -20,8 +20,18 @@ const port = config.port;
 
 const app = express();
 
+const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",")
+    : ["http://localhost:5173"];
+
 const corsOptions = {
-    origin: ["http://localhost:5173"],
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
 };
 
