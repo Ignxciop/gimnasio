@@ -1,8 +1,16 @@
 export const errorHandler = (err, req, res, next) => {
-    console.error("Error:", err);
+    if (process.env.NODE_ENV === "development") {
+        console.error("Error:", err);
+    }
 
     const statusCode = err.statusCode || 500;
-    const message = err.message || "Error interno del servidor";
+
+    const message =
+        process.env.NODE_ENV === "production"
+            ? err.statusCode
+                ? err.message
+                : "Error interno del servidor"
+            : err.message || "Error interno del servidor";
 
     if (err.code === "P2002" || err.code === "23505") {
         return res.status(409).json({

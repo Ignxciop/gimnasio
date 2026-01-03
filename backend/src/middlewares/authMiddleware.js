@@ -76,14 +76,6 @@ export const authorize = (...allowedRoles) => {
                 where: { id: roleId },
             });
 
-            console.log("authorize - roleId:", roleId);
-            console.log("authorize - userRole:", userRole);
-            console.log("authorize - allowedRoles:", allowedRoles);
-            console.log(
-                "authorize - includes?",
-                allowedRoles.includes(userRole?.role)
-            );
-
             if (!userRole || !allowedRoles.includes(userRole.role)) {
                 return res.status(403).json({
                     success: false,
