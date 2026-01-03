@@ -6,6 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "nodemon --quiet index.js",
+        "start": "node index.js",
         "prisma:migrate": "pnpm prisma migrate dev --name",
         "seed": "node src/scripts/seed.js",
         "cleanup-orphans": "node src/scripts/cleanup-orphan-videos.js",
