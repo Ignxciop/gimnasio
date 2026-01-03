@@ -4,6 +4,7 @@ import {
     generateToken,
     generateRefreshToken,
     verifyToken,
+    verifyRefreshToken,
     hashToken,
 } from "../config/jwt.js";
 
@@ -84,7 +85,7 @@ class AuthService {
     }
 
     async refresh(refreshToken) {
-        const decoded = verifyToken(refreshToken);
+        const decoded = verifyRefreshToken(refreshToken);
 
         if (!decoded || !decoded.userId) {
             const error = new Error("Refresh token inválido");
@@ -105,7 +106,13 @@ class AuthService {
         });
 
         if (!storedToken) {
-            const error = new Error("Refresh token inválido o expirado");
+            await prisma.refreshToken.deleteMany({
+                where: { userId: decoded.userId },
+            });
+
+            const error = new Error(
+                "Refresh token inválido o reusado. Sesión cerrada por seguridad"
+            );
             error.statusCode = 401;
             throw error;
         }
