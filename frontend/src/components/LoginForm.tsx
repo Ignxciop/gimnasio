@@ -41,7 +41,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         setIsLoading(true);
 
         try {
-            const response = await authService.login({ email, password });
+            await authService.login({ email, password });
 
             onSuccess?.();
         } catch (error) {
