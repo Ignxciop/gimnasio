@@ -1,11 +1,14 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Home, User, Dumbbell, Shield, Settings } from "lucide-react";
+import { Home, Dumbbell, Shield, Settings } from "lucide-react";
 import { getUserFromToken } from "../../utils/getUserFromToken";
+import { useUserGender } from "../../hooks/useUserGender";
+import { GenderAwareUserIcon } from "./GenderAwareUserIcon";
 import "./bottomnav.css";
 
 export const BottomNav: React.FC = () => {
     const user = getUserFromToken();
+    const userGender = useUserGender();
     const isAdmin = user?.roleId === 1;
     const canManage = user?.roleId === 1 || user?.roleId === 2;
 
@@ -42,7 +45,11 @@ export const BottomNav: React.FC = () => {
                     (isActive ? " bottomnav__link--active" : "")
                 }
             >
-                <User className="bottomnav__icon" size={22} />
+                <GenderAwareUserIcon
+                    gender={userGender}
+                    size={22}
+                    className="bottomnav__icon"
+                />
                 <span className="bottomnav__label">Perfil</span>
             </NavLink>
             {canManage && (
