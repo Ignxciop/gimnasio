@@ -79,7 +79,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                                         onChange={(val) =>
                                             handleRoleChange(
                                                 user.id,
-                                                parseInt(val)
+                                                parseInt(val as string)
                                             )
                                         }
                                         options={ROLE_OPTIONS}
@@ -170,7 +170,10 @@ export const UserTable: React.FC<UserTableProps> = ({
                                 <Select
                                     value={user.roleId.toString()}
                                     onChange={(val) =>
-                                        handleRoleChange(user.id, parseInt(val))
+                                        handleRoleChange(
+                                            user.id,
+                                            parseInt(val as string)
+                                        )
                                     }
                                     options={ROLE_OPTIONS}
                                     disabled={loading === user.id}
