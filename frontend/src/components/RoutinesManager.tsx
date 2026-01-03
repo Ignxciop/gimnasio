@@ -149,8 +149,14 @@ export default function RoutinesManager() {
     );
 
     const reorderRoutines = useApiCall(
-        (routines: { id: number; order: number }[], token: string) =>
-            routineService.reorder(routines, token),
+        (
+            routines: {
+                id: number;
+                order: number;
+                folderId: number | null;
+            }[],
+            token: string
+        ) => routineService.reorder(routines, token),
         {
             successMessage: SUCCESS_MESSAGES.ROUTINES.ORDER_UPDATED,
             errorMessage: ERROR_MESSAGES.ROUTINES.UPDATE_ORDER,
