@@ -24,10 +24,22 @@ class AuthController {
                 roleId: roleId ? parseInt(roleId) : 3,
             });
 
+            const result = await authService.login({ email, password });
+
+            res.cookie("refreshToken", result.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+
             res.status(201).json({
                 success: true,
                 message: "Usuario registrado exitosamente",
-                data: user,
+                data: {
+                    user: result.user,
+                    accessToken: result.accessToken,
+                },
             });
         } catch (error) {
             next(error);
