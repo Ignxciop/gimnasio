@@ -24,47 +24,40 @@ export const authService = {
     },
 
     async refresh(): Promise<{ accessToken: string }> {
-        try {
-            const csrfResponse = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/auth/csrf-token`,
-                {
-                    method: "GET",
-                    credentials: "include",
-                }
-            );
-
-            if (!csrfResponse.ok) {
-                this.clearAuth();
-                throw new Error("Failed to get CSRF token");
+        const csrfResponse = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/auth/csrf-token`,
+            {
+                method: "GET",
+                credentials: "include",
             }
+        );
 
-            const { csrfToken } = await csrfResponse.json();
-
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "x-csrf-token": csrfToken,
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                this.clearAuth();
-                throw new Error("Failed to refresh token");
-            }
-
-            const data = await response.json();
-            if (data.data.accessToken) {
-                this.saveToken(data.data.accessToken);
-            }
-            return data.data;
-        } catch (error) {
-            this.clearAuth();
-            throw error;
+        if (!csrfResponse.ok) {
+            throw new Error("Failed to get CSRF token");
         }
+
+        const { csrfToken } = await csrfResponse.json();
+
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
+            {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "x-csrf-token": csrfToken,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to refresh token");
+        }
+
+        const data = await response.json();
+        if (data.data.accessToken) {
+            this.saveToken(data.data.accessToken);
+        }
+        return data.data;
     },
 
     async logout(): Promise<void> {
@@ -109,6 +102,22 @@ export const authService = {
             window.location.pathname !== "/register"
         ) {
             window.location.href = "/login";
+        }
+    },
+
+    async initializeAuth(): Promise<boolean> {
+        const token = this.getToken();
+
+        if (token && this.isTokenValid()) {
+            return true;
+        }
+
+        try {
+            await this.refresh();
+            return true;
+        } catch (error) {
+            this.removeToken();
+            return false;
         }
     },
 

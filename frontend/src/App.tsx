@@ -32,16 +32,17 @@ const WorkoutDay = lazy(() => import("./pages/WorkoutDay"));
 const CompletedRoutines = lazy(() => import("./pages/CompletedRoutines"));
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        return !!authService.getToken();
-    });
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isInitializing, setIsInitializing] = useState(true);
 
     useEffect(() => {
-        const token = authService.getToken();
-        if (token && !authService.isTokenValid()) {
-            authService.clearAuth();
-            setIsAuthenticated(false);
-        }
+        const initAuth = async () => {
+            const authenticated = await authService.initializeAuth();
+            setIsAuthenticated(authenticated);
+            setIsInitializing(false);
+        };
+
+        initAuth();
     }, []);
 
     const handleLoginSuccess = () => {
@@ -51,6 +52,23 @@ function App() {
     const handleRegisterSuccess = () => {
         setIsAuthenticated(true);
     };
+
+    if (isInitializing) {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh",
+                    fontSize: "1.2rem",
+                    color: "#666",
+                }}
+            >
+                {LOADING_MESSAGES.GENERIC}
+            </div>
+        );
+    }
 
     return (
         <ToastProvider>
