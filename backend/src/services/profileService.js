@@ -11,6 +11,7 @@ class ProfileService {
                 username: true,
                 email: true,
                 gender: true,
+                preferredUnit: true,
                 isProfilePublic: true,
                 is_active: true,
                 role: {

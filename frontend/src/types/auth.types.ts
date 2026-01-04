@@ -28,6 +28,7 @@ export interface User {
     username: string;
     email: string;
     gender: "male" | "female";
+    preferredUnit?: "kg" | "lbs";
     is_active: boolean;
     roleId: number;
     role: {

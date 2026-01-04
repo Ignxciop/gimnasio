@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
+import { UnitProvider } from "./contexts/UnitContext";
 import { LOADING_MESSAGES } from "./config/messages";
 
 const Login = lazy(() =>
@@ -78,195 +79,197 @@ function App() {
 
     return (
         <ToastProvider>
-            <BrowserRouter>
-                <Suspense
-                    fallback={
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100vh",
-                                fontSize: "1.2rem",
-                                color: "#666",
-                            }}
-                        >
-                            {LOADING_MESSAGES.GENERIC}
-                        </div>
-                    }
-                >
-                    <Routes>
-                        <Route
-                            path="/login"
-                            element={
-                                isAuthenticated ? (
-                                    <Navigate to="/inicio" replace />
-                                ) : (
-                                    <Login
-                                        onLoginSuccess={handleLoginSuccess}
-                                    />
-                                )
-                            }
-                        />
+            <UnitProvider>
+                <BrowserRouter>
+                    <Suspense
+                        fallback={
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "100vh",
+                                    fontSize: "1.2rem",
+                                    color: "#666",
+                                }}
+                            >
+                                {LOADING_MESSAGES.GENERIC}
+                            </div>
+                        }
+                    >
+                        <Routes>
+                            <Route
+                                path="/login"
+                                element={
+                                    isAuthenticated ? (
+                                        <Navigate to="/inicio" replace />
+                                    ) : (
+                                        <Login
+                                            onLoginSuccess={handleLoginSuccess}
+                                        />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/register"
-                            element={
-                                isAuthenticated ? (
-                                    <Navigate to="/inicio" replace />
-                                ) : (
-                                    <Register
-                                        onRegisterSuccess={
-                                            handleRegisterSuccess
-                                        }
-                                    />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/register"
+                                element={
+                                    isAuthenticated ? (
+                                        <Navigate to="/inicio" replace />
+                                    ) : (
+                                        <Register
+                                            onRegisterSuccess={
+                                                handleRegisterSuccess
+                                            }
+                                        />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/verificar-correo"
-                            element={<VerifyEmail />}
-                        />
+                            <Route
+                                path="/verificar-correo"
+                                element={<VerifyEmail />}
+                            />
 
-                        <Route path="/terminos" element={<Terms />} />
+                            <Route path="/terminos" element={<Terms />} />
 
-                        <Route path="/privacidad" element={<Privacy />} />
+                            <Route path="/privacidad" element={<Privacy />} />
 
-                        <Route
-                            path="/inicio"
-                            element={
-                                isAuthenticated ? (
-                                    <Home />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/inicio"
+                                element={
+                                    isAuthenticated ? (
+                                        <Home />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/day/:year/:month/:day"
-                            element={
-                                isAuthenticated ? (
-                                    <WorkoutDay />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/day/:year/:month/:day"
+                                element={
+                                    isAuthenticated ? (
+                                        <WorkoutDay />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/perfil/:username"
-                            element={
-                                isAuthenticated ? (
-                                    <Profile />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/perfil/:username"
+                                element={
+                                    isAuthenticated ? (
+                                        <Profile />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/perfil/:username/estadisticas"
-                            element={
-                                isAuthenticated ? (
-                                    <Statistics />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/perfil/:username/estadisticas"
+                                element={
+                                    isAuthenticated ? (
+                                        <Statistics />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/perfil/:username/rutinas"
-                            element={
-                                isAuthenticated ? (
-                                    <CompletedRoutines />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/perfil/:username/rutinas"
+                                element={
+                                    isAuthenticated ? (
+                                        <CompletedRoutines />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/admin"
-                            element={
-                                isAuthenticated ? (
-                                    <Admin />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/admin"
+                                element={
+                                    isAuthenticated ? (
+                                        <Admin />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/gestion"
-                            element={
-                                isAuthenticated ? (
-                                    <Gestion />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/gestion"
+                                element={
+                                    isAuthenticated ? (
+                                        <Gestion />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/rutinas"
-                            element={
-                                isAuthenticated ? (
-                                    <Rutinas />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/rutinas"
+                                element={
+                                    isAuthenticated ? (
+                                        <Rutinas />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/rutinas/:id"
-                            element={
-                                isAuthenticated ? (
-                                    <RoutineDetail />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/rutinas/:id"
+                                element={
+                                    isAuthenticated ? (
+                                        <RoutineDetail />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/rutinas/:routineId/activa/:activeId"
-                            element={
-                                isAuthenticated ? (
-                                    <ActiveRoutine />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/rutinas/:routineId/activa/:activeId"
+                                element={
+                                    isAuthenticated ? (
+                                        <ActiveRoutine />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="/"
-                            element={
-                                isAuthenticated ? (
-                                    <Navigate to="/inicio" replace />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
+                            <Route
+                                path="/"
+                                element={
+                                    isAuthenticated ? (
+                                        <Navigate to="/inicio" replace />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
 
-                        <Route
-                            path="*"
-                            element={
-                                isAuthenticated ? (
-                                    <Navigate to="/inicio" replace />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
-                        />
-                    </Routes>
-                </Suspense>
-            </BrowserRouter>
+                            <Route
+                                path="*"
+                                element={
+                                    isAuthenticated ? (
+                                        <Navigate to="/inicio" replace />
+                                    ) : (
+                                        <Navigate to="/login" replace />
+                                    )
+                                }
+                            />
+                        </Routes>
+                    </Suspense>
+                </BrowserRouter>
+            </UnitProvider>
         </ToastProvider>
     );
 }
