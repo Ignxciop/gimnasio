@@ -1,17 +1,24 @@
 import { prisma } from "../config/prisma.js";
 import archiver from "archiver";
 
+const LBS_PER_KG = 2.20462;
+
+function kgToLbs(kg) {
+    if (kg === null || kg === undefined) return null;
+    return kg * LBS_PER_KG;
+}
+
 class ExportService {
-    async exportUserData(userId, format) {
+    async exportUserData(userId, format, preferredUnit = "kg") {
         if (format === "json") {
-            return await this.exportJSON(userId);
+            return await this.exportJSON(userId, preferredUnit);
         } else if (format === "csv") {
-            return await this.exportCSVZip(userId);
+            return await this.exportCSVZip(userId, preferredUnit);
         }
         throw new Error("Formato no válido. Usa 'csv' o 'json'");
     }
 
-    async exportJSON(userId) {
+    async exportJSON(userId, preferredUnit = "kg") {
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -71,6 +78,7 @@ class ExportService {
 
         return {
             exportDate: new Date().toISOString(),
+            exportUnit: preferredUnit,
             user,
             folders,
             routines,
@@ -78,18 +86,27 @@ class ExportService {
         };
     }
 
-    async exportCSVZip(userId) {
-        const data = await this.getExportData(userId);
+    async exportCSVZip(userId, preferredUnit = "kg") {
+        const data = await this.getExportData(userId, preferredUnit);
 
         return {
-            entrenamientos: this.generateEntrenamientosCSV(data.workouts),
-            ejercicios: this.generateEjerciciosCSV(data.exerciseSets),
-            series: this.generateSeriesCSV(data.sets),
-            records_personales: this.generateRecordsCSV(data.personalRecords),
+            entrenamientos: this.generateEntrenamientosCSV(
+                data.workouts,
+                preferredUnit
+            ),
+            ejercicios: this.generateEjerciciosCSV(
+                data.exerciseSets,
+                preferredUnit
+            ),
+            series: this.generateSeriesCSV(data.sets, preferredUnit),
+            records_personales: this.generateRecordsCSV(
+                data.personalRecords,
+                preferredUnit
+            ),
         };
     }
 
-    async getExportData(userId) {
+    async getExportData(userId, preferredUnit = "kg") {
         const workouts = await prisma.activeRoutine.findMany({
             where: { userId, status: "completed" },
             include: {
@@ -194,49 +211,59 @@ class ExportService {
         };
     }
 
-    generateEntrenamientosCSV(workouts) {
+    generateEntrenamientosCSV(workouts, unit = "kg") {
         const headers = [
             "Fecha",
             "Rutina",
             "Duración (min)",
             "Series completadas",
-            "Volumen total (kg)",
+            `Volumen total (${unit})`,
         ];
 
-        const rows = workouts.map((w) => [
-            this.formatDate(w.date),
-            this.escapeCSV(w.routineName),
-            Math.floor(w.duration / 60),
-            w.totalSets,
-            w.totalVolume.toFixed(1),
-        ]);
+        const rows = workouts.map((w) => {
+            const volume =
+                unit === "lbs" ? kgToLbs(w.totalVolume) : w.totalVolume;
+            return [
+                this.formatDate(w.date),
+                this.escapeCSV(w.routineName),
+                Math.floor(w.duration / 60),
+                w.totalSets,
+                volume.toFixed(1),
+            ];
+        });
 
         return this.createCSV(headers, rows);
     }
 
-    generateEjerciciosCSV(exercises) {
+    generateEjerciciosCSV(exercises, unit = "kg") {
         const headers = [
             "Ejercicio",
             "Grupo muscular",
             "Series totales",
-            "Volumen total (kg)",
-            "Peso máximo (kg)",
+            `Volumen total (${unit})`,
+            `Peso máximo (${unit})`,
             "Última vez realizado",
         ];
 
-        const rows = exercises.map((ex) => [
-            this.escapeCSV(ex.exerciseName),
-            this.escapeCSV(ex.muscleGroup),
-            ex.totalSets,
-            ex.totalVolume.toFixed(1),
-            ex.maxWeight,
-            this.formatDate(ex.lastDate),
-        ]);
+        const rows = exercises.map((ex) => {
+            const volume =
+                unit === "lbs" ? kgToLbs(ex.totalVolume) : ex.totalVolume;
+            const maxWeight =
+                unit === "lbs" ? kgToLbs(ex.maxWeight) : ex.maxWeight;
+            return [
+                this.escapeCSV(ex.exerciseName),
+                this.escapeCSV(ex.muscleGroup),
+                ex.totalSets,
+                volume.toFixed(1),
+                maxWeight || 0,
+                this.formatDate(ex.lastDate),
+            ];
+        });
 
         return this.createCSV(headers, rows);
     }
 
-    generateSeriesCSV(sets) {
+    generateSeriesCSV(sets, unit = "kg") {
         const headers = [
             "Fecha",
             "Rutina",
@@ -244,44 +271,58 @@ class ExportService {
             "Grupo muscular",
             "Equipamiento",
             "Serie",
-            "Peso (kg)",
+            `Peso (${unit})`,
             "Repeticiones",
             "Es PR",
         ];
 
-        const rows = sets.map((s) => [
-            this.formatDate(s.workoutDate),
-            this.escapeCSV(s.routineName),
-            this.escapeCSV(s.exerciseName),
-            this.escapeCSV(s.muscleGroup),
-            this.escapeCSV(s.equipment),
-            s.setNumber,
-            s.weight || 0,
-            s.reps || 0,
-            s.isPR ? "Sí" : "No",
-        ]);
+        const rows = sets.map((s) => {
+            const weight = s.weight
+                ? unit === "lbs"
+                    ? kgToLbs(s.weight).toFixed(2)
+                    : s.weight
+                : 0;
+            return [
+                this.formatDate(s.workoutDate),
+                this.escapeCSV(s.routineName),
+                this.escapeCSV(s.exerciseName),
+                this.escapeCSV(s.muscleGroup),
+                this.escapeCSV(s.equipment),
+                s.setNumber,
+                weight,
+                s.reps || 0,
+                s.isPR ? "Sí" : "No",
+            ];
+        });
 
         return this.createCSV(headers, rows);
     }
 
-    generateRecordsCSV(records) {
+    generateRecordsCSV(records, unit = "kg") {
         const headers = [
             "Ejercicio",
             "Grupo muscular",
-            "Peso (kg)",
+            `Peso (${unit})`,
             "Repeticiones",
             "Fecha",
             "Rutina",
         ];
 
-        const rows = records.map((r) => [
-            this.escapeCSV(r.exerciseName),
-            this.escapeCSV(r.muscleGroup),
-            r.weight,
-            r.reps,
-            this.formatDate(r.date),
-            this.escapeCSV(r.routineName),
-        ]);
+        const rows = records.map((r) => {
+            const weight = r.weight
+                ? unit === "lbs"
+                    ? kgToLbs(r.weight).toFixed(2)
+                    : r.weight
+                : 0;
+            return [
+                this.escapeCSV(r.exerciseName),
+                this.escapeCSV(r.muscleGroup),
+                weight,
+                r.reps,
+                this.formatDate(r.date),
+                this.escapeCSV(r.routineName),
+            ];
+        });
 
         return this.createCSV(headers, rows);
     }

@@ -111,7 +111,14 @@ class ProfileController {
                 });
             }
 
-            const data = await exportService.exportUserData(userId, format);
+            const user = await profileService.getUserProfile(userId);
+            const preferredUnit = user.preferredUnit || "kg";
+
+            const data = await exportService.exportUserData(
+                userId,
+                format,
+                preferredUnit
+            );
             const date = new Date().toISOString().split("T")[0];
 
             if (format === "json") {
