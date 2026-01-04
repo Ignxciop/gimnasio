@@ -2,12 +2,14 @@ import express from "express";
 import feedbackController from "../controllers/feedbackController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import { createFeedbackValidation } from "../validators/feedbackValidator.js";
+import { feedbackLimiter } from "../config/rateLimiter.js";
 
 const router = express.Router();
 
 router.post(
     "/",
     authMiddleware,
+    feedbackLimiter,
     createFeedbackValidation,
     feedbackController.createFeedback
 );
