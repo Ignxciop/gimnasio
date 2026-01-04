@@ -20,13 +20,23 @@ export const updateSetValidation = [
 ];
 
 export const reorderSetsValidation = [
-    body("setIds")
+    body("sets")
         .isArray({ min: 1 })
-        .withMessage("Se requiere un array de IDs de series")
+        .withMessage("Se requiere un array de series")
         .custom((value) => {
-            if (!value.every((id) => Number.isInteger(id) && id > 0)) {
+            if (
+                !value.every(
+                    (item) =>
+                        item.id &&
+                        Number.isInteger(item.id) &&
+                        item.id > 0 &&
+                        item.order !== undefined &&
+                        Number.isInteger(item.order) &&
+                        item.order >= 0
+                )
+            ) {
                 throw new Error(
-                    "Todos los IDs deben ser números enteros positivos"
+                    "Cada serie debe tener id (entero positivo) y order (entero no negativo)"
                 );
             }
             return true;

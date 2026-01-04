@@ -62,13 +62,10 @@ class ActiveRoutineController {
 
     async reorderSets(req, res, next) {
         try {
-            const { setIds } = req.body;
+            const { sets } = req.body;
             const userId = req.user.userId;
 
-            const result = await activeRoutineService.reorderSets(
-                setIds,
-                userId
-            );
+            const result = await activeRoutineService.reorderSets(sets, userId);
 
             res.status(200).json({
                 success: true,

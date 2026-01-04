@@ -208,17 +208,17 @@ class ActiveRoutineService {
         return false;
     }
 
-    async reorderSets(setIds, userId) {
-        const updates = setIds.map((id, index) =>
+    async reorderSets(sets, userId) {
+        const updates = sets.map((set) =>
             prisma.activeRoutineSet.updateMany({
                 where: {
-                    id,
+                    id: set.id,
                     activeRoutine: {
                         userId,
                         status: "active",
                     },
                 },
-                data: { order: index },
+                data: { order: set.order },
             })
         );
 
