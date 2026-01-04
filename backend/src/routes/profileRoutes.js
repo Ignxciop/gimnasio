@@ -18,6 +18,8 @@ router.patch(
     profileController.updatePrivacy
 );
 
+router.patch("/unit", authenticate, profileController.updateUnit);
+
 router.get("/export", authenticate, profileController.exportData);
 
 router.get("/:username", optionalAuth, profileController.getProfileByUsername);

@@ -9,6 +9,7 @@ import {
     BarChart3,
     Trash2,
     Download,
+    Scale,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { ProfileData } from "../services/profileService";
@@ -17,6 +18,7 @@ import { authService } from "../services/authService";
 import { useApiCall } from "../hooks/useApiCall";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
+import { useUnit } from "../hooks/useUnit";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { ExportDataModal } from "./ExportDataModal";
 import { ERROR_MESSAGES } from "../config/messages";
@@ -34,6 +36,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 }) => {
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { unit, setUnit } = useUnit();
     const [isPrivate, setIsPrivate] = useState(!profileData.isProfilePublic);
     const deleteModal = useModal();
     const exportModal = useModal();
@@ -51,6 +54,15 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         (token: string) => profileService.deleteAccount(token),
         {
             errorMessage: "Error al eliminar la cuenta",
+            showErrorToast: true,
+        }
+    );
+
+    const updateUnit = useApiCall(
+        (unit: "kg" | "lbs", token: string) =>
+            profileService.updateUnit(unit, token),
+        {
+            errorMessage: "Error al actualizar unidad de peso",
             showErrorToast: true,
         }
     );
@@ -74,6 +86,19 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                 "success",
                 `Perfil ${newIsPublic ? "privado" : "público"} ahora`
             );
+        }
+    };
+
+    const handleToggleUnit = async () => {
+        const token = authService.getToken();
+        if (!token) return;
+
+        const newUnit = unit === "kg" ? "lbs" : "kg";
+        const result = await updateUnit.execute(newUnit, token);
+
+        if (result !== undefined) {
+            setUnit(newUnit);
+            showToast("success", `Unidad cambiada a ${newUnit.toUpperCase()}`);
         }
     };
 
@@ -202,6 +227,15 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                                     Perfil público
                                 </>
                             )}
+                        </button>
+
+                        <button
+                            onClick={handleToggleUnit}
+                            className="profile-card__action-btn"
+                            disabled={updateUnit.loading}
+                        >
+                            <Scale size={20} />
+                            Unidad: {unit.toUpperCase()}
                         </button>
 
                         <button

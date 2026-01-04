@@ -84,6 +84,33 @@ export const profileService = {
         return data.data;
     },
 
+    async updateUnit(
+        unit: "kg" | "lbs",
+        token: string
+    ): Promise<{ preferredUnit: "kg" | "lbs" }> {
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/profile/unit`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ unit }),
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(
+                error.message || "Error al actualizar unidad de peso"
+            );
+        }
+
+        const data = await response.json();
+        return data.data;
+    },
+
     async deleteAccount(token: string): Promise<void> {
         const response = await fetch(
             `${import.meta.env.VITE_API_URL}/api/profile/delete-account`,

@@ -56,6 +56,26 @@ class ProfileController {
         }
     }
 
+    async updateUnit(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            const { unit } = req.body;
+
+            const updatedUser = await profileService.updatePreferredUnit(
+                userId,
+                unit
+            );
+
+            res.status(200).json({
+                success: true,
+                message: "Unidad de peso actualizada exitosamente",
+                data: updatedUser,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async deleteAccount(req, res, next) {
         try {
             const userId = req.user.userId;

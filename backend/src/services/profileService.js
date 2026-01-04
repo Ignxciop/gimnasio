@@ -111,6 +111,20 @@ class ProfileService {
         return updatedUser;
     }
 
+    async updatePreferredUnit(userId, unit) {
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: { preferredUnit: unit },
+            select: {
+                id: true,
+                username: true,
+                preferredUnit: true,
+            },
+        });
+
+        return updatedUser;
+    }
+
     async deleteAccount(userId) {
         await prisma.$transaction(async (tx) => {
             await tx.routineExercise.deleteMany({
