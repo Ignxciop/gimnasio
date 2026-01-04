@@ -109,3 +109,28 @@
     margin-top: var(--spacing-xs);
     font-style: italic;
 }
+
+.form__legal-notice {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.form__legal-link {
+    color: var(--accent-mid);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    border-bottom: 1px solid transparent;
+}
+
+.form__legal-link:hover {
+    color: var(--accent-end);
+    border-bottom-color: var(--accent-end);
+}

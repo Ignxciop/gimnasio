@@ -250,6 +250,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                 />
             </div>
 
+            <div className="form__legal-notice">
+                <p>
+                    Al crear una cuenta aceptas nuestros{" "}
+                    <a
+                        href="/terminos"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="form__legal-link"
+                    >
+                        Términos de Uso
+                    </a>{" "}
+                    y{" "}
+                    <a
+                        href="/privacidad"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="form__legal-link"
+                    >
+                        Política de Privacidad
+                    </a>
+                </p>
+            </div>
+
             <div className="form__footer">
                 <Button type="submit" fullWidth isLoading={isLoading}>
                     Registrarse
