@@ -46,12 +46,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
 
         if (!name.trim()) newErrors.name = "El nombre es requerido";
         if (!lastname.trim()) newErrors.lastname = "El apellido es requerido";
-        if (!username.trim())
-            newErrors.username = "El nombre de usuario es requerido";
         if (!gender) newErrors.gender = "El género es requerido";
 
         const emailError = validators.email(email);
         if (emailError) newErrors.email = emailError;
+
+        const usernameError = validators.username(username);
+        if (usernameError) newErrors.username = usernameError;
 
         const passwordError = validators.password(password);
         if (passwordError) newErrors.password = passwordError;
@@ -179,6 +180,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                     disabled={isLoading}
                     autoComplete="username"
                 />
+                {!errors.username && (
+                    <span className="form__help-text">
+                        Solo letras, números y guión bajo (_). Entre 3 y 30
+                        caracteres
+                    </span>
+                )}
             </div>
 
             <div className="form__field">
