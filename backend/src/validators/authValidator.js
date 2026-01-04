@@ -1,13 +1,10 @@
 import { body, validationResult } from "express-validator";
 
 export const loginValidation = [
-    body("email")
+    body("emailOrUsername")
         .trim()
         .notEmpty()
-        .withMessage("El email es requerido")
-        .isEmail()
-        .withMessage("Debe ser un email válido")
-        .normalizeEmail(),
+        .withMessage("El correo o nombre de usuario es requerido"),
 
     body("password").notEmpty().withMessage("La contraseña es requerida"),
 ];

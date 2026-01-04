@@ -9,9 +9,11 @@ import {
 } from "../config/jwt.js";
 
 class AuthService {
-    async login({ email, password }) {
-        const user = await prisma.user.findUnique({
-            where: { email },
+    async login({ emailOrUsername, password }) {
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [{ email: emailOrUsername }, { username: emailOrUsername }],
+            },
             select: {
                 id: true,
                 name: true,
