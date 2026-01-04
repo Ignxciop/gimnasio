@@ -184,7 +184,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 
                         <button
                             className="profile-card__delete"
-                            onClick={deleteModal.open}
+                            onClick={deleteModal.openModal}
                         >
                             <Trash2 size={20} />
                             Eliminar cuenta
@@ -192,7 +192,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 
                         <ConfirmDialog
                             isOpen={deleteModal.isOpen}
-                            onClose={deleteModal.close}
+                            onClose={deleteModal.closeModal}
                             onConfirm={handleDeleteAccount}
                             title="¿Eliminar cuenta?"
                             message="Esta acción es permanente e irreversible. Se eliminarán todos tus datos, rutinas, ejercicios y estadísticas. ¿Estás completamente seguro?"
