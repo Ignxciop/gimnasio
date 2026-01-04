@@ -460,7 +460,7 @@ export default function RoutinesManager() {
 
         const routineCard = element?.closest(".routine-card");
         const folderCard = element?.closest(".folder-card");
-        const routinesListInFolder = element?.closest(".routines-list");
+        const noFolderSection = element?.closest(".no-folder-section");
 
         const token = authService.getToken();
         if (!token) {
@@ -471,7 +471,7 @@ export default function RoutinesManager() {
 
         const routines = routinesFetch.data || [];
 
-        if (routineCard) {
+        if (routineCard && !folderCard) {
             const targetRoutineId = parseInt(
                 routineCard.getAttribute("data-routine-id") || "0"
             );
@@ -523,7 +523,7 @@ export default function RoutinesManager() {
 
                 await moveRoutine.execute(updatedRoutines, token);
             }
-        } else if (folderCard && routinesListInFolder) {
+        } else if (folderCard) {
             const targetFolderId = parseInt(
                 folderCard.getAttribute("data-folder-id") || "0"
             );
@@ -543,7 +543,7 @@ export default function RoutinesManager() {
 
                 await moveRoutine.execute(updatedRoutines, token);
             }
-        } else if (element?.closest(".no-folder-section")) {
+        } else if (noFolderSection) {
             if (draggedRoutine.folderId !== null) {
                 const targetRoutines = routines.filter(
                     (r) => r.folderId === null
