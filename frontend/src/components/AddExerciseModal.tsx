@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { X, Search } from "lucide-react";
 import { useFetch } from "../hooks/useFetch";
+import { useUnit } from "../hooks/useUnit";
 import { exerciseService } from "../services/exerciseService";
 import { getVideoUrl } from "../config/constants";
+import { lbsToKg } from "../utils/unitConverter";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import type { RoutineExerciseFormData } from "../types/routineExercise";
@@ -20,6 +22,7 @@ export default function AddExerciseModal({
     onClose,
     onSubmit,
 }: AddExerciseModalProps) {
+    const { unit } = useUnit();
     const [formData, setFormData] = useState<RoutineExerciseFormData>({
         exerciseId: 0,
         sets: 0,
@@ -69,11 +72,12 @@ export default function AddExerciseModal({
             return;
         }
 
-        const weight =
-            weightInput === ""
-                ? undefined
-                : parseFloat(weightInput.replace(",", "."));
-        onSubmit({ ...formData, weight });
+        let weightInKg: number | undefined = undefined;
+        if (weightInput !== "") {
+            const inputValue = parseFloat(weightInput.replace(",", "."));
+            weightInKg = unit === "lbs" ? lbsToKg(inputValue) : inputValue;
+        }
+        onSubmit({ ...formData, weight: weightInKg });
     };
 
     if (!isOpen) return null;
@@ -251,7 +255,7 @@ export default function AddExerciseModal({
                         </div>
 
                         <div className="form-group">
-                            <label>Peso (kg)</label>
+                            <label>Peso ({unit})</label>
                             <Input
                                 type="text"
                                 value={weightInput}

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { getVideoUrl } from "../config/constants";
+import { useUnit } from "../hooks/useUnit";
+import { kgToLbs, lbsToKg, formatWeight } from "../utils/unitConverter";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import type {
@@ -22,6 +24,7 @@ export default function EditRoutineExerciseModal({
     onSubmit,
     routineExercise,
 }: EditRoutineExerciseModalProps) {
+    const { unit } = useUnit();
     const [formData, setFormData] = useState({
         sets: 3,
         repsMin: 6,
@@ -42,9 +45,12 @@ export default function EditRoutineExerciseModal({
                     weight: routineExercise.weight || undefined,
                     restTime: routineExercise.restTime,
                 });
-                setWeightInput(
-                    routineExercise.weight ? String(routineExercise.weight) : ""
-                );
+                const displayWeight = routineExercise.weight
+                    ? unit === "lbs"
+                        ? formatWeight(kgToLbs(routineExercise.weight))
+                        : routineExercise.weight
+                    : "";
+                setWeightInput(displayWeight.toString());
             }
         } else {
             document.body.style.overflow = "";
@@ -57,11 +63,14 @@ export default function EditRoutineExerciseModal({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const weight =
-            weightInput === ""
-                ? undefined
-                : parseFloat(weightInput.replace(",", "."));
-        onSubmit({ ...formData, weight });
+
+        let weightInKg: number | undefined = undefined;
+        if (weightInput !== "") {
+            const inputValue = parseFloat(weightInput.replace(",", "."));
+            weightInKg = unit === "lbs" ? lbsToKg(inputValue) : inputValue;
+        }
+
+        onSubmit({ ...formData, weight: weightInKg });
     };
 
     if (!isOpen || !routineExercise) return null;
@@ -166,7 +175,7 @@ export default function EditRoutineExerciseModal({
                         </div>
 
                         <div className="form-group">
-                            <label>Peso (kg)</label>
+                            <label>Peso ({unit})</label>
                             <Input
                                 type="text"
                                 value={weightInput}

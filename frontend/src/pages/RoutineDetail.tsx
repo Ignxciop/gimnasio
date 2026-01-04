@@ -12,12 +12,14 @@ import MainLayout from "../layouts/MainLayout";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
 import { useApiCall } from "../hooks/useApiCall";
+import { useUnit } from "../hooks/useUnit";
 import { VideoThumbnail } from "../components/ui/VideoThumbnail";
 import { routineService } from "../services/routineService";
 import { routineExerciseService } from "../services/routineExerciseService";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
+import { kgToLbs, formatWeight } from "../utils/unitConverter";
 import {
     LOADING_MESSAGES,
     ERROR_MESSAGES,
@@ -35,6 +37,7 @@ import EditRoutineExerciseModal from "../components/EditRoutineExerciseModal";
 export default function RoutineDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { unit } = useUnit();
     const [routine, setRoutine] = useState<Routine | null>(null);
     const [activeRoutineId, setActiveRoutineId] = useState<number | null>(null);
     const [draggedExercise, setDraggedExercise] =
@@ -361,7 +364,14 @@ export default function RoutineDetail() {
                                             </span>
                                             {routineExercise.weight && (
                                                 <span className="detail-badge">
-                                                    {routineExercise.weight} kg
+                                                    {formatWeight(
+                                                        unit === "lbs"
+                                                            ? kgToLbs(
+                                                                  routineExercise.weight
+                                                              )
+                                                            : routineExercise.weight
+                                                    )}{" "}
+                                                    {unit}
                                                 </span>
                                             )}
                                             <span className="detail-badge">

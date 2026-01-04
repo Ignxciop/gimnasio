@@ -5,12 +5,14 @@ import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
 import { useApiCall } from "../hooks/useApiCall";
+import { useUnit } from "../hooks/useUnit";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { VideoThumbnail } from "../components/ui/VideoThumbnail";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
 import { formatTime } from "../utils/dateHelpers";
+import { kgToLbs, lbsToKg, formatWeight } from "../utils/unitConverter";
 import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import "../styles/activeRoutine.css";
 
@@ -60,6 +62,7 @@ export default function ActiveRoutine() {
     const { routineId, activeId } = useParams();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { unit } = useUnit();
     const cancelModal = useModal();
     const completeModal = useModal();
     const [activeRoutine, setActiveRoutine] = useState<ActiveRoutine | null>(
@@ -161,12 +164,17 @@ export default function ActiveRoutine() {
         if (!activeRoutine) return;
 
         const normalizedValue = value.replace(/,/g, ".");
-        const weight = normalizedValue === "" ? null : Number(normalizedValue);
+        let weightInKg: number | null = null;
+
+        if (normalizedValue !== "") {
+            const inputValue = Number(normalizedValue);
+            weightInKg = unit === "lbs" ? lbsToKg(inputValue) : inputValue;
+        }
 
         setActiveRoutine({
             ...activeRoutine,
             sets: activeRoutine.sets.map((set) =>
-                set.id === setId ? { ...set, actualWeight: weight } : set
+                set.id === setId ? { ...set, actualWeight: weightInKg } : set
             ),
         });
     };
@@ -589,14 +597,23 @@ export default function ActiveRoutine() {
                                                     </span>
                                                     <div className="input-wrapper">
                                                         <label className="input-label">
-                                                            KG
+                                                            {unit.toUpperCase()}
                                                         </label>
                                                         <input
                                                             type="text"
                                                             className="set-input"
                                                             value={
-                                                                set.actualWeight ??
-                                                                ""
+                                                                set.actualWeight !==
+                                                                null
+                                                                    ? formatWeight(
+                                                                          unit ===
+                                                                              "lbs"
+                                                                              ? kgToLbs(
+                                                                                    set.actualWeight
+                                                                                )
+                                                                              : set.actualWeight
+                                                                      )
+                                                                    : ""
                                                             }
                                                             onChange={(e) =>
                                                                 handleWeightChange(
@@ -609,8 +626,16 @@ export default function ActiveRoutine() {
                                                                 set.completed
                                                             }
                                                             placeholder={
-                                                                set.targetWeight?.toString() ||
-                                                                "0"
+                                                                set.targetWeight
+                                                                    ? formatWeight(
+                                                                          unit ===
+                                                                              "lbs"
+                                                                              ? kgToLbs(
+                                                                                    set.targetWeight
+                                                                                )
+                                                                              : set.targetWeight
+                                                                      ).toString()
+                                                                    : "0"
                                                             }
                                                         />
                                                     </div>

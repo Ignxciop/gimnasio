@@ -11,10 +11,12 @@ import {
 import MainLayout from "../layouts/MainLayout";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { useToast } from "../hooks/useToast";
+import { useUnit } from "../hooks/useUnit";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { getVideoUrl, getApiEndpoint } from "../config/constants";
+import { kgToLbs, formatWeight } from "../utils/unitConverter";
 import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import type { DayWorkout } from "../services/dashboardService";
 import "../styles/workoutDay.css";
@@ -44,6 +46,7 @@ export default function CompletedRoutines() {
     const { username } = useParams<{ username: string }>();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { unit } = useUnit();
     const [workouts, setWorkouts] = useState<DayWorkout[]>([]);
     const [expandedWorkouts, setExpandedWorkouts] = useState<Set<number>>(
         new Set()
@@ -386,9 +389,19 @@ export default function CompletedRoutines() {
                                                                     </span>
                                                                     <div className="set-data">
                                                                         <span>
-                                                                            {set.actualWeight ||
-                                                                                0}{" "}
-                                                                            kg
+                                                                            {formatWeight(
+                                                                                unit ===
+                                                                                    "lbs" &&
+                                                                                    set.actualWeight
+                                                                                    ? kgToLbs(
+                                                                                          set.actualWeight
+                                                                                      )
+                                                                                    : set.actualWeight ||
+                                                                                          0
+                                                                            )}{" "}
+                                                                            {
+                                                                                unit
+                                                                            }
                                                                         </span>
                                                                         <span>
                                                                             ×
