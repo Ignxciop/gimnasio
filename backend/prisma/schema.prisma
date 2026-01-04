@@ -18,6 +18,11 @@ enum Gender {
   female
 }
 
+enum Unit {
+  kg
+  lbs
+}
+
 model User{
   id String @id @default(uuid())
   name String
@@ -26,6 +31,7 @@ model User{
   email String @unique
   password String
   gender Gender @default(male)
+  preferredUnit Unit @default(kg)
   isProfilePublic Boolean @default(true)
   isEmailVerified Boolean @default(false)
   createdAt DateTime @default(now())
