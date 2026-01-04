@@ -359,7 +359,8 @@ export default function RoutinesManager() {
         setDraggedRoutine(null);
     };
 
-    const handleFolderTouchStart = (_e: React.TouchEvent, folder: Folder) => {
+    const handleFolderTouchStart = (e: React.TouchEvent, folder: Folder) => {
+        e.stopPropagation();
         setDraggedFolder(folder);
         setIsTouchDragging(true);
     };
@@ -385,12 +386,14 @@ export default function RoutinesManager() {
     };
 
     const handleFolderTouchEnd = async (e: React.TouchEvent) => {
-        if (!isTouchDragging || !draggedFolder) {
+        if (!isTouchDragging || !draggedFolder || draggedRoutine) {
             setIsTouchDragging(false);
             setDraggedFolder(null);
             setDragOverFolder(null);
             return;
         }
+
+        e.stopPropagation();
 
         const touch = e.changedTouches[0];
         const element = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -435,10 +438,8 @@ export default function RoutinesManager() {
         setDraggedRoutine(null);
     };
 
-    const handleRoutineTouchStart = (
-        _e: React.TouchEvent,
-        routine: Routine
-    ) => {
+    const handleRoutineTouchStart = (e: React.TouchEvent, routine: Routine) => {
+        e.stopPropagation();
         setDraggedRoutine(routine);
         setIsTouchDragging(true);
     };
@@ -449,11 +450,13 @@ export default function RoutinesManager() {
     };
 
     const handleRoutineTouchEnd = async (e: React.TouchEvent) => {
-        if (!isTouchDragging || !draggedRoutine) {
+        if (!isTouchDragging || !draggedRoutine || draggedFolder) {
             setIsTouchDragging(false);
             setDraggedRoutine(null);
             return;
         }
+
+        e.stopPropagation();
 
         const touch = e.changedTouches[0];
         const element = document.elementFromPoint(touch.clientX, touch.clientY);
