@@ -68,6 +68,7 @@ export default function ActiveRoutine() {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [draggedSet, setDraggedSet] = useState<ActiveRoutineSet | null>(null);
     const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
+    const draggedSetRef = useRef<ActiveRoutineSet | null>(null);
 
     const fetchActiveRoutine = useApiCall(activeRoutineService.getActive, {
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH,
@@ -197,18 +198,22 @@ export default function ActiveRoutine() {
 
     const handleDragStart = (e: React.DragEvent, set: ActiveRoutineSet) => {
         setDraggedSet(set);
+        draggedSetRef.current = set;
     };
 
     const handleTouchStart = (e: React.TouchEvent, set: ActiveRoutineSet) => {
         e.stopPropagation();
         e.preventDefault();
+        console.log("Touch start:", set.id);
         setDraggedSet(set);
+        draggedSetRef.current = set;
         setIsTouchDragging(true);
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
         if (!isTouchDragging) return;
         e.preventDefault();
+        console.log("Touch move");
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -223,40 +228,97 @@ export default function ActiveRoutine() {
 
         if (!draggedSet || draggedSet.id === targetSet.id || !activeRoutine) {
             setDraggedSet(null);
+            draggedSetRef.current = null;
+            return;
+        }
+
+        if (draggedSet.exerciseId !== targetSet.exerciseId) {
+            setDraggedSet(null);
+            draggedSetRef.current = null;
             return;
         }
 
         const token = authService.getToken();
         if (!token) {
             setDraggedSet(null);
+            draggedSetRef.current = null;
             return;
         }
 
-        const sets = activeRoutine.sets;
-        const draggedIndex = sets.findIndex((s) => s.id === draggedSet.id);
-        const targetIndex = sets.findIndex((s) => s.id === targetSet.id);
+        const exerciseSets = activeRoutine.sets
+            .filter((s) => s.exerciseId === draggedSet.exerciseId)
+            .sort((a, b) => a.order - b.order);
+        console.log(
+            "All exercise sets:",
+            exerciseSets.map((s) => ({ id: s.id, order: s.order }))
+        );
 
-        const reordered = [...sets];
+        const draggedIndex = exerciseSets.findIndex(
+            (s) => s.id === draggedSet.id
+        );
+        const targetIndex = exerciseSets.findIndex(
+            (s) => s.id === targetSet.id
+        );
+        console.log(
+            "Dragged index:",
+            draggedIndex,
+            "Target index:",
+            targetIndex
+        );
+
+        const reordered = [...exerciseSets];
         reordered.splice(draggedIndex, 1);
         reordered.splice(targetIndex, 0, draggedSet);
 
-        const setIds = reordered.map((s) => s.id);
+        const minOrder = exerciseSets[0].order;
 
-        const result = await reorderSets.execute(setIds, token);
-        if (result !== undefined) {
-            setActiveRoutine({
-                ...activeRoutine,
-                sets: reordered,
-            });
-        }
+        const reorderedWithUpdatedOrder = reordered.map((set, idx) => ({
+            ...set,
+            order: minOrder + idx,
+        }));
+
+        const setsToUpdate = reorderedWithUpdatedOrder.map((s) => ({
+            id: s.id,
+            order: s.order,
+        }));
+        console.log(
+            "Updating sets with orders:",
+            setsToUpdate,
+            "minOrder:",
+            minOrder
+        );
+
+        const updatedSets = activeRoutine.sets.map((set) => {
+            const updated = reorderedWithUpdatedOrder.find(
+                (rs) => rs.id === set.id
+            );
+            return updated || set;
+        });
+
+        setActiveRoutine({
+            ...activeRoutine,
+            sets: updatedSets,
+        });
+
+        await reorderSets.execute(setsToUpdate, token);
 
         setDraggedSet(null);
+        draggedSetRef.current = null;
     };
 
     const handleTouchEnd = async (e: React.TouchEvent) => {
-        if (!isTouchDragging || !draggedSet) {
+        console.log(
+            "Touch end - isTouchDragging:",
+            isTouchDragging,
+            "draggedSetRef:",
+            draggedSetRef.current?.id
+        );
+
+        if (!isTouchDragging || !draggedSetRef.current) {
             setIsTouchDragging(false);
             setDraggedSet(null);
+            draggedSetRef.current = null;
+            console.log("Early return: no dragging or no draggedSet");
             return;
         }
 
@@ -269,23 +331,47 @@ export default function ActiveRoutine() {
         );
 
         const setCard = elementBelow?.closest(".set-card");
+        console.log("Element below:", elementBelow, "Set card found:", setCard);
+
         if (!setCard) {
             setIsTouchDragging(false);
             setDraggedSet(null);
+            draggedSetRef.current = null;
+            console.log("No set card found");
             return;
         }
 
         const targetId = parseInt(setCard.getAttribute("data-set-id") || "0");
-        const target = activeRoutine?.sets.find((s) => s.id === targetId);
+        const currentDraggedSet = draggedSetRef.current;
+        console.log(
+            "Target ID:",
+            targetId,
+            "Dragged set ID:",
+            currentDraggedSet.id
+        );
 
-        if (
-            !target ||
-            !draggedSet ||
-            draggedSet.id === target.id ||
-            !activeRoutine
-        ) {
+        if (!activeRoutine) {
             setIsTouchDragging(false);
             setDraggedSet(null);
+            draggedSetRef.current = null;
+            return;
+        }
+
+        const target = activeRoutine.sets.find((s) => s.id === targetId);
+
+        if (!target || currentDraggedSet.id === target.id) {
+            setIsTouchDragging(false);
+            setDraggedSet(null);
+            draggedSetRef.current = null;
+            console.log("No target or same set");
+            return;
+        }
+
+        if (currentDraggedSet.exerciseId !== target.exerciseId) {
+            setIsTouchDragging(false);
+            setDraggedSet(null);
+            draggedSetRef.current = null;
+            console.log("Different exercises");
             return;
         }
 
@@ -293,29 +379,69 @@ export default function ActiveRoutine() {
         if (!token) {
             setIsTouchDragging(false);
             setDraggedSet(null);
+            draggedSetRef.current = null;
             return;
         }
 
-        const sets = activeRoutine.sets;
-        const draggedIndex = sets.findIndex((s) => s.id === draggedSet.id);
-        const targetIndex = sets.findIndex((s) => s.id === target.id);
+        const exerciseSets = activeRoutine.sets
+            .filter((s) => s.exerciseId === currentDraggedSet.exerciseId)
+            .sort((a, b) => a.order - b.order);
+        console.log(
+            "Touch: All exercise sets before reorder:",
+            exerciseSets.map((s) => ({ id: s.id, order: s.order }))
+        );
 
-        const reordered = [...sets];
+        const draggedIndex = exerciseSets.findIndex(
+            (s) => s.id === currentDraggedSet.id
+        );
+        const targetIndex = exerciseSets.findIndex((s) => s.id === target.id);
+        console.log(
+            "Touch: Dragged index:",
+            draggedIndex,
+            "Target index:",
+            targetIndex
+        );
+
+        const reordered = [...exerciseSets];
         reordered.splice(draggedIndex, 1);
-        reordered.splice(targetIndex, 0, draggedSet);
+        reordered.splice(targetIndex, 0, currentDraggedSet);
 
-        const setIds = reordered.map((s) => s.id);
+        const minOrder = exerciseSets[0].order;
 
-        const result = await reorderSets.execute(setIds, token);
-        if (result !== undefined) {
-            setActiveRoutine({
-                ...activeRoutine,
-                sets: reordered,
-            });
-        }
+        const reorderedWithUpdatedOrder = reordered.map((set, idx) => ({
+            ...set,
+            order: minOrder + idx,
+        }));
+
+        const setsToUpdate = reorderedWithUpdatedOrder.map((s) => ({
+            id: s.id,
+            order: s.order,
+        }));
+        console.log(
+            "Updating sets with orders:",
+            setsToUpdate,
+            "minOrder:",
+            minOrder
+        );
+
+        const updatedSets = activeRoutine.sets.map((set) => {
+            const updated = reorderedWithUpdatedOrder.find(
+                (rs) => rs.id === set.id
+            );
+            return updated || set;
+        });
+
+        setActiveRoutine({
+            ...activeRoutine,
+            sets: updatedSets,
+        });
+        console.log("State updated");
+
+        await reorderSets.execute(setsToUpdate, token);
 
         setIsTouchDragging(false);
         setDraggedSet(null);
+        draggedSetRef.current = null;
     };
 
     const handleAddSet = async (exerciseId: number) => {
@@ -431,6 +557,10 @@ export default function ActiveRoutine() {
                                 };
                             }
                             acc[exerciseId].sets.push(set);
+                            acc[exerciseId].minOrder = Math.min(
+                                acc[exerciseId].minOrder,
+                                set.order
+                            );
                             return acc;
                         }, {} as Record<number, { exercise: (typeof activeRoutine.sets)[0]["exercise"]; sets: typeof activeRoutine.sets; minOrder: number }>)
                     )
