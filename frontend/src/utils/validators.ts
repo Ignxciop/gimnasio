@@ -39,4 +39,15 @@ export const validators = {
         if (value === 0 || !value) return `Debes seleccionar ${fieldName}`;
         return undefined;
     },
+
+    username: (value: string): string | undefined => {
+        if (!value) return "El nombre de usuario es requerido";
+        if (value.trim().length < 3)
+            return "El nombre de usuario debe tener al menos 3 caracteres";
+        if (value.trim().length > 30)
+            return "El nombre de usuario no puede exceder 30 caracteres";
+        if (!/^[a-zA-Z0-9_]+$/.test(value))
+            return "Solo puede contener letras, números y guión bajo (_)";
+        return undefined;
+    },
 };
