@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { validators } from "../utils/validators";
@@ -12,6 +13,7 @@ interface RegisterFormProps {
 }
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
+    const navigate = useNavigate();
     const [name, setName] = useState("");
     const [lastname, setLastname] = useState("");
     const [email, setEmail] = useState("");
@@ -79,11 +81,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
                 password,
                 gender,
             });
-            if (response.data.accessToken) {
-                authService.saveToken(response.data.accessToken);
-            }
 
-            onSuccess?.();
+            navigate("/verificar-correo", {
+                state: {
+                    userId: response.data.userId,
+                    email: response.data.email,
+                    password,
+                },
+            });
         } catch (error) {
             if (error instanceof ApiError) {
                 if (error.errors) {
