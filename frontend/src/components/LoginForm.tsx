@@ -11,21 +11,24 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
-    const [email, setEmail] = useState("");
+    const [emailOrUsername, setEmailOrUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-        {}
-    );
+    const [errors, setErrors] = useState<{
+        emailOrUsername?: string;
+        password?: string;
+    }>({});
     const [generalError, setGeneralError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const validateForm = (): boolean => {
-        const newErrors: { email?: string; password?: string } = {};
+        const newErrors: { emailOrUsername?: string; password?: string } = {};
 
-        const emailError = validators.email(email);
+        if (!emailOrUsername.trim()) {
+            newErrors.emailOrUsername =
+                "El correo o nombre de usuario es requerido";
+        }
+
         const passwordError = validators.password(password);
-
-        if (emailError) newErrors.email = emailError;
         if (passwordError) newErrors.password = passwordError;
 
         setErrors(newErrors);
@@ -41,7 +44,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         setIsLoading(true);
 
         try {
-            const response = await authService.login({ email, password });
+            const response = await authService.login({
+                emailOrUsername,
+                password,
+            });
             if (response.data.accessToken) {
                 authService.saveToken(response.data.accessToken);
             }
@@ -50,10 +56,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         } catch (error) {
             if (error instanceof ApiError) {
                 if (error.errors) {
-                    const backendErrors: { email?: string; password?: string } =
-                        {};
+                    const backendErrors: {
+                        emailOrUsername?: string;
+                        password?: string;
+                    } = {};
                     error.errors.forEach((err) => {
-                        if (err.field === "email" || err.field === "password") {
+                        if (
+                            err.field === "emailOrUsername" ||
+                            err.field === "password"
+                        ) {
                             backendErrors[err.field] = err.message;
                         }
                     });
@@ -82,14 +93,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
 
             <div className="form__field">
                 <Input
-                    type="email"
-                    label="Email"
-                    placeholder="correo@ejemplo.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    error={errors.email}
+                    type="text"
+                    label="Correo o nombre de usuario"
+                    placeholder="correo@ejemplo.com o usuario"
+                    value={emailOrUsername}
+                    onChange={(e) => setEmailOrUsername(e.target.value)}
+                    error={errors.emailOrUsername}
                     disabled={isLoading}
-                    autoComplete="email"
+                    autoComplete="username"
                 />
             </div>
 
