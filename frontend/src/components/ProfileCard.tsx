@@ -86,9 +86,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         const result = await deleteAccount.execute(token);
 
         if (result !== undefined) {
-            showToast("success", "Cuenta eliminada permanentemente");
             authService.removeToken();
-            window.location.href = "/login";
+            showToast("success", "Cuenta eliminada permanentemente");
+            setTimeout(() => {
+                window.location.replace("/login");
+            }, 500);
         }
     };
 
