@@ -10,6 +10,7 @@ const Login = lazy(() =>
 const Register = lazy(() =>
     import("./pages/Register").then((m) => ({ default: m.Register }))
 );
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Home = lazy(() =>
     import("./pages/Home").then((m) => ({ default: m.Home }))
 );
@@ -119,6 +120,11 @@ function App() {
                                     />
                                 )
                             }
+                        />
+
+                        <Route
+                            path="/verificar-correo"
+                            element={<VerifyEmail />}
                         />
 
                         <Route
