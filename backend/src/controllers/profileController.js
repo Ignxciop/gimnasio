@@ -54,6 +54,28 @@ class ProfileController {
             next(error);
         }
     }
+
+    async deleteAccount(req, res, next) {
+        try {
+            const userId = req.user.userId;
+
+            await profileService.deleteAccount(userId);
+
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+            });
+
+            res.status(200).json({
+                success: true,
+                message: "Cuenta eliminada permanentemente",
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new ProfileController();

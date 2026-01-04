@@ -20,4 +20,6 @@ router.patch(
 
 router.get("/:username", optionalAuth, profileController.getProfileByUsername);
 
+router.delete("/delete-account", authenticate, profileController.deleteAccount);
+
 export default router;
