@@ -21,9 +21,24 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 };
 
 export const refreshAccessToken = async (): Promise<string> => {
+    const csrfResponse = await fetch(`${API_BASE_URL}/api/auth/csrf-token`, {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!csrfResponse.ok) {
+        throw new Error("Failed to get CSRF token");
+    }
+
+    const { csrfToken } = await csrfResponse.json();
+
     const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
         method: "POST",
         credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+            "x-csrf-token": csrfToken,
+        },
     });
 
     if (!response.ok) {
