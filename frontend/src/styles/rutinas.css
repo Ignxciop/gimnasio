@@ -85,6 +85,7 @@
     padding: 1.5rem;
     cursor: move;
     transition: all 0.3s ease;
+    touch-action: none;
 }
 
 .folder-card:hover {
@@ -165,6 +166,7 @@
     border-radius: 16px;
     transition: all 0.2s ease;
     cursor: move;
+    touch-action: none;
 }
 
 .routine-card:hover {

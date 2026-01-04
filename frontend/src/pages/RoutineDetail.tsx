@@ -39,6 +39,7 @@ export default function RoutineDetail() {
     const [activeRoutineId, setActiveRoutineId] = useState<number | null>(null);
     const [draggedExercise, setDraggedExercise] =
         useState<RoutineExercise | null>(null);
+    const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
 
     const addExerciseModal = useModal();
     const editExerciseModal = useModal<RoutineExercise>();
@@ -148,6 +149,76 @@ export default function RoutineDetail() {
         e.preventDefault();
     };
 
+    const handleTouchStart = (
+        e: React.TouchEvent,
+        exercise: RoutineExercise
+    ) => {
+        e.stopPropagation();
+        setDraggedExercise(exercise);
+        setIsTouchDragging(true);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (!isTouchDragging) return;
+        e.preventDefault();
+    };
+
+    const handleTouchEnd = async (e: React.TouchEvent) => {
+        if (!isTouchDragging || !draggedExercise) {
+            setIsTouchDragging(false);
+            setDraggedExercise(null);
+            return;
+        }
+
+        e.stopPropagation();
+
+        const touch = e.changedTouches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        const exerciseCard = element?.closest(".exercise-card");
+        if (!exerciseCard) {
+            setIsTouchDragging(false);
+            setDraggedExercise(null);
+            return;
+        }
+
+        const targetId = parseInt(
+            exerciseCard.getAttribute("data-exercise-id") || "0"
+        );
+        const exercises = exercisesFetch.data || [];
+        const targetExercise = exercises.find((ex) => ex.id === targetId);
+
+        if (!targetExercise || targetExercise.id === draggedExercise.id) {
+            setIsTouchDragging(false);
+            setDraggedExercise(null);
+            return;
+        }
+
+        const token = authService.getToken();
+        if (token) {
+            const draggedIndex = exercises.findIndex(
+                (ex) => ex.id === draggedExercise.id
+            );
+            const targetIndex = exercises.findIndex(
+                (ex) => ex.id === targetExercise.id
+            );
+
+            const reordered = [...exercises];
+            reordered.splice(draggedIndex, 1);
+            reordered.splice(targetIndex, 0, draggedExercise);
+
+            const updatedExercises = reordered.map((exercise, index) => ({
+                id: exercise.id,
+                order: index,
+            }));
+
+            await reorderExercises.execute(updatedExercises, token);
+        }
+
+        setIsTouchDragging(false);
+        setDraggedExercise(null);
+    };
+
     const handleDrop = async (
         e: React.DragEvent,
         targetExercise: RoutineExercise
@@ -242,11 +313,17 @@ export default function RoutineDetail() {
                         exercisesFetch.data.map((routineExercise) => (
                             <div
                                 key={routineExercise.id}
+                                data-exercise-id={routineExercise.id}
                                 className="exercise-card"
                                 draggable
                                 onDragStart={() =>
                                     handleDragStart(routineExercise)
                                 }
+                                onTouchStart={(e) =>
+                                    handleTouchStart(e, routineExercise)
+                                }
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
                                 onDragOver={handleDragOver}
                                 onDrop={(e) => handleDrop(e, routineExercise)}
                             >
