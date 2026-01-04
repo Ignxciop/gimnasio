@@ -104,7 +104,15 @@ app.get("/api/auth/csrf-token", (req, res) => {
 });
 
 app.use("/api/", generalLimiter);
-app.use("/resources", cors(corsOptions), express.static("resources"));
+app.use(
+    "/resources",
+    cors(corsOptions),
+    (req, res, next) => {
+        res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+        next();
+    },
+    express.static("resources")
+);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
