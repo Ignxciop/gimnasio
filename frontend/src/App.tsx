@@ -11,6 +11,8 @@ const Register = lazy(() =>
     import("./pages/Register").then((m) => ({ default: m.Register }))
 );
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 const Home = lazy(() =>
     import("./pages/Home").then((m) => ({ default: m.Home }))
 );
@@ -126,6 +128,10 @@ function App() {
                             path="/verificar-correo"
                             element={<VerifyEmail />}
                         />
+
+                        <Route path="/terminos" element={<Terms />} />
+
+                        <Route path="/privacidad" element={<Privacy />} />
 
                         <Route
                             path="/inicio"
