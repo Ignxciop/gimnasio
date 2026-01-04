@@ -37,6 +37,7 @@ export default function RoutinesManager() {
     const [draggedFolder, setDraggedFolder] = useState<Folder | null>(null);
     const [draggedRoutine, setDraggedRoutine] = useState<Routine | null>(null);
     const [dragOverFolder, setDragOverFolder] = useState<number | null>(null);
+    const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
 
     const foldersFetch = useFetch<Folder[]>({
         fetchFn: folderService.getAll,
@@ -144,22 +145,6 @@ export default function RoutinesManager() {
         {
             successMessage: SUCCESS_MESSAGES.ROUTINES.MOVED,
             errorMessage: ERROR_MESSAGES.ROUTINES.MOVE,
-            onSuccess: () => routinesFetch.execute(),
-        }
-    );
-
-    const reorderRoutines = useApiCall(
-        (
-            routines: {
-                id: number;
-                order: number;
-                folderId: number | null;
-            }[],
-            token: string
-        ) => routineService.reorder(routines, token),
-        {
-            successMessage: SUCCESS_MESSAGES.ROUTINES.ORDER_UPDATED,
-            errorMessage: ERROR_MESSAGES.ROUTINES.UPDATE_ORDER,
             onSuccess: () => routinesFetch.execute(),
         }
     );
@@ -352,23 +337,231 @@ export default function RoutinesManager() {
             updatedRoutines = reordered.map((routine, index) => ({
                 id: routine.id,
                 order: index,
-                folderId: targetRoutine.folderId ?? null,
+                folderId: routine.folderId ?? null,
             }));
         } else {
             const targetIndex = folderRoutines.findIndex(
                 (r) => r.id === targetRoutine.id
             );
+            const otherRoutines = folderRoutines.filter(
+                (r) => r.id !== targetRoutine.id
+            );
+            otherRoutines.splice(targetIndex, 0, draggedRoutine);
 
-            updatedRoutines = [
-                {
-                    id: draggedRoutine.id,
-                    order: targetIndex,
-                    folderId: targetRoutine.folderId ?? null,
-                },
-            ];
+            updatedRoutines = otherRoutines.map((routine, index) => ({
+                id: routine.id,
+                order: index,
+                folderId: targetRoutine.folderId ?? null,
+            }));
         }
 
-        await reorderRoutines.execute(updatedRoutines, token);
+        await moveRoutine.execute(updatedRoutines, token);
+        setDraggedRoutine(null);
+    };
+
+    const handleFolderTouchStart = (_e: React.TouchEvent, folder: Folder) => {
+        setDraggedFolder(folder);
+        setIsTouchDragging(true);
+    };
+
+    const handleFolderTouchMove = (e: React.TouchEvent) => {
+        if (!isTouchDragging) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        const folderCard = element?.closest(".folder-card");
+        if (folderCard) {
+            const folderId = parseInt(
+                folderCard.getAttribute("data-folder-id") || "0"
+            );
+            if (folderId && draggedFolder && folderId !== draggedFolder.id) {
+                setDragOverFolder(folderId);
+            }
+        } else {
+            setDragOverFolder(null);
+        }
+    };
+
+    const handleFolderTouchEnd = async (e: React.TouchEvent) => {
+        if (!isTouchDragging || !draggedFolder) {
+            setIsTouchDragging(false);
+            setDraggedFolder(null);
+            setDragOverFolder(null);
+            return;
+        }
+
+        const touch = e.changedTouches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        const folderCard = element?.closest(".folder-card");
+        if (folderCard && dragOverFolder) {
+            const targetFolderId = parseInt(
+                folderCard.getAttribute("data-folder-id") || "0"
+            );
+            const folders = foldersFetch.data || [];
+            const targetFolder = folders.find((f) => f.id === targetFolderId);
+
+            if (targetFolder && targetFolder.id !== draggedFolder.id) {
+                const token = authService.getToken();
+                if (token) {
+                    const draggedIndex = folders.findIndex(
+                        (f) => f.id === draggedFolder.id
+                    );
+                    const targetIndex = folders.findIndex(
+                        (f) => f.id === targetFolder.id
+                    );
+
+                    const reorderedFolders = [...folders];
+                    reorderedFolders.splice(draggedIndex, 1);
+                    reorderedFolders.splice(targetIndex, 0, draggedFolder);
+
+                    const updatedFolders = reorderedFolders.map(
+                        (folder, index) => ({
+                            id: folder.id,
+                            order: index,
+                        })
+                    );
+
+                    await reorderFolders.execute(updatedFolders, token);
+                }
+            }
+        }
+
+        setIsTouchDragging(false);
+        setDraggedFolder(null);
+        setDragOverFolder(null);
+        setDraggedRoutine(null);
+    };
+
+    const handleRoutineTouchStart = (
+        _e: React.TouchEvent,
+        routine: Routine
+    ) => {
+        setDraggedRoutine(routine);
+        setIsTouchDragging(true);
+    };
+
+    const handleRoutineTouchMove = (e: React.TouchEvent) => {
+        if (!isTouchDragging) return;
+        e.preventDefault();
+    };
+
+    const handleRoutineTouchEnd = async (e: React.TouchEvent) => {
+        if (!isTouchDragging || !draggedRoutine) {
+            setIsTouchDragging(false);
+            setDraggedRoutine(null);
+            return;
+        }
+
+        const touch = e.changedTouches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        const routineCard = element?.closest(".routine-card");
+        const folderCard = element?.closest(".folder-card");
+        const routinesListInFolder = element?.closest(".routines-list");
+
+        const token = authService.getToken();
+        if (!token) {
+            setIsTouchDragging(false);
+            setDraggedRoutine(null);
+            return;
+        }
+
+        const routines = routinesFetch.data || [];
+
+        if (routineCard) {
+            const targetRoutineId = parseInt(
+                routineCard.getAttribute("data-routine-id") || "0"
+            );
+            const targetRoutine = routines.find(
+                (r) => r.id === targetRoutineId
+            );
+
+            if (targetRoutine && targetRoutine.id !== draggedRoutine.id) {
+                const sameFolder =
+                    draggedRoutine.folderId === targetRoutine.folderId;
+                const folderRoutines = routines.filter(
+                    (r) => r.folderId === targetRoutine.folderId
+                );
+
+                let updatedRoutines;
+
+                if (sameFolder) {
+                    const draggedIndex = folderRoutines.findIndex(
+                        (r) => r.id === draggedRoutine.id
+                    );
+                    const targetIndex = folderRoutines.findIndex(
+                        (r) => r.id === targetRoutine.id
+                    );
+
+                    const reordered = [...folderRoutines];
+                    reordered.splice(draggedIndex, 1);
+                    reordered.splice(targetIndex, 0, draggedRoutine);
+
+                    updatedRoutines = reordered.map((routine, index) => ({
+                        id: routine.id,
+                        order: index,
+                        folderId: routine.folderId ?? null,
+                    }));
+                } else {
+                    const targetIndex = folderRoutines.findIndex(
+                        (r) => r.id === targetRoutine.id
+                    );
+                    const otherRoutines = folderRoutines.filter(
+                        (r) => r.id !== targetRoutine.id
+                    );
+                    otherRoutines.splice(targetIndex, 0, draggedRoutine);
+
+                    updatedRoutines = otherRoutines.map((routine, index) => ({
+                        id: routine.id,
+                        order: index,
+                        folderId: targetRoutine.folderId ?? null,
+                    }));
+                }
+
+                await moveRoutine.execute(updatedRoutines, token);
+            }
+        } else if (folderCard && routinesListInFolder) {
+            const targetFolderId = parseInt(
+                folderCard.getAttribute("data-folder-id") || "0"
+            );
+
+            if (draggedRoutine.folderId !== targetFolderId) {
+                const targetRoutines = routines.filter(
+                    (r) => r.folderId === targetFolderId
+                );
+
+                const updatedRoutines = [
+                    {
+                        id: draggedRoutine.id,
+                        order: targetRoutines.length,
+                        folderId: targetFolderId,
+                    },
+                ];
+
+                await moveRoutine.execute(updatedRoutines, token);
+            }
+        } else if (element?.closest(".no-folder-section")) {
+            if (draggedRoutine.folderId !== null) {
+                const targetRoutines = routines.filter(
+                    (r) => r.folderId === null
+                );
+
+                const updatedRoutines = [
+                    {
+                        id: draggedRoutine.id,
+                        order: targetRoutines.length,
+                        folderId: null,
+                    },
+                ];
+
+                await moveRoutine.execute(updatedRoutines, token);
+            }
+        }
+
+        setIsTouchDragging(false);
         setDraggedRoutine(null);
     };
 
@@ -411,6 +604,7 @@ export default function RoutinesManager() {
                                                 ? "drag-over"
                                                 : ""
                                         }`}
+                                        data-folder-id={folder.id}
                                         draggable
                                         onDragStart={() =>
                                             handleFolderDragStart(folder)
@@ -422,6 +616,11 @@ export default function RoutinesManager() {
                                         onDrop={(e) =>
                                             handleFolderDrop(e, folder)
                                         }
+                                        onTouchStart={(e) =>
+                                            handleFolderTouchStart(e, folder)
+                                        }
+                                        onTouchMove={handleFolderTouchMove}
+                                        onTouchEnd={handleFolderTouchEnd}
                                     >
                                         <div className="folder-header">
                                             <div className="folder-info">
@@ -471,6 +670,9 @@ export default function RoutinesManager() {
                                                     <div
                                                         key={routine.id}
                                                         className="routine-card"
+                                                        data-routine-id={
+                                                            routine.id
+                                                        }
                                                         draggable
                                                         onDragStart={() =>
                                                             handleRoutineDragStart(
@@ -485,6 +687,18 @@ export default function RoutinesManager() {
                                                                 e,
                                                                 routine
                                                             )
+                                                        }
+                                                        onTouchStart={(e) =>
+                                                            handleRoutineTouchStart(
+                                                                e,
+                                                                routine
+                                                            )
+                                                        }
+                                                        onTouchMove={
+                                                            handleRoutineTouchMove
+                                                        }
+                                                        onTouchEnd={
+                                                            handleRoutineTouchEnd
                                                         }
                                                     >
                                                         <div className="routine-info">
@@ -550,6 +764,7 @@ export default function RoutinesManager() {
                                     <div
                                         key={routine.id}
                                         className="routine-card"
+                                        data-routine-id={routine.id}
                                         draggable
                                         onDragStart={() =>
                                             handleRoutineDragStart(routine)
@@ -561,6 +776,11 @@ export default function RoutinesManager() {
                                                 routine
                                             )
                                         }
+                                        onTouchStart={(e) =>
+                                            handleRoutineTouchStart(e, routine)
+                                        }
+                                        onTouchMove={handleRoutineTouchMove}
+                                        onTouchEnd={handleRoutineTouchEnd}
                                     >
                                         <div className="routine-info">
                                             <GripVertical
