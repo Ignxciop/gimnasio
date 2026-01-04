@@ -67,8 +67,7 @@ export default function ActiveRoutine() {
     );
     const [elapsedTime, setElapsedTime] = useState(0);
     const [draggedSet, setDraggedSet] = useState<ActiveRoutineSet | null>(null);
-    const dragStartY = useRef<number>(0);
-    const hasMoved = useRef<boolean>(false);
+    const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
 
     const fetchActiveRoutine = useApiCall(activeRoutineService.getActive, {
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH,
@@ -196,28 +195,20 @@ export default function ActiveRoutine() {
         await updateSet.execute(setId, set.actualWeight, set.actualReps, token);
     };
 
-    const handleDragStart = (
-        e: React.DragEvent | React.TouchEvent,
-        set: ActiveRoutineSet
-    ) => {
+    const handleDragStart = (e: React.DragEvent, set: ActiveRoutineSet) => {
         setDraggedSet(set);
-        hasMoved.current = false;
+    };
 
-        if ("touches" in e) {
-            dragStartY.current = e.touches[0].clientY;
-        }
+    const handleTouchStart = (e: React.TouchEvent, set: ActiveRoutineSet) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setDraggedSet(set);
+        setIsTouchDragging(true);
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
-        if (!draggedSet) return;
-
-        const currentY = e.touches[0].clientY;
-        const deltaY = Math.abs(currentY - dragStartY.current);
-
-        if (deltaY > 10) {
-            hasMoved.current = true;
-            e.preventDefault();
-        }
+        if (!isTouchDragging) return;
+        e.preventDefault();
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -263,10 +254,13 @@ export default function ActiveRoutine() {
     };
 
     const handleTouchEnd = async (e: React.TouchEvent) => {
-        if (!hasMoved.current || !draggedSet) {
+        if (!isTouchDragging || !draggedSet) {
+            setIsTouchDragging(false);
             setDraggedSet(null);
             return;
         }
+
+        e.stopPropagation();
 
         const touch = e.changedTouches[0];
         const elementBelow = document.elementFromPoint(
@@ -276,6 +270,7 @@ export default function ActiveRoutine() {
 
         const setCard = elementBelow?.closest(".set-card");
         if (!setCard) {
+            setIsTouchDragging(false);
             setDraggedSet(null);
             return;
         }
@@ -289,12 +284,14 @@ export default function ActiveRoutine() {
             draggedSet.id === target.id ||
             !activeRoutine
         ) {
+            setIsTouchDragging(false);
             setDraggedSet(null);
             return;
         }
 
         const token = authService.getToken();
         if (!token) {
+            setIsTouchDragging(false);
             setDraggedSet(null);
             return;
         }
@@ -317,6 +314,7 @@ export default function ActiveRoutine() {
             });
         }
 
+        setIsTouchDragging(false);
         setDraggedSet(null);
     };
 
@@ -494,15 +492,15 @@ export default function ActiveRoutine() {
                                                 onDragStart={(e) =>
                                                     handleDragStart(e, set)
                                                 }
-                                                onTouchStart={(e) =>
-                                                    handleDragStart(e, set)
-                                                }
-                                                onTouchMove={handleTouchMove}
-                                                onTouchEnd={handleTouchEnd}
                                                 onDragOver={handleDragOver}
                                                 onDrop={(e) =>
                                                     handleDrop(e, set)
                                                 }
+                                                onTouchStart={(e) =>
+                                                    handleTouchStart(e, set)
+                                                }
+                                                onTouchMove={handleTouchMove}
+                                                onTouchEnd={handleTouchEnd}
                                             >
                                                 <GripVertical
                                                     size={16}

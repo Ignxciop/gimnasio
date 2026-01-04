@@ -173,7 +173,7 @@
     border-radius: 6px;
     padding: 0.75rem;
     transition: all 0.2s ease;
-    touch-action: pan-y;
+    touch-action: none;
 }
 
 .set-card:hover {
@@ -204,13 +204,17 @@
 }
 
 .drag-handle {
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-secondary);
     cursor: grab;
-    flex-shrink: 0;
+    transition: color 0.2s ease;
 }
 
 .drag-handle:active {
     cursor: grabbing;
+}
+
+.drag-handle:hover {
+    color: var(--accent-mid);
 }
 
 .set-number {
@@ -250,6 +254,24 @@
     font-size: 0.9rem;
     text-align: center;
     transition: all 0.2s ease;
+}
+.set-input::-webkit-outer-spin-button,
+.set-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.set-input[type="number"] {
+    -moz-appearance: textfield;
+}
+.set-input::-webkit-outer-spin-button,
+.set-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.set-input[type="number"] {
+    -moz-appearance: textfield;
 }
 
 .set-input:focus {
