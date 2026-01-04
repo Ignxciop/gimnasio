@@ -830,8 +830,25 @@ export default function RoutinesManager() {
                         (!routinesFetch.data ||
                             routinesFetch.data.length === 0) && (
                             <div className="empty-state">
-                                <p>No tienes carpetas ni rutinas aún</p>
-                                <p>Comienza creando una carpeta o una rutina</p>
+                                <h3>Comienza a organizar tus entrenamientos</h3>
+                                <p>
+                                    Crea rutinas personalizadas con los
+                                    ejercicios que necesitas para alcanzar tus
+                                    objetivos.
+                                </p>
+                                <div className="empty-state-actions">
+                                    <button
+                                        onClick={handleCreateRoutine}
+                                        className="btn-primary-action"
+                                    >
+                                        <Plus size={20} />
+                                        Crear mi primera rutina
+                                    </button>
+                                    <p className="empty-state-hint">
+                                        También puedes crear carpetas para
+                                        organizar rutinas por objetivos o fases
+                                    </p>
+                                </div>
                             </div>
                         )}
                 </div>

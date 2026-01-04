@@ -203,6 +203,27 @@ export default function CompletedRoutines() {
                 </div>
 
                 <div className="workout-day-list">
+                    {workouts.length === 0 && (
+                        <div className="empty-workouts-state">
+                            <div className="empty-state-content">
+                                <h3>
+                                    No hay entrenamientos completados todavía
+                                </h3>
+                                <p>
+                                    Aquí verás el historial completo de todos
+                                    tus entrenamientos una vez que comiences a
+                                    entrenar.
+                                </p>
+                                <button
+                                    className="btn-primary"
+                                    onClick={() => navigate("/rutinas")}
+                                >
+                                    Ir a mis rutinas
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {workouts.map((workout) => {
                         const isExpanded = expandedWorkouts.has(workout.id);
                         const exerciseGroups = workout.sets.reduce(

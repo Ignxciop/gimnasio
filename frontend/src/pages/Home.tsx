@@ -139,6 +139,35 @@ export const Home: React.FC = () => {
         );
     }
 
+    const hasWorkouts = recentWorkouts.length > 0;
+    const hasStats = monthlyStats && monthlyStats.totalWorkouts > 0;
+
+    if (!loading && !hasWorkouts && !hasStats) {
+        return (
+            <MainLayout>
+                <div className="home-container">
+                    <h1 className="home-title">Dashboard</h1>
+                    <div className="home-empty-state">
+                        <div className="empty-state-content">
+                            <h2>¡Bienvenido a tu espacio de entrenamiento!</h2>
+                            <p>
+                                Todavía no has completado ningún entrenamiento.
+                                Comienza creando tu primera rutina y registra tu
+                                progreso.
+                            </p>
+                            <button
+                                className="btn-primary"
+                                onClick={() => navigate("/rutinas")}
+                            >
+                                Crear mi primera rutina
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </MainLayout>
+        );
+    }
+
     return (
         <MainLayout>
             <div className="home-container">
