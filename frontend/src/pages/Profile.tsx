@@ -25,7 +25,6 @@ export const Profile: React.FC = () => {
     const [feedbackType, setFeedbackType] = useState<
         "suggestion" | "bug_report"
     >(FEEDBACK_TYPES.SUGGESTION);
-    const [showDonationTooltip, setShowDonationTooltip] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
@@ -87,6 +86,10 @@ export const Profile: React.FC = () => {
         setFeedbackModalOpen(true);
     };
 
+    const handleDonation = () => {
+        window.open("https://buymeacoffee.com/josenunez", "_blank");
+    };
+
     if (loading) {
         return (
             <MainLayout>
@@ -139,29 +142,15 @@ export const Profile: React.FC = () => {
                             Reportes
                         </Button>
 
-                        <div className="profile-action-btn-wrapper">
-                            <Button
-                                variant="secondary"
-                                disabled
-                                onMouseEnter={() =>
-                                    setShowDonationTooltip(true)
-                                }
-                                onMouseLeave={() =>
-                                    setShowDonationTooltip(false)
-                                }
-                                onClick={() => setShowDonationTooltip(true)}
-                                aria-label="Donación (próximamente)"
-                                className="profile-action-btn--donation"
-                            >
-                                <Heart size={20} />
-                                Donación
-                            </Button>
-                            {showDonationTooltip && (
-                                <span className="profile-action-tooltip">
-                                    Próximamente
-                                </span>
-                            )}
-                        </div>
+                        <Button
+                            variant="secondary"
+                            onClick={handleDonation}
+                            aria-label="Apoyar con una donación"
+                            className="profile-action-btn--donation"
+                        >
+                            <Heart size={20} />
+                            Donación
+                        </Button>
                     </div>
                 )}
 
