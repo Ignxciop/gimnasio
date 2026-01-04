@@ -83,6 +83,23 @@ export const profileService = {
         const data = await response.json();
         return data.data;
     },
+
+    async deleteAccount(token: string): Promise<void> {
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/profile/delete-account`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al eliminar la cuenta");
+        }
+    },
 };
 
 export type { ProfileData };
