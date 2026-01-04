@@ -48,7 +48,7 @@ class ExportService {
         });
 
         const completedWorkouts = await prisma.activeRoutine.findMany({
-            where: { userId, status: "completado" },
+            where: { userId, status: "completed" },
             include: {
                 routine: true,
                 sets: {
@@ -91,7 +91,7 @@ class ExportService {
 
     async getExportData(userId) {
         const workouts = await prisma.activeRoutine.findMany({
-            where: { userId, status: "completado" },
+            where: { userId, status: "completed" },
             include: {
                 routine: true,
                 sets: {
