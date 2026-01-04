@@ -72,6 +72,9 @@ export default function ActiveRoutine() {
     const [draggedSet, setDraggedSet] = useState<ActiveRoutineSet | null>(null);
     const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
     const draggedSetRef = useRef<ActiveRoutineSet | null>(null);
+    const [weightInputs, setWeightInputs] = useState<Record<number, string>>(
+        {}
+    );
 
     const fetchActiveRoutine = useApiCall(activeRoutineService.getActive, {
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH,
@@ -163,20 +166,26 @@ export default function ActiveRoutine() {
     const handleWeightChange = (setId: number, value: string) => {
         if (!activeRoutine) return;
 
-        const normalizedValue = value.replace(/,/g, ".");
-        let weightInKg: number | null = null;
+        if (value === "" || /^\d*[,.]?\d*$/.test(value)) {
+            setWeightInputs((prev) => ({ ...prev, [setId]: value }));
 
-        if (normalizedValue !== "") {
-            const inputValue = Number(normalizedValue);
-            weightInKg = unit === "lbs" ? lbsToKg(inputValue) : inputValue;
+            const normalizedValue = value.replace(/,/g, ".");
+            let weightInKg: number | null = null;
+
+            if (normalizedValue !== "" && normalizedValue !== ".") {
+                const inputValue = Number(normalizedValue);
+                weightInKg = unit === "lbs" ? lbsToKg(inputValue) : inputValue;
+            }
+
+            setActiveRoutine({
+                ...activeRoutine,
+                sets: activeRoutine.sets.map((set) =>
+                    set.id === setId
+                        ? { ...set, actualWeight: weightInKg }
+                        : set
+                ),
+            });
         }
-
-        setActiveRoutine({
-            ...activeRoutine,
-            sets: activeRoutine.sets.map((set) =>
-                set.id === setId ? { ...set, actualWeight: weightInKg } : set
-            ),
-        });
     };
 
     const handleRepsChange = (setId: number, value: string) => {
@@ -603,8 +612,14 @@ export default function ActiveRoutine() {
                                                             type="text"
                                                             className="set-input"
                                                             value={
-                                                                set.actualWeight !==
-                                                                null
+                                                                weightInputs[
+                                                                    set.id
+                                                                ] !== undefined
+                                                                    ? weightInputs[
+                                                                          set.id
+                                                                      ]
+                                                                    : set.actualWeight !==
+                                                                      null
                                                                     ? formatWeight(
                                                                           unit ===
                                                                               "lbs"
@@ -612,7 +627,7 @@ export default function ActiveRoutine() {
                                                                                     set.actualWeight
                                                                                 )
                                                                               : set.actualWeight
-                                                                      )
+                                                                      ).toString()
                                                                     : ""
                                                             }
                                                             onChange={(e) =>
@@ -622,6 +637,35 @@ export default function ActiveRoutine() {
                                                                         .value
                                                                 )
                                                             }
+                                                            onBlur={() => {
+                                                                if (
+                                                                    weightInputs[
+                                                                        set.id
+                                                                    ] !==
+                                                                        undefined &&
+                                                                    set.actualWeight !==
+                                                                        null
+                                                                ) {
+                                                                    const formatted =
+                                                                        formatWeight(
+                                                                            unit ===
+                                                                                "lbs"
+                                                                                ? kgToLbs(
+                                                                                      set.actualWeight
+                                                                                  )
+                                                                                : set.actualWeight
+                                                                        ).toString();
+                                                                    setWeightInputs(
+                                                                        (
+                                                                            prev
+                                                                        ) => ({
+                                                                            ...prev,
+                                                                            [set.id]:
+                                                                                formatted,
+                                                                        })
+                                                                    );
+                                                                }
+                                                            }}
                                                             disabled={
                                                                 set.completed
                                                             }
