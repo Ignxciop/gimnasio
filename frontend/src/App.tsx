@@ -32,7 +32,10 @@ const WorkoutDay = lazy(() => import("./pages/WorkoutDay"));
 const CompletedRoutines = lazy(() => import("./pages/CompletedRoutines"));
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+        const token = authService.getToken();
+        return token ? authService.isTokenValid() : false;
+    });
     const [isInitializing, setIsInitializing] = useState(true);
 
     useEffect(() => {

@@ -1,4 +1,5 @@
 import { tokenStorage } from "./tokenStorage";
+import { authService } from "./authService";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -18,35 +19,6 @@ const processQueue = (error: Error | null, token: string | null = null) => {
     });
 
     failedQueue = [];
-};
-
-export const refreshAccessToken = async (): Promise<string> => {
-    const csrfResponse = await fetch(`${API_BASE_URL}/api/auth/csrf-token`, {
-        method: "GET",
-        credentials: "include",
-    });
-
-    if (!csrfResponse.ok) {
-        throw new Error("Failed to get CSRF token");
-    }
-
-    const { csrfToken } = await csrfResponse.json();
-
-    const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": csrfToken,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error("Failed to refresh token");
-    }
-
-    const data = await response.json();
-    return data.data.accessToken;
 };
 
 export const fetchWithAuth = async (
@@ -71,6 +43,20 @@ export const fetchWithAuth = async (
     });
 
     if (response.status === 401 || response.status === 403) {
+        const isAuthEndpoint =
+            url.includes("/auth/login") ||
+            url.includes("/auth/register") ||
+            url.includes("/auth/refresh");
+
+        const isPublicRoute =
+            window.location.pathname === "/login" ||
+            window.location.pathname === "/register" ||
+            window.location.pathname === "/";
+
+        if (isAuthEndpoint || isPublicRoute) {
+            return response;
+        }
+
         if (isRefreshing) {
             return new Promise((resolve, reject) => {
                 failedQueue.push({
@@ -92,8 +78,8 @@ export const fetchWithAuth = async (
         isRefreshing = true;
 
         try {
-            const newToken = await refreshAccessToken();
-            tokenStorage.setToken(newToken);
+            const result = await authService.refresh();
+            const newToken = result.accessToken;
             processQueue(null, newToken);
 
             headers.set("Authorization", `Bearer ${newToken}`);
@@ -104,13 +90,7 @@ export const fetchWithAuth = async (
             });
         } catch (error) {
             processQueue(error as Error, null);
-            tokenStorage.removeToken();
-            if (
-                window.location.pathname !== "/login" &&
-                window.location.pathname !== "/register"
-            ) {
-                window.location.href = "/login";
-            }
+            authService.clearAuth();
             throw error;
         } finally {
             isRefreshing = false;

@@ -7,6 +7,9 @@ import type {
     RegisterResponse,
 } from "../types/auth.types";
 
+let isRefreshing = false;
+let refreshPromise: Promise<{ accessToken: string }> | null = null;
+
 export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
         const response = await api.post<LoginResponse>(
@@ -24,40 +27,54 @@ export const authService = {
     },
 
     async refresh(): Promise<{ accessToken: string }> {
-        const csrfResponse = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/auth/csrf-token`,
-            {
-                method: "GET",
-                credentials: "include",
+        if (isRefreshing && refreshPromise) {
+            return refreshPromise;
+        }
+
+        isRefreshing = true;
+        refreshPromise = (async () => {
+            try {
+                const csrfResponse = await fetch(
+                    `${import.meta.env.VITE_API_URL}/api/auth/csrf-token`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+
+                if (!csrfResponse.ok) {
+                    throw new Error("Failed to get CSRF token");
+                }
+
+                const { csrfToken } = await csrfResponse.json();
+
+                const response = await fetch(
+                    `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
+                    {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "x-csrf-token": csrfToken,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to refresh token");
+                }
+
+                const data = await response.json();
+                if (data.data.accessToken) {
+                    this.saveToken(data.data.accessToken);
+                }
+                return data.data;
+            } finally {
+                isRefreshing = false;
+                refreshPromise = null;
             }
-        );
+        })();
 
-        if (!csrfResponse.ok) {
-            throw new Error("Failed to get CSRF token");
-        }
-
-        const { csrfToken } = await csrfResponse.json();
-
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
-            {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "x-csrf-token": csrfToken,
-                },
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to refresh token");
-        }
-
-        const data = await response.json();
-        if (data.data.accessToken) {
-            this.saveToken(data.data.accessToken);
-        }
-        return data.data;
+        return refreshPromise;
     },
 
     async logout(): Promise<void> {
@@ -97,15 +114,23 @@ export const authService = {
 
     clearAuth(): void {
         this.removeToken();
-        if (
-            window.location.pathname !== "/login" &&
-            window.location.pathname !== "/register"
-        ) {
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/login" && currentPath !== "/register") {
             window.location.href = "/login";
         }
     },
 
     async initializeAuth(): Promise<boolean> {
+        const currentPath = window.location.pathname;
+        const isPublicRoute =
+            currentPath === "/login" ||
+            currentPath === "/register" ||
+            currentPath === "/";
+
+        if (isPublicRoute) {
+            return false;
+        }
+
         const token = this.getToken();
 
         if (token && this.isTokenValid()) {
