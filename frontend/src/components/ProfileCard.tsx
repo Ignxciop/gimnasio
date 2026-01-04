@@ -8,6 +8,7 @@ import {
     EyeOff,
     BarChart3,
     Trash2,
+    Download,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { ProfileData } from "../services/profileService";
@@ -17,6 +18,7 @@ import { useApiCall } from "../hooks/useApiCall";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { ExportDataModal } from "./ExportDataModal";
 import { ERROR_MESSAGES } from "../config/messages";
 import { GenderAwareUserIcon } from "./ui/GenderAwareUserIcon";
 import "./profileCard.css";
@@ -34,6 +36,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     const { showToast } = useToast();
     const [isPrivate, setIsPrivate] = useState(!profileData.isProfilePublic);
     const deleteModal = useModal();
+    const exportModal = useModal();
 
     const updatePrivacy = useApiCall(
         (isPrivate: boolean, token: string) =>
@@ -96,6 +99,31 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
 
     const handleGoToStats = () => {
         navigate(`/perfil/${profileData.username}/estadisticas`);
+    };
+
+    const handleExportData = async (format: "csv" | "json") => {
+        const token = authService.getToken();
+        if (!token) {
+            showToast("error", "No hay sesión activa");
+            return;
+        }
+
+        try {
+            await profileService.exportData(format, token);
+            showToast(
+                "success",
+                format === "json"
+                    ? "Backup descargado correctamente"
+                    : "Datos exportados correctamente"
+            );
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al exportar datos"
+            );
+        }
     };
 
     return (
@@ -185,12 +213,26 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                         </button>
 
                         <button
+                            className="profile-card__action-btn profile-card__action-btn--export"
+                            onClick={exportModal.openModal}
+                        >
+                            <Download size={20} />
+                            Exportar mis datos
+                        </button>
+
+                        <button
                             className="profile-card__delete"
                             onClick={deleteModal.openModal}
                         >
                             <Trash2 size={20} />
                             Eliminar cuenta
                         </button>
+
+                        <ExportDataModal
+                            isOpen={exportModal.isOpen}
+                            onClose={exportModal.closeModal}
+                            onExport={handleExportData}
+                        />
 
                         <ConfirmDialog
                             isOpen={deleteModal.isOpen}

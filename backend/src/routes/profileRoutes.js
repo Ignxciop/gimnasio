@@ -18,6 +18,8 @@ router.patch(
     profileController.updatePrivacy
 );
 
+router.get("/export", authenticate, profileController.exportData);
+
 router.get("/:username", optionalAuth, profileController.getProfileByUsername);
 
 router.delete("/delete-account", authenticate, profileController.deleteAccount);

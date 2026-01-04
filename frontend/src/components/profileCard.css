@@ -130,6 +130,26 @@
     box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
 }
 
+.profile-card__action-btn--export {
+    background: linear-gradient(
+        135deg,
+        rgba(34, 197, 94, 0.15),
+        rgba(16, 185, 129, 0.15)
+    );
+    border-color: rgba(34, 197, 94, 0.3);
+    color: rgb(34, 197, 94);
+    font-weight: var(--font-weight-semibold);
+}
+
+.profile-card__action-btn--export:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(34, 197, 94, 0.25),
+        rgba(16, 185, 129, 0.25)
+    );
+    border-color: rgba(34, 197, 94, 0.5);
+}
+
 .profile-card__logout {
     margin-top: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-lg);

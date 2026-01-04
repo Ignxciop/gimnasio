@@ -1,4 +1,5 @@
 import profileService from "../services/profileService.js";
+import exportService from "../services/exportService.js";
 
 class ProfileController {
     async getProfile(req, res, next) {
@@ -72,6 +73,52 @@ class ProfileController {
                 success: true,
                 message: "Cuenta eliminada permanentemente",
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async exportData(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            const { format } = req.query;
+
+            if (!format || !["csv", "json"].includes(format)) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Formato inválido. Usa 'csv' o 'json' como parámetro",
+                });
+            }
+
+            const data = await exportService.exportUserData(userId, format);
+            const date = new Date().toISOString().split("T")[0];
+
+            if (format === "json") {
+                res.setHeader("Content-Type", "application/json");
+                res.setHeader(
+                    "Content-Disposition",
+                    `attachment; filename=gimnasio_backup_${date}.json`
+                );
+                return res.status(200).json(data);
+            }
+
+            if (format === "csv") {
+                const archive = exportService.createZipStream(data);
+
+                res.setHeader("Content-Type", "application/zip");
+                res.setHeader(
+                    "Content-Disposition",
+                    `attachment; filename=gimnasio_datos_${date}.zip`
+                );
+
+                archive.on("error", (err) => {
+                    throw err;
+                });
+
+                archive.pipe(res);
+                archive.finalize();
+            }
         } catch (error) {
             next(error);
         }

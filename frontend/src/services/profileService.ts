@@ -100,6 +100,42 @@ export const profileService = {
             throw new Error(error.message || "Error al eliminar la cuenta");
         }
     },
+
+    async exportData(format: "csv" | "json", token: string): Promise<void> {
+        const response = await fetch(
+            `${
+                import.meta.env.VITE_API_URL
+            }/api/profile/export?format=${format}`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al exportar datos");
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+
+        const date = new Date().toISOString().split("T")[0];
+        const filename =
+            format === "json"
+                ? `gimnasio_backup_${date}.json`
+                : `gimnasio_datos_${date}.zip`;
+
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    },
 };
 
 export type { ProfileData };
