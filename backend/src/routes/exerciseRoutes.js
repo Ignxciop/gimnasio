@@ -46,17 +46,11 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 
-router.get(
-    "/",
-    authenticate,
-    authorize("administrador", "manager"),
-    exerciseController.getAll
-);
+router.get("/", authenticate, exerciseController.getAll);
 
 router.get(
     "/:id",
     authenticate,
-    authorize("administrador", "manager"),
     getExerciseByIdValidation,
     handleValidationErrors,
     exerciseController.getById
