@@ -109,7 +109,10 @@ export const activeRoutineService = {
         return data.data;
     },
 
-    async reorderSets(setIds: number[], token: string): Promise<void> {
+    async reorderSets(
+        sets: { id: number; order: number }[],
+        token: string
+    ): Promise<void> {
         const response = await fetch(
             `${import.meta.env.VITE_API_URL}/api/active-routines/reorder`,
             {
@@ -118,7 +121,7 @@ export const activeRoutineService = {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ setIds }),
+                body: JSON.stringify({ sets }),
             }
         );
 
