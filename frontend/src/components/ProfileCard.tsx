@@ -7,6 +7,7 @@ import {
     Eye,
     EyeOff,
     BarChart3,
+    Trash2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { ProfileData } from "../services/profileService";
@@ -14,6 +15,8 @@ import { profileService } from "../services/profileService";
 import { authService } from "../services/authService";
 import { useApiCall } from "../hooks/useApiCall";
 import { useToast } from "../hooks/useToast";
+import { useModal } from "../hooks/useModal";
+import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { ERROR_MESSAGES } from "../config/messages";
 import { GenderAwareUserIcon } from "./ui/GenderAwareUserIcon";
 import "./profileCard.css";
@@ -30,12 +33,21 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     const navigate = useNavigate();
     const { showToast } = useToast();
     const [isPrivate, setIsPrivate] = useState(!profileData.isProfilePublic);
+    const deleteModal = useModal();
 
     const updatePrivacy = useApiCall(
         (isPrivate: boolean, token: string) =>
             profileService.updatePrivacy(isPrivate, token),
         {
             errorMessage: ERROR_MESSAGES.PROFILE.UPDATE_PRIVACY,
+            showErrorToast: true,
+        }
+    );
+
+    const deleteAccount = useApiCall(
+        (token: string) => profileService.deleteAccount(token),
+        {
+            errorMessage: "Error al eliminar la cuenta",
             showErrorToast: true,
         }
     );
@@ -65,6 +77,19 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
     const handleLogout = () => {
         authService.removeToken();
         window.location.href = "/login";
+    };
+
+    const handleDeleteAccount = async () => {
+        const token = authService.getToken();
+        if (!token) return;
+
+        const result = await deleteAccount.execute(token);
+
+        if (result !== undefined) {
+            showToast("success", "Cuenta eliminada permanentemente");
+            authService.removeToken();
+            window.location.href = "/login";
+        }
     };
 
     const handleGoToStats = () => {
@@ -156,6 +181,26 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                             <LogOut size={20} />
                             Cerrar sesión
                         </button>
+
+                        <button
+                            className="profile-card__delete"
+                            onClick={deleteModal.open}
+                        >
+                            <Trash2 size={20} />
+                            Eliminar cuenta
+                        </button>
+
+                        <ConfirmDialog
+                            isOpen={deleteModal.isOpen}
+                            onClose={deleteModal.close}
+                            onConfirm={handleDeleteAccount}
+                            title="¿Eliminar cuenta?"
+                            message="Esta acción es permanente e irreversible. Se eliminarán todos tus datos, rutinas, ejercicios y estadísticas. ¿Estás completamente seguro?"
+                            confirmText="Sí, eliminar permanentemente"
+                            cancelText="Cancelar"
+                            variant="danger"
+                            isLoading={deleteAccount.loading}
+                        />
                     </>
                 )}
             </div>
