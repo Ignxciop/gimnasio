@@ -109,6 +109,44 @@ class ProfileService {
 
         return updatedUser;
     }
+
+    async deleteAccount(userId) {
+        await prisma.$transaction(async (tx) => {
+            await tx.routineExercise.deleteMany({
+                where: {
+                    routine: {
+                        userId: userId,
+                    },
+                },
+            });
+
+            await tx.routine.deleteMany({
+                where: { userId },
+            });
+
+            await tx.folder.deleteMany({
+                where: { userId },
+            });
+
+            await tx.emailVerification.deleteMany({
+                where: { userId },
+            });
+
+            await tx.refreshToken.deleteMany({
+                where: { userId },
+            });
+
+            await tx.feedback.deleteMany({
+                where: { userId },
+            });
+
+            await tx.user.delete({
+                where: { id: userId },
+            });
+        });
+
+        return { success: true };
+    }
 }
 
 export default new ProfileService();
