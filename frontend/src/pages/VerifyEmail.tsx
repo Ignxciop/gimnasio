@@ -30,7 +30,7 @@ export default function VerifyEmail() {
             if (email && tempPassword) {
                 try {
                     const response = await authService.login({
-                        email,
+                        emailOrUsername: email,
                         password: tempPassword,
                     });
                     authService.saveToken(response.data.accessToken);
