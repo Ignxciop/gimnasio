@@ -1,0 +1,37 @@
+{
+    "name": "gimnasio-app",
+    "services": [
+        {
+            "name": "backend",
+            "type": "docker",
+            "dockerfile": "./backend/Dockerfile",
+            "buildContext": "./backend",
+            "port": 3000,
+            "env": {
+                "NODE_ENV": "production",
+                "PORT": "3000",
+                "DATABASE_URL": "${DATABASE_URL}",
+                "JWT_SECRET": "${JWT_SECRET}",
+                "REFRESH_JWT_SECRET": "${REFRESH_JWT_SECRET}",
+                "CSRF_SECRET": "${CSRF_SECRET}",
+                "JWT_EXPIRES_IN": "15m",
+                "REFRESH_JWT_EXPIRES_IN": "7d",
+                "CORS_ORIGIN": "${CORS_ORIGIN}",
+                "EMAIL_USER": "${EMAIL_USER}",
+                "EMAIL_APP_PASSWORD": "${EMAIL_APP_PASSWORD}",
+                "FRONTEND_URL": "${FRONTEND_URL}"
+            }
+        },
+        {
+            "name": "frontend",
+            "type": "docker",
+            "dockerfile": "./frontend/Dockerfile",
+            "buildContext": "./frontend",
+            "port": 80,
+            "buildArgs": {
+                "VITE_API_URL": "${VITE_API_URL}"
+            },
+            "dependencies": ["backend"]
+        }
+    ]
+}
