@@ -63,17 +63,14 @@ export const activeRoutineService = {
     },
 
     async create(routineId: number, token: string): Promise<ActiveRoutine> {
-        const response = await fetch(
-            `${API_BASE_URL}/api/active-routines`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ routineId }),
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/api/active-routines`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ routineId }),
+        });
 
         if (!response.ok) {
             const error = await response.json();
