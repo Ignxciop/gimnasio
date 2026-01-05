@@ -1,5 +1,8 @@
+// @ts-ignore - window.ENV is injected at runtime
+const runtimeApiUrl = typeof window !== "undefined" && window.ENV?.VITE_API_URL;
+
 export const API_BASE_URL =
-    import.meta.env.VITE_API_URL || "http://localhost:3000";
+    runtimeApiUrl || import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const PATHS = {
     RESOURCES: "/resources/examples_exercises",
