@@ -6,9 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "nodemon --quiet index.js",
-        "build": "prisma generate",
         "start": "node index.js",
-        "migrate:deploy": "prisma migrate deploy",
         "prisma:migrate": "pnpm prisma migrate dev --name",
         "seed": "node src/scripts/seed.js",
         "cleanup-orphans": "node src/scripts/cleanup-orphan-videos.js",
