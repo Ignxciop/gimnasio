@@ -8,6 +8,7 @@
         "dev": "nodemon --quiet index.js",
         "start": "node index.js",
         "postinstall": "prisma generate",
+        "migrate:deploy": "prisma migrate deploy",
         "prisma:migrate": "pnpm prisma migrate dev --name",
         "seed": "node src/scripts/seed.js",
         "cleanup-orphans": "node src/scripts/cleanup-orphan-videos.js",
