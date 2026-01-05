@@ -6,7 +6,7 @@ import {
     CheckCircle,
 } from "lucide-react";
 import { useUnit } from "../hooks/useUnit";
-import { kgToLbs, formatWeight } from "../utils/unitConverter";
+import { kgToLbs } from "../utils/unitConverter";
 import "./monthlyStats.css";
 
 interface MonthlyStatsProps {

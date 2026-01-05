@@ -140,7 +140,7 @@ export const Home: React.FC = () => {
     }
 
     const hasWorkouts = recentWorkouts.length > 0;
-    const hasStats = monthlyStats && monthlyStats.totalWorkouts > 0;
+    const hasStats = monthlyStats && monthlyStats.current.totalWorkouts > 0;
 
     if (!loading && !hasWorkouts && !hasStats) {
         return (

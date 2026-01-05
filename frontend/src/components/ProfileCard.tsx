@@ -277,7 +277,6 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
                             confirmText="Sí, eliminar permanentemente"
                             cancelText="Cancelar"
                             variant="danger"
-                            isLoading={deleteAccount.loading}
                         />
                     </>
                 )}

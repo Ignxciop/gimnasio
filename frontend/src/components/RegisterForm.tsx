@@ -12,7 +12,7 @@ interface RegisterFormProps {
     onSuccess?: () => void;
 }
 
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
+export const RegisterForm: React.FC<RegisterFormProps> = () => {
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [lastname, setLastname] = useState("");
@@ -85,8 +85,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
 
             navigate("/verificar-correo", {
                 state: {
-                    userId: response.data.userId,
-                    email: response.data.email,
+                    userId: response.data.user.id,
+                    email: response.data.user.email,
                     password,
                 },
             });

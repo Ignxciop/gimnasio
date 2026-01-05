@@ -300,14 +300,16 @@ export default function WorkoutDay() {
                                                                     </span>
                                                                     <div className="set-data">
                                                                         <span>
-                                                                            {formatWeight(
-                                                                                unit ===
-                                                                                    "lbs"
-                                                                                    ? kgToLbs(
-                                                                                          set.actualWeight
-                                                                                      )
-                                                                                    : set.actualWeight
-                                                                            )}{" "}
+                                                                            {set.actualWeight
+                                                                                ? formatWeight(
+                                                                                      unit ===
+                                                                                          "lbs"
+                                                                                          ? kgToLbs(
+                                                                                                set.actualWeight
+                                                                                            )
+                                                                                          : set.actualWeight
+                                                                                  )
+                                                                                : 0}{" "}
                                                                             {
                                                                                 unit
                                                                             }

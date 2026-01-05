@@ -213,7 +213,7 @@ export default function ActiveRoutine() {
         await updateSet.execute(setId, set.actualWeight, set.actualReps, token);
     };
 
-    const handleDragStart = (e: React.DragEvent, set: ActiveRoutineSet) => {
+    const handleDragStart = (_e: React.DragEvent, set: ActiveRoutineSet) => {
         setDraggedSet(set);
         draggedSetRef.current = set;
     };
