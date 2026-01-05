@@ -7,8 +7,8 @@ services:
             dockerfile: Dockerfile
         container_name: gimnasio-backend
         restart: unless-stopped
-        expose:
-            - "3000"
+        ports:
+            - "3000:3000"
         environment:
             NODE_ENV: production
             PORT: 3000
@@ -18,26 +18,12 @@ services:
             CSRF_SECRET: ${CSRF_SECRET}
             JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
             REFRESH_JWT_EXPIRES_IN: ${REFRESH_JWT_EXPIRES_IN:-7d}
-            CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+            CORS_ORIGIN: ${CORS_ORIGIN}
             EMAIL_USER: ${EMAIL_USER}
             EMAIL_APP_PASSWORD: ${EMAIL_APP_PASSWORD}
-            FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+            FRONTEND_URL: ${FRONTEND_URL}
         networks:
             - gimnasio-network
-        healthcheck:
-            test:
-                [
-                    "CMD",
-                    "wget",
-                    "--quiet",
-                    "--tries=1",
-                    "--spider",
-                    "http://localhost:3000/api/health",
-                ]
-            interval: 30s
-            timeout: 10s
-            retries: 3
-            start_period: 40s
 
     frontend:
         build:
@@ -47,26 +33,28 @@ services:
                 VITE_API_URL: ${VITE_API_URL:-http://backend:3000}
         container_name: gimnasio-frontend
         restart: unless-stopped
-        expose:
-            - "80"
+        ports:
+            - "80:80"
         depends_on:
             - backend
         networks:
             - gimnasio-network
-        healthcheck:
-            test:
-                [
-                    "CMD",
-                    "wget",
-                    "--quiet",
-                    "--tries=1",
-                    "--spider",
-                    "http://localhost",
-                ]
-            interval: 30s
-            timeout: 3s
-            retries: 3
-            start_period: 5s
+
+    cloudflared:
+        image: cloudflare/cloudflared:latest
+        container_name: gimnasio-cloudflared
+        restart: unless-stopped
+        environment:
+            TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+        networks:
+            - gimnasio-network
+        command:
+            - tunnel
+            - --no-autoupdate
+            - run
+        depends_on:
+            - frontend
+            - backend
 
 networks:
     gimnasio-network:
