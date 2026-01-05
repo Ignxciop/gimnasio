@@ -8,10 +8,10 @@ services:
         container_name: gimnasio-backend
         restart: unless-stopped
         ports:
-            - "3000:3000"
+            - "4001:4001"
         environment:
             NODE_ENV: production
-            PORT: 3000
+            PORT: 4001
             DATABASE_URL: ${DATABASE_URL}
             JWT_SECRET: ${JWT_SECRET}
             REFRESH_JWT_SECRET: ${REFRESH_JWT_SECRET}
@@ -30,11 +30,11 @@ services:
             context: ./frontend
             dockerfile: Dockerfile
             args:
-                VITE_API_URL: ${VITE_API_URL:-http://backend:3000}
+                VITE_API_URL: ${VITE_API_URL:-http://backend:4001}
         container_name: gimnasio-frontend
         restart: unless-stopped
         ports:
-            - "80:80"
+            - "4000:4000"
         depends_on:
             - backend
         networks:
