@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_BASE_URL } from "../config/constants";
 
 interface VerifyEmailRequest {
     userId: string;
@@ -11,7 +11,7 @@ interface ResendCodeRequest {
 
 export const emailVerificationService = {
     async verifyEmail(data: VerifyEmailRequest): Promise<void> {
-        const response = await fetch(`${API_URL}/api/auth/verify-email`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/verify-email`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -26,7 +26,7 @@ export const emailVerificationService = {
     },
 
     async resendCode(data: ResendCodeRequest): Promise<void> {
-        const response = await fetch(`${API_URL}/api/auth/resend-code`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/resend-code`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

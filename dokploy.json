@@ -28,7 +28,7 @@
             "dockerfile": "./frontend/Dockerfile",
             "buildContext": "./frontend",
             "port": 4000,
-            "buildArgs": {
+            "env": {
                 "VITE_API_URL": "${VITE_API_URL}"
             },
             "dependencies": ["backend"]
