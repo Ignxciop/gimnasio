@@ -20,6 +20,6 @@ RUN mkdir -p /app/resources/user_photo && \
 
 USER nodejs
 
-EXPOSE 3000
+EXPOSE 4001
 
 CMD ["sh", "-c", "pnpm prisma migrate deploy && node index.js"]
