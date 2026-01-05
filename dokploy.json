@@ -29,7 +29,7 @@
             "buildContext": "./frontend",
             "port": 4000,
             "env": {
-                "VITE_API_URL": "${VITE_API_URL}"
+                "VITE_API_URL": "https://api.gimnasio.josenunez.cl"
             },
             "dependencies": ["backend"]
         }
