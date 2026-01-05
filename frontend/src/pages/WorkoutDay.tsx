@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronDown, ChevronUp, Clock, Trash2 } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
+import { useUnit } from "../hooks/useUnit";
+import { kgToLbs, formatWeight } from "../utils/unitConverter";
 import { authService } from "../services/authService";
 import { dashboardService } from "../services/dashboardService";
 import { activeRoutineService } from "../services/activeRoutineService";
@@ -37,6 +39,7 @@ export default function WorkoutDay() {
     const { year, month, day } = useParams();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { unit } = useUnit();
     const [workouts, setWorkouts] = useState<DayWorkout[]>([]);
     const [expandedWorkouts, setExpandedWorkouts] = useState<Set<number>>(
         new Set()
@@ -297,9 +300,17 @@ export default function WorkoutDay() {
                                                                     </span>
                                                                     <div className="set-data">
                                                                         <span>
-                                                                            {set.actualWeight ||
-                                                                                0}{" "}
-                                                                            kg
+                                                                            {formatWeight(
+                                                                                unit ===
+                                                                                    "lbs"
+                                                                                    ? kgToLbs(
+                                                                                          set.actualWeight
+                                                                                      )
+                                                                                    : set.actualWeight
+                                                                            )}{" "}
+                                                                            {
+                                                                                unit
+                                                                            }
                                                                         </span>
                                                                         <span>
                                                                             ×

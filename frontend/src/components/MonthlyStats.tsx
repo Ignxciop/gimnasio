@@ -5,6 +5,8 @@ import {
     Dumbbell,
     CheckCircle,
 } from "lucide-react";
+import { useUnit } from "../hooks/useUnit";
+import { kgToLbs, formatWeight } from "../utils/unitConverter";
 import "./monthlyStats.css";
 
 interface MonthlyStatsProps {
@@ -40,6 +42,8 @@ const formatVolume = (volume: number): string => {
 };
 
 export const MonthlyStats: React.FC<MonthlyStatsProps> = ({ stats }) => {
+    const { unit } = useUnit();
+
     const getChangeIndicator = (change: number) => {
         if (change > 0) {
             return (
@@ -100,7 +104,12 @@ export const MonthlyStats: React.FC<MonthlyStatsProps> = ({ stats }) => {
                     </div>
                     <div className="stat-content">
                         <div className="stat-value">
-                            {formatVolume(stats.current.totalVolume)} kg
+                            {formatVolume(
+                                unit === "lbs"
+                                    ? kgToLbs(stats.current.totalVolume)
+                                    : stats.current.totalVolume
+                            )}{" "}
+                            {unit}
                         </div>
                         <div className="stat-label">Volumen Total</div>
                         {getChangeIndicator(stats.comparison.volume)}
