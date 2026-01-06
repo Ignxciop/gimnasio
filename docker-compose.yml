@@ -24,7 +24,7 @@ services:
             FRONTEND_URL: ${FRONTEND_URL}
         networks:
             - gimnasio-network
-            - dokploy
+            - default
 
     frontend:
         build:
@@ -60,5 +60,6 @@ services:
 networks:
     gimnasio-network:
         driver: bridge
-    dokploy:
+    default:
+        name: dokploy-network
         external: true
