@@ -23,8 +23,26 @@ const Profile = lazy(() =>
 const Statistics = lazy(() =>
     import("./pages/Statistics").then((m) => ({ default: m.Statistics }))
 );
-const Admin = lazy(() =>
-    import("./pages/Admin").then((m) => ({ default: m.Admin }))
+const AdminLayout = lazy(() =>
+    import("./layouts/AdminLayout").then((m) => ({ default: m.AdminLayout }))
+);
+const AdminUsers = lazy(() =>
+    import("./pages/admin/AdminUsers").then((m) => ({ default: m.AdminUsers }))
+);
+const AdminFeedback = lazy(() =>
+    import("./pages/admin/AdminFeedback").then((m) => ({
+        default: m.AdminFeedback,
+    }))
+);
+const AdminDashboard = lazy(() =>
+    import("./pages/admin/AdminDashboard").then((m) => ({
+        default: m.AdminDashboard,
+    }))
+);
+const AdminAudit = lazy(() =>
+    import("./pages/admin/AdminAudit").then((m) => ({
+        default: m.AdminAudit,
+    }))
 );
 const Gestion = lazy(() =>
     import("./pages/Gestion").then((m) => ({ default: m.Gestion }))
@@ -194,12 +212,26 @@ function App() {
                                 path="/admin"
                                 element={
                                     isAuthenticated ? (
-                                        <Admin />
+                                        <AdminLayout />
                                     ) : (
                                         <Navigate to="/login" replace />
                                     )
                                 }
-                            />
+                            >
+                                <Route index element={<AdminDashboard />} />
+                                <Route
+                                    path="usuarios"
+                                    element={<AdminUsers />}
+                                />
+                                <Route
+                                    path="feedback"
+                                    element={<AdminFeedback />}
+                                />
+                                <Route
+                                    path="auditoria"
+                                    element={<AdminAudit />}
+                                />
+                            </Route>
 
                             <Route
                                 path="/gestion"
