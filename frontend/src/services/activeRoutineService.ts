@@ -44,14 +44,11 @@ interface ActiveRoutine {
 
 export const activeRoutineService = {
     async getActive(token: string): Promise<ActiveRoutine | null> {
-        const response = await fetch(
-            `${API_BASE_URL}/active-routines/active`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/active-routines/active`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
         if (!response.ok) {
             const error = await response.json();
@@ -102,6 +99,29 @@ export const activeRoutineService = {
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || "Error al actualizar serie");
+        }
+
+        const data = await response.json();
+        return data.data;
+    },
+
+    async uncompleteSet(
+        setId: number,
+        token: string
+    ): Promise<ActiveRoutineSet> {
+        const response = await fetch(
+            `${API_BASE_URL}/active-routines/sets/${setId}/complete`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Error al desmarcar serie");
         }
 
         const data = await response.json();
@@ -166,17 +186,14 @@ export const activeRoutineService = {
     },
 
     async addSet(exerciseId: number, token: string): Promise<ActiveRoutineSet> {
-        const response = await fetch(
-            `${API_BASE_URL}/active-routines/sets`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ exerciseId }),
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/active-routines/sets`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ exerciseId }),
+        });
 
         if (!response.ok) {
             const error = await response.json();
