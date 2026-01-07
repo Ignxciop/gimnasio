@@ -1,0 +1,125 @@
+.admin-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: calc(100vh - 80px);
+}
+
+.admin-layout__header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0b0b0b 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem 2rem 0;
+}
+
+.admin-layout__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+}
+
+.admin-layout__tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.admin-layout__tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.admin-layout__tab {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+    white-space: nowrap;
+    position: relative;
+}
+
+.admin-layout__tab:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.admin-layout__tab--active {
+    color: #fff;
+    border-bottom-color: var(--accent-start);
+    background: rgba(220, 38, 38, 0.05);
+}
+
+.admin-layout__tab svg {
+    flex-shrink: 0;
+}
+
+.admin-layout__content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .admin-layout__header {
+        padding: 1.5rem 1.5rem 0;
+    }
+
+    .admin-layout__title {
+        font-size: 1.5rem;
+    }
+
+    .admin-layout__content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-layout__header {
+        padding: 1rem 1rem 0;
+    }
+
+    .admin-layout__title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-layout__tabs {
+        gap: 0.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .admin-layout__tab {
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .admin-layout__tab svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .admin-layout__content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-layout__tab span {
+        display: none;
+    }
+
+    .admin-layout__tab {
+        padding: 0.875rem;
+        justify-content: center;
+    }
+}
