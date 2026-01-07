@@ -8,6 +8,8 @@ services:
         restart: unless-stopped
         ports:
             - "4001:4001"
+        volumes:
+            - backend-resources:/app/resources
         environment:
             NODE_ENV: production
             PORT: 4001
@@ -55,10 +57,14 @@ services:
             - frontend
             - backend
 
+volumes:
+    backend-resources:
+        driver: local
+
 networks:
     gimnasio-network:
         driver: bridge
     default:
         name: dokploy-network
         external: true
-# Build: 20260107-032100
+# Build: 20260107-201500
