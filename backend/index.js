@@ -1,4 +1,6 @@
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import { config } from "./src/config/config.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -20,6 +22,9 @@ import { errorHandler } from "./src/middlewares/errorHandler.js";
 import { generalLimiter } from "./src/config/rateLimiter.js";
 
 const port = config.port;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -122,7 +127,7 @@ app.use(
         res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
         next();
     },
-    express.static("resources")
+    express.static(path.join(__dirname, "resources"))
 );
 
 app.use("/api/auth", authRoutes);
