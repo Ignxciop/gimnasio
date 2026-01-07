@@ -166,6 +166,42 @@ class ActiveRoutineService {
         return updatedSet;
     }
 
+    async uncompleteSet(setId, userId) {
+        const set = await prisma.activeRoutineSet.findFirst({
+            where: {
+                id: setId,
+                activeRoutine: {
+                    userId,
+                    status: "active",
+                },
+            },
+        });
+
+        if (!set) {
+            const error = new Error("Serie no encontrada");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const updatedSet = await prisma.activeRoutineSet.update({
+            where: { id: setId },
+            data: {
+                completed: false,
+                isPR: false,
+            },
+            include: {
+                exercise: {
+                    include: {
+                        equipment: true,
+                        muscleGroup: true,
+                    },
+                },
+            },
+        });
+
+        return updatedSet;
+    }
+
     async checkIfPR(exerciseId, weight, reps, userId) {
         const historicalSets = await prisma.activeRoutineSet.findMany({
             where: {
