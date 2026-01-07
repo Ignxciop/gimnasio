@@ -30,7 +30,7 @@ services:
             context: ./frontend
             dockerfile: Dockerfile
             args:
-                VITE_API_URL: ${VITE_API_URL:-http://backend:4001}
+                VITE_API_URL: ${VITE_API_URL:-https://gimnasio-api.josenunez.cl}
         restart: unless-stopped
         ports:
             - "4000:4000"
