@@ -12,10 +12,10 @@ importers:
         specifier: ^0.561.0
         version: 0.561.0(react@19.2.3)
       react:
-        specifier: ^19.2.0
+        specifier: ^19.2.3
         version: 19.2.3
       react-dom:
-        specifier: ^19.2.0
+        specifier: ^19.2.3
         version: 19.2.3(react@19.2.3)
       react-router-dom:
         specifier: ^7.10.1
