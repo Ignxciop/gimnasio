@@ -2,8 +2,7 @@ import type {
     RoutineExercise,
     RoutineExerciseFormData,
 } from "../types/routineExercise";
-
-const API_URL = "http://localhost:3000/api";
+import { API_BASE_URL } from "../config/constants";
 
 const handleError = (error: any, defaultMessage: string) => {
     if (error.errors && Array.isArray(error.errors)) {
@@ -21,7 +20,7 @@ export const routineExerciseService = {
     ): Promise<RoutineExercise[]> {
         try {
             const response = await fetch(
-                `${API_URL}/routines/${routineId}/exercises`,
+                `${API_BASE_URL}/routines/${routineId}/exercises`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -53,7 +52,7 @@ export const routineExerciseService = {
     ): Promise<RoutineExercise> {
         try {
             const response = await fetch(
-                `${API_URL}/routines/${routineId}/exercises`,
+                `${API_BASE_URL}/routines/${routineId}/exercises`,
                 {
                     method: "POST",
                     headers: {
@@ -87,7 +86,7 @@ export const routineExerciseService = {
         token: string
     ): Promise<RoutineExercise> {
         try {
-            const response = await fetch(`${API_URL}/routine-exercises/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/routine-exercises/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -115,7 +114,7 @@ export const routineExerciseService = {
 
     async delete(id: number, token: string): Promise<void> {
         try {
-            const response = await fetch(`${API_URL}/routine-exercises/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/routine-exercises/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -142,7 +141,7 @@ export const routineExerciseService = {
     ): Promise<void> {
         try {
             const response = await fetch(
-                `${API_URL}/routine-exercises/reorder`,
+                `${API_BASE_URL}/routine-exercises/reorder`,
                 {
                     method: "PATCH",
                     headers: {

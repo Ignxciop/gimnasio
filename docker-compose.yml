@@ -33,7 +33,7 @@ services:
         ports:
             - "4000:4000"
         environment:
-            VITE_API_URL: ${VITE_API_URL:-https://gimnasio-api.josenunez.cl}
+            API_URL: ${API_URL}
         depends_on:
             - backend
         networks:

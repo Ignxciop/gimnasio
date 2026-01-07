@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../config/constants";
+
 interface RecentWorkout {
     id: number;
     routineName: string;
@@ -61,8 +63,6 @@ interface MonthlyStats {
     };
 }
 
-const API_URL = "http://localhost:3000/api";
-
 export const dashboardService = {
     async getCompletedDates(
         year: number,
@@ -70,7 +70,7 @@ export const dashboardService = {
         token: string
     ): Promise<number[]> {
         const response = await fetch(
-            `${API_URL}/active-routines/completed/dates?year=${year}&month=${month}`,
+            `${API_BASE_URL}/active-routines/completed/dates?year=${year}&month=${month}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export const dashboardService = {
         limit: number = 3
     ): Promise<RecentWorkout[]> {
         const response = await fetch(
-            `${API_URL}/active-routines/completed/recent?limit=${limit}`,
+            `${API_BASE_URL}/active-routines/completed/recent?limit=${limit}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -120,7 +120,7 @@ export const dashboardService = {
         token: string
     ): Promise<DayWorkout[]> {
         const response = await fetch(
-            `${API_URL}/active-routines/completed/by-date?year=${year}&month=${month}&day=${day}`,
+            `${API_BASE_URL}/active-routines/completed/by-date?year=${year}&month=${month}&day=${day}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -141,7 +141,7 @@ export const dashboardService = {
 
     async getWeeklyStreak(token: string): Promise<WeeklyStreak> {
         const response = await fetch(
-            `${API_URL}/active-routines/streak/weekly`,
+            `${API_BASE_URL}/active-routines/streak/weekly`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -164,7 +164,7 @@ export const dashboardService = {
         token: string
     ): Promise<MonthlyStats> {
         const response = await fetch(
-            `${API_URL}/active-routines/stats/monthly?year=${year}&month=${month}`,
+            `${API_BASE_URL}/active-routines/stats/monthly?year=${year}&month=${month}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,

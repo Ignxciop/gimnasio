@@ -1,8 +1,29 @@
-// @ts-ignore - window.ENV is injected at runtime
-const runtimeApiUrl = typeof window !== "undefined" && window.ENV?.VITE_API_URL;
+// Runtime config injected by env.sh in Docker container
+// @ts-ignore - window.__ENV__ is injected at runtime
+const runtimeConfig =
+    typeof window !== "undefined" ? window.__ENV__ : undefined;
 
-export const API_BASE_URL =
-    runtimeApiUrl || import.meta.env.VITE_API_URL || "http://localhost:3000";
+// Priority: runtime config > build-time env > error
+const getApiUrl = (): string => {
+    if (runtimeConfig?.API_URL) {
+        return runtimeConfig.API_URL;
+    }
+
+    if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+    }
+
+    // Development fallback
+    if (import.meta.env.DEV) {
+        return "http://localhost:3000";
+    }
+
+    throw new Error(
+        "API_BASE_URL not configured. Set API_URL environment variable in docker-compose.yml"
+    );
+};
+
+export const API_BASE_URL = getApiUrl();
 
 export const PATHS = {
     RESOURCES: "/resources/examples_exercises",
