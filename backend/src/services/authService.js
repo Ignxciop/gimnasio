@@ -22,6 +22,7 @@ class AuthService {
                 email: true,
                 password: true,
                 gender: true,
+                preferredUnit: true,
                 is_active: true,
                 roleId: true,
                 role: {
