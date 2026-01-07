@@ -4,7 +4,13 @@
 
 El frontend **requiere** la variable `API_URL` en runtime para conectarse al backend.
 
-**Sin esta variable configurada, el frontend intentará usar localhost y fallará en producción.**
+**La variable DEBE incluir el sufijo `/api` completo.**
+
+```bash
+API_URL=https://gimnasio-api.josenunez.cl/api
+```
+
+**Sin esta variable configurada correctamente, el frontend no podrá comunicarse con el backend.**
 
 ---
 
@@ -15,8 +21,8 @@ El frontend **requiere** la variable `API_URL` en runtime para conectarse al bac
 En Dokploy → Proyecto → **Settings** → **Environment Variables**, agrega:
 
 ```bash
-# 🔴 CRÍTICA - Frontend API URL
-API_URL=https://gimnasio-api.josenunez.cl
+# 🔴 CRÍTICA - Frontend API URL (DEBE incluir /api)
+API_URL=https://gimnasio-api.josenunez.cl/api
 
 # Database
 GIMNASIO_DATABASE_URL=postgresql://postgres:PASSWORD@database-3rvmiy:5432/gimnasio

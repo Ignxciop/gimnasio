@@ -1,4 +1,5 @@
 import type { Routine, RoutineFormData } from "../types/routine";
+import { API_BASE_URL } from "../config/constants";
 
 const handleError = (error: unknown, defaultMessage: string): never => {
     if (error instanceof Error && error.message) {
@@ -9,14 +10,11 @@ const handleError = (error: unknown, defaultMessage: string): never => {
 
 export const routineService = {
     async getAll(token: string): Promise<Routine[]> {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/routines`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/routines`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
         if (!response.ok) {
             const error = await response.json();
@@ -28,14 +26,11 @@ export const routineService = {
     },
 
     async getById(id: number, token: string): Promise<Routine> {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/routines/${id}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/routines/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
         if (!response.ok) {
             const error = await response.json();
@@ -51,17 +46,14 @@ export const routineService = {
         token: string
     ): Promise<Routine> {
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/routines`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(routineData),
-                }
-            );
+            const response = await fetch(`${API_BASE_URL}/routines`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(routineData),
+            });
 
             if (!response.ok) {
                 const error = await response.json();
@@ -83,17 +75,14 @@ export const routineService = {
         routineData: RoutineFormData,
         token: string
     ): Promise<Routine> {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/routines/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(routineData),
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/routines/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(routineData),
+        });
 
         if (!response.ok) {
             const error = await response.json();
@@ -110,7 +99,7 @@ export const routineService = {
         token: string
     ): Promise<Routine> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/routines/${id}/move`,
+            `${API_BASE_URL}/routines/${id}/move`,
             {
                 method: "PATCH",
                 headers: {
@@ -131,15 +120,12 @@ export const routineService = {
     },
 
     async delete(id: number, token: string): Promise<void> {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/routines/${id}`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/routines/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
         if (!response.ok) {
             const error = await response.json();
@@ -153,7 +139,7 @@ export const routineService = {
     ): Promise<void> {
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/routines/reorder`,
+                `${API_BASE_URL}/routines/reorder`,
                 {
                     method: "PATCH",
                     headers: {

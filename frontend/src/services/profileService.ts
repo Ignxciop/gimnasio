@@ -1,5 +1,6 @@
 import { api } from "./api";
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config/constants";
 import type { User } from "../types/auth.types";
 
 interface ProfileResponse {
@@ -42,7 +43,7 @@ export const profileService = {
         }
 
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/profile/${username}`,
+            `${API_BASE_URL}/profile/${username}`,
             {
                 headers,
             }
@@ -61,17 +62,14 @@ export const profileService = {
         isPublic: boolean,
         token: string
     ): Promise<ProfileData> {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/profile/privacy`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ isPublic }),
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/profile/privacy`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ isPublic }),
+        });
 
         if (!response.ok) {
             const error = await response.json();
@@ -88,17 +86,14 @@ export const profileService = {
         unit: "kg" | "lbs",
         token: string
     ): Promise<{ preferredUnit: "kg" | "lbs" }> {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/profile/unit`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ unit }),
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/profile/unit`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ unit }),
+        });
 
         if (!response.ok) {
             const error = await response.json();
@@ -113,7 +108,7 @@ export const profileService = {
 
     async deleteAccount(token: string): Promise<void> {
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/profile/delete-account`,
+            `${API_BASE_URL}/profile/delete-account`,
             {
                 method: "DELETE",
                 headers: {
@@ -130,9 +125,7 @@ export const profileService = {
 
     async exportData(format: "csv" | "json", token: string): Promise<void> {
         const response = await fetch(
-            `${
-                import.meta.env.VITE_API_URL
-            }/api/profile/export?format=${format}`,
+            `${API_BASE_URL}/profile/export?format=${format}`,
             {
                 method: "GET",
                 headers: {

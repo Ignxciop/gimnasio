@@ -1,5 +1,6 @@
 import { api } from "./api";
 import { tokenStorage } from "./tokenStorage";
+import { API_BASE_URL } from "../config/constants";
 import type {
     LoginCredentials,
     LoginResponse,
@@ -35,7 +36,7 @@ export const authService = {
         refreshPromise = (async () => {
             try {
                 const csrfResponse = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/auth/csrf-token`,
+                    `${API_BASE_URL}/auth/csrf-token`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -49,7 +50,7 @@ export const authService = {
                 const { csrfToken } = await csrfResponse.json();
 
                 const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
+                    `${API_BASE_URL}/auth/refresh`,
                     {
                         method: "POST",
                         credentials: "include",
@@ -79,7 +80,7 @@ export const authService = {
 
     async logout(): Promise<void> {
         const csrfResponse = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/auth/csrf-token`,
+            `${API_BASE_URL}/auth/csrf-token`,
             {
                 method: "GET",
                 credentials: "include",
@@ -88,7 +89,7 @@ export const authService = {
 
         if (csrfResponse.ok) {
             const { csrfToken } = await csrfResponse.json();
-            await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
+            await fetch(`${API_BASE_URL}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

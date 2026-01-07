@@ -1,4 +1,5 @@
 import { api } from "./api";
+import { API_BASE_URL } from "../config/constants";
 
 export interface Exercise {
     id: number;
@@ -65,16 +66,13 @@ export const exerciseService = {
             formData.append("video", videoFile);
         }
 
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/exercises`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                body: formData,
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/exercises`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+        });
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -106,16 +104,13 @@ export const exerciseService = {
             formData.append("video", videoFile);
         }
 
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/exercises/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                body: formData,
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/exercises/${id}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: formData,
+        });
 
         if (!response.ok) {
             const errorData = await response.json();

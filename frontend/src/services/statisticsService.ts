@@ -1,4 +1,5 @@
 import type { EffectiveSet } from "../types/muscleStimulus.types";
+import { API_BASE_URL } from "../config/constants";
 
 interface ActiveRoutineSetResponse {
     id: number;
@@ -34,9 +35,7 @@ export const statisticsService = {
         }
 
         const response = await fetch(
-            `${
-                import.meta.env.VITE_API_URL
-            }/api/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
+            `${API_BASE_URL}/statistics/monthly-sets?userId=${userId}&year=${year}&month=${month}`,
             {
                 headers,
             }
@@ -70,9 +69,7 @@ export const statisticsService = {
         }
 
         const response = await fetch(
-            `${
-                import.meta.env.VITE_API_URL
-            }/api/statistics/months-with-workouts?userId=${userId}`,
+            `${API_BASE_URL}/statistics/months-with-workouts?userId=${userId}`,
             {
                 headers,
             }
@@ -90,14 +87,11 @@ export const statisticsService = {
     },
 
     async getExercises(token: string) {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/exercises`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
+        const response = await fetch(`${API_BASE_URL}/exercises`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
         if (!response.ok) {
             throw new Error("Error al obtener ejercicios");

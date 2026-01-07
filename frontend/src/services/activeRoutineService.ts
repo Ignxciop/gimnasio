@@ -45,7 +45,7 @@ interface ActiveRoutine {
 export const activeRoutineService = {
     async getActive(token: string): Promise<ActiveRoutine | null> {
         const response = await fetch(
-            `${API_BASE_URL}/api/active-routines/active`,
+            `${API_BASE_URL}/active-routines/active`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ export const activeRoutineService = {
     },
 
     async create(routineId: number, token: string): Promise<ActiveRoutine> {
-        const response = await fetch(`${API_BASE_URL}/api/active-routines`, {
+        const response = await fetch(`${API_BASE_URL}/active-routines`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -88,7 +88,7 @@ export const activeRoutineService = {
         token: string
     ): Promise<ActiveRoutineSet> {
         const response = await fetch(
-            `${API_BASE_URL}/api/active-routines/sets/${setId}`,
+            `${API_BASE_URL}/active-routines/sets/${setId}`,
             {
                 method: "PUT",
                 headers: {
@@ -113,7 +113,7 @@ export const activeRoutineService = {
         token: string
     ): Promise<void> {
         const response = await fetch(
-            `${API_BASE_URL}/api/active-routines/reorder`,
+            `${API_BASE_URL}/active-routines/reorder`,
             {
                 method: "PUT",
                 headers: {
@@ -132,7 +132,7 @@ export const activeRoutineService = {
 
     async complete(activeRoutineId: number, token: string): Promise<void> {
         const response = await fetch(
-            `${API_BASE_URL}/api/active-routines/${activeRoutineId}/complete`,
+            `${API_BASE_URL}/active-routines/${activeRoutineId}/complete`,
             {
                 method: "POST",
                 headers: {
@@ -150,7 +150,7 @@ export const activeRoutineService = {
 
     async cancel(activeRoutineId: number, token: string): Promise<void> {
         const response = await fetch(
-            `${API_BASE_URL}/api/active-routines/${activeRoutineId}/cancel`,
+            `${API_BASE_URL}/active-routines/${activeRoutineId}/cancel`,
             {
                 method: "DELETE",
                 headers: {
@@ -167,7 +167,7 @@ export const activeRoutineService = {
 
     async addSet(exerciseId: number, token: string): Promise<ActiveRoutineSet> {
         const response = await fetch(
-            `${API_BASE_URL}/api/active-routines/sets`,
+            `${API_BASE_URL}/active-routines/sets`,
             {
                 method: "POST",
                 headers: {
@@ -209,7 +209,7 @@ export const activeRoutineService = {
         token: string
     ): Promise<void> {
         const response = await fetch(
-            `${API_BASE_URL}/api/active-routines/completed/${activeRoutineId}`,
+            `${API_BASE_URL}/active-routines/completed/${activeRoutineId}`,
             {
                 method: "DELETE",
                 headers: {

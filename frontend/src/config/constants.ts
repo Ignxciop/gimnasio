@@ -3,30 +3,51 @@
 const runtimeConfig =
     typeof window !== "undefined" ? window.__ENV__ : undefined;
 
-// Priority: runtime config > build-time env > error
-const getApiUrl = (): string => {
-    let baseUrl: string;
+// Normalize API URL - remove trailing slash, validate format
+const normalizeApiUrl = (url: string): string => {
+    const normalized = url.replace(/\/+$/, ""); // Remove trailing slashes
 
-    if (runtimeConfig?.API_URL) {
-        baseUrl = runtimeConfig.API_URL;
-    } else if (import.meta.env.VITE_API_URL) {
-        baseUrl = import.meta.env.VITE_API_URL;
-    } else if (import.meta.env.DEV) {
-        baseUrl = "http://localhost:3000";
-    } else {
+    // Defensive validation
+    if (normalized.includes("/api/api")) {
         throw new Error(
-            "API_BASE_URL not configured. Set API_URL environment variable in docker-compose.yml"
+            "❌ API_BASE_URL mal configurada: contiene doble /api. " +
+                "La variable debe ser: https://gimnasio-api.josenunez.cl/api"
         );
     }
 
-    return `${baseUrl}/api`;
+    if (!import.meta.env.DEV && normalized.includes("localhost")) {
+        console.warn(
+            "⚠️ WARNING: API_BASE_URL contiene localhost en producción"
+        );
+    }
+
+    return normalized;
+};
+
+// Priority: runtime config > build-time env > development fallback
+const getApiUrl = (): string => {
+    if (runtimeConfig?.API_URL) {
+        return normalizeApiUrl(runtimeConfig.API_URL);
+    }
+
+    if (import.meta.env.VITE_API_URL) {
+        return normalizeApiUrl(import.meta.env.VITE_API_URL);
+    }
+
+    // Development fallback includes /api
+    if (import.meta.env.DEV) {
+        return "http://localhost:3000/api";
+    }
+
+    throw new Error(
+        "API_BASE_URL not configured. Set API_URL environment variable with full path (e.g., https://gimnasio-api.josenunez.cl/api)"
+    );
 };
 
 export const API_BASE_URL = getApiUrl();
 
 export const PATHS = {
     RESOURCES: "/resources/examples_exercises",
-    API: "/api",
 } as const;
 
 export const ROLES = {
@@ -61,5 +82,5 @@ export const getVideoUrl = (videoPath: string | null): string | null => {
 };
 
 export const getApiEndpoint = (path: string): string => {
-    return `${API_BASE_URL}${PATHS.API}${path}`;
+    return `${API_BASE_URL}${path}`;
 };
