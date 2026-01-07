@@ -59,6 +59,4 @@ networks:
         driver: bridge
     default:
         name: dokploy-network
-
-        # Build: 20260106-010000
         external: true

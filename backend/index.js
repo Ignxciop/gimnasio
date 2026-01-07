@@ -88,6 +88,15 @@ app.use(cookieParser());
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
+app.get("/health", (req, res) => {
+    res.json({
+        status: "ok",
+        timestamp: new Date().toISOString(),
+        corsOrigin: process.env.CORS_ORIGIN,
+        nodeEnv: process.env.NODE_ENV,
+    });
+});
+
 app.get("/api/auth/csrf-token", (req, res) => {
     try {
         const token = generateCsrfToken(req, res);
