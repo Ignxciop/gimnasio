@@ -29,11 +29,11 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile
-            args:
-                VITE_API_URL: ${VITE_API_URL:-https://gimnasio-api.josenunez.cl}
         restart: unless-stopped
         ports:
             - "4000:4000"
+        environment:
+            VITE_API_URL: ${VITE_API_URL:-https://gimnasio-api.josenunez.cl}
         depends_on:
             - backend
         networks:
