@@ -44,8 +44,25 @@ const AdminAudit = lazy(() =>
         default: m.AdminAudit,
     }))
 );
-const Gestion = lazy(() =>
-    import("./pages/Gestion").then((m) => ({ default: m.Gestion }))
+const GestionLayout = lazy(() =>
+    import("./layouts/GestionLayout").then((m) => ({
+        default: m.GestionLayout,
+    }))
+);
+const GestionExercises = lazy(() =>
+    import("./pages/gestion/GestionExercises").then((m) => ({
+        default: m.GestionExercises,
+    }))
+);
+const GestionEquipment = lazy(() =>
+    import("./pages/gestion/GestionEquipment").then((m) => ({
+        default: m.GestionEquipment,
+    }))
+);
+const GestionMuscleGroups = lazy(() =>
+    import("./pages/gestion/GestionMuscleGroups").then((m) => ({
+        default: m.GestionMuscleGroups,
+    }))
 );
 const Rutinas = lazy(() => import("./pages/Rutinas"));
 const RoutineDetail = lazy(() => import("./pages/RoutineDetail"));
@@ -237,12 +254,22 @@ function App() {
                                 path="/gestion"
                                 element={
                                     isAuthenticated ? (
-                                        <Gestion />
+                                        <GestionLayout />
                                     ) : (
                                         <Navigate to="/login" replace />
                                     )
                                 }
-                            />
+                            >
+                                <Route index element={<GestionExercises />} />
+                                <Route
+                                    path="equipamiento"
+                                    element={<GestionEquipment />}
+                                />
+                                <Route
+                                    path="grupos-musculares"
+                                    element={<GestionMuscleGroups />}
+                                />
+                            </Route>
 
                             <Route
                                 path="/rutinas"
