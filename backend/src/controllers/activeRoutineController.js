@@ -60,6 +60,26 @@ class ActiveRoutineController {
         }
     }
 
+    async uncompleteSet(req, res, next) {
+        try {
+            const setId = parseInt(req.params.setId);
+            const userId = req.user.userId;
+
+            const updatedSet = await activeRoutineService.uncompleteSet(
+                setId,
+                userId
+            );
+
+            res.status(200).json({
+                success: true,
+                message: "Serie desmarcada exitosamente",
+                data: updatedSet,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async reorderSets(req, res, next) {
         try {
             const { sets } = req.body;
