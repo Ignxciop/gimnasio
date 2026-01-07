@@ -72,6 +72,9 @@ export default function ActiveRoutine() {
     const [draggedSet, setDraggedSet] = useState<ActiveRoutineSet | null>(null);
     const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
     const draggedSetRef = useRef<ActiveRoutineSet | null>(null);
+    const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
+    const [longPressActive, setLongPressActive] =
+        useState<ActiveRoutineSet | null>(null);
     const [weightInputs, setWeightInputs] = useState<Record<number, string>>(
         {}
     );
@@ -102,6 +105,19 @@ export default function ActiveRoutine() {
             if (updatedSet.isPR) {
                 showToast("success", "¡Nuevo PR! 🏆");
             }
+        },
+    });
+
+    const uncompleteSet = useApiCall(activeRoutineService.uncompleteSet, {
+        errorMessage: "Error al desmarcar la serie",
+        onSuccess: (updatedSet) => {
+            if (!activeRoutine) return;
+            setActiveRoutine({
+                ...activeRoutine,
+                sets: activeRoutine.sets.map((s) =>
+                    s.id === updatedSet.id ? { ...s, ...updatedSet } : s
+                ),
+            });
         },
     });
 
@@ -210,23 +226,51 @@ export default function ActiveRoutine() {
         const token = authService.getToken();
         if (!token) return;
 
-        await updateSet.execute(setId, set.actualWeight, set.actualReps, token);
+        if (set.completed) {
+            await uncompleteSet.execute(setId, token);
+        } else {
+            await updateSet.execute(
+                setId,
+                set.actualWeight,
+                set.actualReps,
+                token
+            );
+        }
     };
 
     const handleDragStart = (_e: React.DragEvent, set: ActiveRoutineSet) => {
         setDraggedSet(set);
         draggedSetRef.current = set;
+        document.body.style.overflow = "hidden";
     };
 
     const handleTouchStart = (e: React.TouchEvent, set: ActiveRoutineSet) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".drag-handle")) return;
+
         e.stopPropagation();
-        e.preventDefault();
-        setDraggedSet(set);
-        draggedSetRef.current = set;
-        setIsTouchDragging(true);
+
+        setLongPressActive(set);
+
+        const timer = setTimeout(() => {
+            setDraggedSet(set);
+            draggedSetRef.current = set;
+            setIsTouchDragging(true);
+            setLongPressActive(null);
+            document.body.style.overflow = "hidden";
+        }, 400);
+
+        setLongPressTimer(timer);
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
+        if (longPressTimer && !isTouchDragging) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+            setLongPressActive(null);
+            return;
+        }
+
         if (!isTouchDragging) return;
         e.preventDefault();
     };
@@ -244,12 +288,14 @@ export default function ActiveRoutine() {
         if (!draggedSet || draggedSet.id === targetSet.id || !activeRoutine) {
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
         if (draggedSet.exerciseId !== targetSet.exerciseId) {
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -257,6 +303,7 @@ export default function ActiveRoutine() {
         if (!token) {
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -303,13 +350,21 @@ export default function ActiveRoutine() {
 
         setDraggedSet(null);
         draggedSetRef.current = null;
+        document.body.style.overflow = "";
     };
 
     const handleTouchEnd = async (e: React.TouchEvent) => {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+            setLongPressActive(null);
+        }
+
         if (!isTouchDragging || !draggedSetRef.current) {
             setIsTouchDragging(false);
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -327,6 +382,7 @@ export default function ActiveRoutine() {
             setIsTouchDragging(false);
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -337,6 +393,7 @@ export default function ActiveRoutine() {
             setIsTouchDragging(false);
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -346,6 +403,7 @@ export default function ActiveRoutine() {
             setIsTouchDragging(false);
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -353,6 +411,7 @@ export default function ActiveRoutine() {
             setIsTouchDragging(false);
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -361,6 +420,7 @@ export default function ActiveRoutine() {
             setIsTouchDragging(false);
             setDraggedSet(null);
             draggedSetRef.current = null;
+            document.body.style.overflow = "";
             return;
         }
 
@@ -406,6 +466,7 @@ export default function ActiveRoutine() {
         setIsTouchDragging(false);
         setDraggedSet(null);
         draggedSetRef.current = null;
+        document.body.style.overflow = "";
     };
 
     const handleAddSet = async (exerciseId: number) => {
@@ -581,6 +642,11 @@ export default function ActiveRoutine() {
                                                     draggedSet?.id === set.id
                                                         ? "dragging"
                                                         : ""
+                                                } ${
+                                                    longPressActive?.id ===
+                                                    set.id
+                                                        ? "long-press-active"
+                                                        : ""
                                                 }`}
                                                 draggable
                                                 onDragStart={(e) =>
@@ -714,7 +780,6 @@ export default function ActiveRoutine() {
                                                             )
                                                         }
                                                         className="btn-complete-set"
-                                                        disabled={set.completed}
                                                     >
                                                         <Check size={18} />
                                                     </button>
