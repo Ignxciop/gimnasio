@@ -11,7 +11,7 @@ services:
         environment:
             NODE_ENV: production
             PORT: 4001
-            DATABASE_URL: ${DATABASE_URL}
+            DATABASE_URL: ${GIMNASIO_DATABASE_URL}
             JWT_SECRET: ${JWT_SECRET}
             REFRESH_JWT_SECRET: ${REFRESH_JWT_SECRET}
             CSRF_SECRET: ${CSRF_SECRET}
