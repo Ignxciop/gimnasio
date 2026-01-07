@@ -16,8 +16,8 @@ export interface RegisterResponse {
     success: boolean;
     message: string;
     data: {
-        user: User;
-        accessToken: string;
+        userId: string;
+        email: string;
     };
 }
 
