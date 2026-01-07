@@ -5,7 +5,6 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
-        container_name: gimnasio-backend
         restart: unless-stopped
         ports:
             - "4001:4001"
@@ -32,7 +31,6 @@ services:
             dockerfile: Dockerfile
             args:
                 VITE_API_URL: ${VITE_API_URL:-http://backend:4001}
-        container_name: gimnasio-frontend
         restart: unless-stopped
         ports:
             - "4000:4000"
@@ -43,7 +41,6 @@ services:
 
     cloudflared:
         image: cloudflare/cloudflared:latest
-        container_name: gimnasio-cloudflared
         restart: unless-stopped
         environment:
             TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
