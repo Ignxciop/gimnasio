@@ -86,13 +86,38 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    cursor: move;
-    transition: all 0.2s ease;
-    touch-action: none;
+    transition: all 0.15s ease;
+    position: relative;
+    overflow: visible;
 }
 
 .exercise-card:hover {
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+.exercise-card.long-press-active {
+    transform: scale(1.02);
+    border-color: rgba(220, 38, 38, 0.3);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.2);
+    background: linear-gradient(
+        145deg,
+        rgba(220, 38, 38, 0.08),
+        rgba(15, 15, 15, 0.95)
+    );
+}
+
+.exercise-card.dragging,
+.exercise-card[data-dragging="true"] {
+    opacity: 0.7;
+    transform: scale(1.03);
+    border-color: var(--accent-mid);
+    box-shadow: 0 12px 32px rgba(220, 38, 38, 0.5);
+    background: linear-gradient(
+        145deg,
+        rgba(220, 38, 38, 0.2),
+        rgba(15, 15, 15, 0.95)
+    );
+    z-index: 1000;
 }
 
 .exercise-card-content {
@@ -100,20 +125,80 @@
     align-items: center;
     gap: 1rem;
     flex: 1;
+    pointer-events: auto;
 }
 
 .drag-handle {
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.5);
     cursor: grab;
-    transition: color 0.2s ease;
+    transition: all 0.15s ease;
+    padding: 0.625rem;
+    margin: -0.625rem;
+    border-radius: 6px;
+    pointer-events: auto;
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 1px solid transparent;
 }
 
-.drag-handle:active {
-    cursor: grabbing;
+.drag-handle svg {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
 }
 
 .drag-handle:hover {
     color: var(--accent-mid);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.drag-handle:hover svg {
+    opacity: 1;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+    background-color: rgba(220, 38, 38, 0.1);
+    border-color: var(--accent-mid);
+    color: var(--accent-mid);
+}
+
+.exercise-card.long-press-active .drag-handle {
+    background-color: rgba(220, 38, 38, 0.15);
+    border-color: var(--accent-mid);
+    color: var(--accent-mid);
+    animation: pulse 0.4s ease-in-out;
+}
+
+.exercise-card.dragging .drag-handle,
+.exercise-card[data-dragging="true"] .drag-handle {
+    cursor: grabbing;
+    background-color: rgba(220, 38, 38, 0.2);
+    color: var(--accent-mid);
+}
+
+@media (hover: none) {
+    .drag-handle svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.6;
+    }
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
 }
 
 .exercise-thumbnail {
