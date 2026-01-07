@@ -85,8 +85,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = () => {
 
             navigate("/verificar-correo", {
                 state: {
-                    userId: response.data.user.id,
-                    email: response.data.user.email,
+                    userId: response.data.userId,
+                    email: response.data.email,
                     password,
                 },
             });
