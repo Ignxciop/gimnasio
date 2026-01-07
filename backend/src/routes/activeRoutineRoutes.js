@@ -43,6 +43,12 @@ router.put(
     activeRoutineController.updateSet
 );
 
+router.delete(
+    "/sets/:setId/complete",
+    authenticate,
+    activeRoutineController.uncompleteSet
+);
+
 router.put(
     "/reorder",
     authenticate,
