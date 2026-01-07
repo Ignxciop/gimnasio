@@ -15,7 +15,7 @@ RUN pnpm prisma generate
 
 COPY --chown=nodejs:nodejs . .
 
-RUN mkdir -p /app/resources/user_photo && \
+RUN mkdir -p /app/resources/user_photo /app/resources/examples_exercises && \
     chown -R nodejs:nodejs /app/resources
 
 USER nodejs
