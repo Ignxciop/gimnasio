@@ -22,8 +22,8 @@ services:
             EMAIL_APP_PASSWORD: ${EMAIL_APP_PASSWORD}
             FRONTEND_URL: ${FRONTEND_URL}
         networks:
-            gimnasio-network:
-            default:
+            - gimnasio-network
+            - default
 
     frontend:
         build:
@@ -37,8 +37,7 @@ services:
         depends_on:
             - backend
         networks:
-            gimnasio-network:
-            default:
+            - gimnasio-network
 
     cloudflared:
         image: cloudflare/cloudflared:latest
@@ -46,8 +45,7 @@ services:
         environment:
             TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
         networks:
-            gimnasio-network:
-            default:
+            - gimnasio-network
         command:
             - tunnel
             - --no-autoupdate
