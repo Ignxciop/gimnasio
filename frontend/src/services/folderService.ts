@@ -1,6 +1,5 @@
 import type { Folder, FolderFormData } from "../types/routine";
-
-const API_URL = "http://localhost:3000/api";
+import { API_BASE_URL } from "../config/constants";
 
 const handleError = (error: any, defaultMessage: string): never => {
     if (error.message) {
@@ -11,7 +10,7 @@ const handleError = (error: any, defaultMessage: string): never => {
 
 export const folderService = {
     async getAll(token: string): Promise<Folder[]> {
-        const response = await fetch(`${API_URL}/folders`, {
+        const response = await fetch(`${API_BASE_URL}/folders`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -27,7 +26,7 @@ export const folderService = {
     },
 
     async getById(id: number, token: string): Promise<Folder> {
-        const response = await fetch(`${API_URL}/folders/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/folders/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -44,7 +43,7 @@ export const folderService = {
 
     async create(folderData: FolderFormData, token: string): Promise<Folder> {
         try {
-            const response = await fetch(`${API_URL}/folders`, {
+            const response = await fetch(`${API_BASE_URL}/folders`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -74,7 +73,7 @@ export const folderService = {
         token: string
     ): Promise<Folder> {
         try {
-            const response = await fetch(`${API_URL}/folders/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/folders/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -102,7 +101,7 @@ export const folderService = {
 
     async delete(id: number, token: string): Promise<void> {
         try {
-            const response = await fetch(`${API_URL}/folders/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/folders/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -128,7 +127,7 @@ export const folderService = {
         token: string
     ): Promise<void> {
         try {
-            const response = await fetch(`${API_URL}/folders/reorder`, {
+            const response = await fetch(`${API_BASE_URL}/folders/reorder`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
