@@ -23,6 +23,8 @@ const port = config.port;
 
 const app = express();
 
+app.set("trust proxy", true);
+
 const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
     : process.env.NODE_ENV === "production"
