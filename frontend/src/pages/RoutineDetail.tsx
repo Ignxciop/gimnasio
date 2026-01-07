@@ -43,6 +43,9 @@ export default function RoutineDetail() {
     const [draggedExercise, setDraggedExercise] =
         useState<RoutineExercise | null>(null);
     const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
+    const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
+    const [longPressActive, setLongPressActive] =
+        useState<RoutineExercise | null>(null);
 
     const addExerciseModal = useModal();
     const editExerciseModal = useModal<RoutineExercise>();
@@ -146,6 +149,7 @@ export default function RoutineDetail() {
 
     const handleDragStart = (exercise: RoutineExercise) => {
         setDraggedExercise(exercise);
+        document.body.style.overflow = "hidden";
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -156,20 +160,46 @@ export default function RoutineDetail() {
         e: React.TouchEvent,
         exercise: RoutineExercise
     ) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".drag-handle")) return;
+
         e.stopPropagation();
-        setDraggedExercise(exercise);
-        setIsTouchDragging(true);
+
+        setLongPressActive(exercise);
+
+        const timer = setTimeout(() => {
+            setDraggedExercise(exercise);
+            setIsTouchDragging(true);
+            setLongPressActive(null);
+            document.body.style.overflow = "hidden";
+        }, 400);
+
+        setLongPressTimer(timer);
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
+        if (longPressTimer && !isTouchDragging) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+            setLongPressActive(null);
+            return;
+        }
+
         if (!isTouchDragging) return;
         e.preventDefault();
     };
 
     const handleTouchEnd = async (e: React.TouchEvent) => {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+            setLongPressActive(null);
+        }
+
         if (!isTouchDragging || !draggedExercise) {
             setIsTouchDragging(false);
             setDraggedExercise(null);
+            document.body.style.overflow = "";
             return;
         }
 
@@ -182,6 +212,7 @@ export default function RoutineDetail() {
         if (!exerciseCard) {
             setIsTouchDragging(false);
             setDraggedExercise(null);
+            document.body.style.overflow = "";
             return;
         }
 
@@ -194,6 +225,7 @@ export default function RoutineDetail() {
         if (!targetExercise || targetExercise.id === draggedExercise.id) {
             setIsTouchDragging(false);
             setDraggedExercise(null);
+            document.body.style.overflow = "";
             return;
         }
 
@@ -220,6 +252,7 @@ export default function RoutineDetail() {
 
         setIsTouchDragging(false);
         setDraggedExercise(null);
+        document.body.style.overflow = "";
     };
 
     const handleDrop = async (
@@ -230,12 +263,14 @@ export default function RoutineDetail() {
 
         if (!draggedExercise || draggedExercise.id === targetExercise.id) {
             setDraggedExercise(null);
+            document.body.style.overflow = "";
             return;
         }
 
         const token = authService.getToken();
         if (!token) {
             setDraggedExercise(null);
+            document.body.style.overflow = "";
             return;
         }
 
@@ -258,6 +293,7 @@ export default function RoutineDetail() {
 
         await reorderExercises.execute(updatedExercises, token);
         setDraggedExercise(null);
+        document.body.style.overflow = "";
     };
 
     const handleStartWorkout = async () => {
@@ -317,7 +353,15 @@ export default function RoutineDetail() {
                             <div
                                 key={routineExercise.id}
                                 data-exercise-id={routineExercise.id}
-                                className="exercise-card"
+                                className={`exercise-card ${
+                                    draggedExercise?.id === routineExercise.id
+                                        ? "dragging"
+                                        : ""
+                                } ${
+                                    longPressActive?.id === routineExercise.id
+                                        ? "long-press-active"
+                                        : ""
+                                }`}
                                 draggable
                                 onDragStart={() =>
                                     handleDragStart(routineExercise)
