@@ -10,6 +10,7 @@ export const loginLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: false,
+    validate: { trustProxy: false },
 });
 
 export const refreshLimiter = rateLimit({
@@ -21,6 +22,7 @@ export const refreshLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { trustProxy: false },
 });
 
 export const registerLimiter = rateLimit({
@@ -32,6 +34,7 @@ export const registerLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { trustProxy: false },
 });
 
 export const generalLimiter = rateLimit({
@@ -43,6 +46,7 @@ export const generalLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { trustProxy: false },
 });
 
 export const uploadLimiter = rateLimit({
@@ -54,6 +58,7 @@ export const uploadLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { trustProxy: false },
 });
 
 export const crudLimiter = rateLimit({
@@ -65,6 +70,7 @@ export const crudLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { trustProxy: false },
 });
 
 export const feedbackLimiter = rateLimit({
@@ -76,4 +82,5 @@ export const feedbackLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { trustProxy: false },
 });
