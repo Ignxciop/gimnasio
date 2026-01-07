@@ -4,10 +4,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { doubleCsrfProtection, generateCsrfToken } from "./src/config/csrf.js";
-
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
-console.log("CORS_ORIGIN:", process.env.CORS_ORIGIN);
-
 import authRoutes from "./src/routes/authRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
 import adminRoutes from "./src/routes/adminRoutes.js";

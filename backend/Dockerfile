@@ -22,4 +22,4 @@ USER nodejs
 
 EXPOSE 4001
 
-CMD ["node", "index.js"]
+CMD ["sh", "-c", "pnpm prisma migrate deploy && node index.js"]
