@@ -46,6 +46,7 @@ services:
             TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
         networks:
             - gimnasio-network
+            - default
         command:
             - tunnel
             - --no-autoupdate
