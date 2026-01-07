@@ -5,22 +5,21 @@ const runtimeConfig =
 
 // Priority: runtime config > build-time env > error
 const getApiUrl = (): string => {
+    let baseUrl: string;
+
     if (runtimeConfig?.API_URL) {
-        return runtimeConfig.API_URL;
+        baseUrl = runtimeConfig.API_URL;
+    } else if (import.meta.env.VITE_API_URL) {
+        baseUrl = import.meta.env.VITE_API_URL;
+    } else if (import.meta.env.DEV) {
+        baseUrl = "http://localhost:3000";
+    } else {
+        throw new Error(
+            "API_BASE_URL not configured. Set API_URL environment variable in docker-compose.yml"
+        );
     }
 
-    if (import.meta.env.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL;
-    }
-
-    // Development fallback
-    if (import.meta.env.DEV) {
-        return "http://localhost:3000";
-    }
-
-    throw new Error(
-        "API_BASE_URL not configured. Set API_URL environment variable in docker-compose.yml"
-    );
+    return `${baseUrl}/api`;
 };
 
 export const API_BASE_URL = getApiUrl();
