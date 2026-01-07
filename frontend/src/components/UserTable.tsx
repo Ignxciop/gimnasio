@@ -8,8 +8,8 @@ import "./userTable.css";
 
 interface UserTableProps {
     users: User[];
-    onRoleChange: (userId: number, newRoleId: number) => Promise<void>;
-    onStatusToggle: (userId: number, currentStatus: boolean) => Promise<void>;
+    onRoleChange: (userId: string, newRoleId: number) => Promise<void>;
+    onStatusToggle: (userId: string, currentStatus: boolean) => Promise<void>;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({
@@ -17,9 +17,9 @@ export const UserTable: React.FC<UserTableProps> = ({
     onRoleChange,
     onStatusToggle,
 }) => {
-    const [loading, setLoading] = useState<number | null>(null);
+    const [loading, setLoading] = useState<string | null>(null);
 
-    const handleRoleChange = async (userId: number, newRoleId: number) => {
+    const handleRoleChange = async (userId: string, newRoleId: number) => {
         try {
             setLoading(userId);
             await onRoleChange(userId, newRoleId);
@@ -31,7 +31,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     };
 
     const handleStatusToggle = async (
-        userId: number,
+        userId: string,
         currentStatus: boolean
     ) => {
         try {

@@ -29,7 +29,7 @@ interface ActiveRoutineSet {
 
 interface ActiveRoutine {
     id: number;
-    userId: number;
+    userId: string;
     routineId: number;
     startTime: string;
     endTime: string | null;

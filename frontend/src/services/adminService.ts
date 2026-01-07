@@ -19,7 +19,7 @@ export const adminService = {
     },
 
     async updateUserRole(
-        userId: number,
+        userId: string,
         roleId: number,
         token: string
     ): Promise<User> {
@@ -31,7 +31,7 @@ export const adminService = {
     },
 
     async updateUserStatus(
-        userId: number,
+        userId: string,
         isActive: boolean,
         token: string
     ): Promise<User> {

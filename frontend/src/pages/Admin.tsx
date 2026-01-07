@@ -45,7 +45,7 @@ export const Admin: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleRoleChange = async (userId: number, newRoleId: number) => {
+    const handleRoleChange = async (userId: string, newRoleId: number) => {
         const token = authService.getToken();
         if (!token) return;
 
@@ -53,7 +53,7 @@ export const Admin: React.FC = () => {
     };
 
     const handleStatusToggle = async (
-        userId: number,
+        userId: string,
         currentStatus: boolean
     ) => {
         const token = authService.getToken();

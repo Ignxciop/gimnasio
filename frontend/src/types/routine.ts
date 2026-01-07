@@ -3,7 +3,7 @@ export interface Folder {
     name: string;
     description?: string | null;
     order: number;
-    userId: number;
+    userId: string;
     createdAt: string;
     updatedAt: string;
     routines?: Routine[];
@@ -15,7 +15,7 @@ export interface Routine {
     description?: string | null;
     order: number;
     folderId?: number | null;
-    userId: number;
+    userId: string;
     createdAt: string;
     updatedAt: string;
     folder?: Folder | null;

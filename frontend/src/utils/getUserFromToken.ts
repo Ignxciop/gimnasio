@@ -1,7 +1,7 @@
 import { authService } from "../services/authService";
 
 interface TokenPayload {
-    userId: number;
+    userId: string;
     email: string;
     roleId: number;
     username: string;
