@@ -1,11 +1,14 @@
 import rateLimit from "express-rate-limit";
 
 const createKeyGenerator = (useAuth = false) => {
-    return (req) => {
-        if (useAuth && req.user?.id) {
+    if (!useAuth) {
+        return undefined;
+    }
+    return (req, res) => {
+        if (req.user?.id) {
             return `user_${req.user.id}`;
         }
-        return req.ip || "unknown";
+        return req.ip;
     };
 };
 
@@ -19,7 +22,7 @@ export const strictAuthLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skipSuccessfulRequests: true,
-    validate: { trustProxy: false },
+    validate: { trustProxy: false, keyGeneratorIpFallback: false },
     keyGenerator: createKeyGenerator(false),
 });
 
@@ -32,7 +35,7 @@ export const refreshLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: { trustProxy: false },
+    validate: { trustProxy: false, keyGeneratorIpFallback: false },
     keyGenerator: createKeyGenerator(false),
 });
 
@@ -45,7 +48,7 @@ export const registerLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: { trustProxy: false },
+    validate: { trustProxy: false, keyGeneratorIpFallback: false },
     keyGenerator: createKeyGenerator(false),
 });
 
@@ -58,7 +61,7 @@ export const readLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: { trustProxy: false },
+    validate: { trustProxy: false, keyGeneratorIpFallback: false },
     keyGenerator: createKeyGenerator(true),
 });
 
@@ -71,7 +74,7 @@ export const writeLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: { trustProxy: false },
+    validate: { trustProxy: false, keyGeneratorIpFallback: false },
     keyGenerator: createKeyGenerator(true),
 });
 
@@ -84,7 +87,7 @@ export const uploadLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: { trustProxy: false },
+    validate: { trustProxy: false, keyGeneratorIpFallback: false },
     keyGenerator: createKeyGenerator(true),
 });
 
@@ -97,7 +100,7 @@ export const feedbackLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    validate: { trustProxy: false },
+    validate: { trustProxy: false, keyGeneratorIpFallback: false },
     keyGenerator: createKeyGenerator(true),
 });
 
