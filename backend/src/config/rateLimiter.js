@@ -1,6 +1,15 @@
 import rateLimit from "express-rate-limit";
 
-export const loginLimiter = rateLimit({
+const createKeyGenerator = (useAuth = false) => {
+    return (req) => {
+        if (useAuth && req.user?.id) {
+            return `user_${req.user.id}`;
+        }
+        return req.ip || "unknown";
+    };
+};
+
+export const strictAuthLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
     message: {
@@ -9,13 +18,14 @@ export const loginLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: false,
+    skipSuccessfulRequests: true,
     validate: { trustProxy: false },
+    keyGenerator: createKeyGenerator(false),
 });
 
 export const refreshLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 30,
+    max: 100,
     message: {
         success: false,
         error: "Demasiadas solicitudes de renovación de token. Por favor, intenta nuevamente en 15 minutos.",
@@ -23,6 +33,7 @@ export const refreshLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     validate: { trustProxy: false },
+    keyGenerator: createKeyGenerator(false),
 });
 
 export const registerLimiter = rateLimit({
@@ -35,23 +46,38 @@ export const registerLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     validate: { trustProxy: false },
+    keyGenerator: createKeyGenerator(false),
 });
 
-export const generalLimiter = rateLimit({
+export const readLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 500,
+    max: 2000,
     message: {
         success: false,
-        error: "Demasiadas solicitudes. Por favor, intenta nuevamente en 15 minutos.",
+        error: "Demasiadas solicitudes de lectura. Por favor, intenta nuevamente en 15 minutos.",
     },
     standardHeaders: true,
     legacyHeaders: false,
     validate: { trustProxy: false },
+    keyGenerator: createKeyGenerator(true),
+});
+
+export const writeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000,
+    message: {
+        success: false,
+        error: "Demasiadas operaciones de escritura. Por favor, intenta nuevamente en 15 minutos.",
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: { trustProxy: false },
+    keyGenerator: createKeyGenerator(true),
 });
 
 export const uploadLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    max: 50,
+    max: 100,
     message: {
         success: false,
         error: "Demasiados archivos subidos. Por favor, intenta nuevamente en 1 hora.",
@@ -59,23 +85,12 @@ export const uploadLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     validate: { trustProxy: false },
-});
-
-export const crudLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 200,
-    message: {
-        success: false,
-        error: "Demasiadas operaciones. Por favor, intenta nuevamente en 15 minutos.",
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-    validate: { trustProxy: false },
+    keyGenerator: createKeyGenerator(true),
 });
 
 export const feedbackLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    max: 10,
+    max: 20,
     message: {
         success: false,
         error: "Demasiados mensajes de feedback. Por favor, intenta nuevamente en 1 hora.",
@@ -83,4 +98,9 @@ export const feedbackLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     validate: { trustProxy: false },
+    keyGenerator: createKeyGenerator(true),
 });
+
+export const loginLimiter = strictAuthLimiter;
+export const generalLimiter = readLimiter;
+export const crudLimiter = writeLimiter;

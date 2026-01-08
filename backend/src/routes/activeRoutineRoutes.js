@@ -1,6 +1,7 @@
 import express from "express";
 import activeRoutineController from "../controllers/activeRoutineController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import { validationResult } from "express-validator";
 import {
     createActiveRoutineValidation,
@@ -25,10 +26,16 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 
-router.get("/active", authenticate, activeRoutineController.getActive);
+router.get(
+    "/active",
+    readLimiter,
+    authenticate,
+    activeRoutineController.getActive
+);
 
 router.post(
     "/",
+    writeLimiter,
     authenticate,
     createActiveRoutineValidation,
     handleValidationErrors,
@@ -37,6 +44,7 @@ router.post(
 
 router.put(
     "/sets/:setId",
+    writeLimiter,
     authenticate,
     updateSetValidation,
     handleValidationErrors,
@@ -45,64 +53,88 @@ router.put(
 
 router.delete(
     "/sets/:setId/complete",
+    writeLimiter,
     authenticate,
     activeRoutineController.uncompleteSet
 );
 
 router.put(
     "/reorder",
+    writeLimiter,
     authenticate,
     reorderSetsValidation,
     handleValidationErrors,
     activeRoutineController.reorderSets
 );
 
-router.post("/:id/complete", authenticate, activeRoutineController.complete);
+router.post(
+    "/:id/complete",
+    writeLimiter,
+    authenticate,
+    activeRoutineController.complete
+);
 
-router.delete("/:id/cancel", authenticate, activeRoutineController.cancel);
+router.delete(
+    "/:id/cancel",
+    writeLimiter,
+    authenticate,
+    activeRoutineController.cancel
+);
 
 router.delete(
     "/completed/:id",
+    writeLimiter,
     authenticate,
     activeRoutineController.deleteCompleted
 );
 
 router.post(
     "/sets",
+    writeLimiter,
     authenticate,
     addSetValidation,
     handleValidationErrors,
     activeRoutineController.addSet
 );
 
-router.delete("/sets/:setId", authenticate, activeRoutineController.removeSet);
+router.delete(
+    "/sets/:setId",
+    writeLimiter,
+    authenticate,
+    activeRoutineController.removeSet
+);
 
 router.get(
     "/completed/dates",
+    readLimiter,
     authenticate,
     activeRoutineController.getCompletedDates
 );
 
 router.get(
     "/completed/recent",
+    readLimiter,
     authenticate,
     activeRoutineController.getRecentCompleted
 );
 
 router.get(
     "/completed/by-date",
+    readLimiter,
     authenticate,
     activeRoutineController.getCompletedByDate
 );
 
 router.get(
     "/streak/weekly",
+    readLimiter,
     authenticate,
     activeRoutineController.getWeeklyStreak
 );
 
 router.get(
     "/stats/monthly",
+    readLimiter,
     authenticate,
     activeRoutineController.getMonthlyStats
 );

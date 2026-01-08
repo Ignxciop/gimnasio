@@ -1,6 +1,7 @@
 import express from "express";
 import profileController from "../controllers/profileController.js";
 import { authenticate, optionalAuth } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import {
     updatePrivacyValidation,
     validate,
@@ -8,22 +9,33 @@ import {
 
 const router = express.Router();
 
-router.get("/me", authenticate, profileController.getProfile);
+router.get("/me", readLimiter, authenticate, profileController.getProfile);
 
 router.patch(
     "/privacy",
+    writeLimiter,
     authenticate,
     updatePrivacyValidation,
     validate,
     profileController.updatePrivacy
 );
 
-router.patch("/unit", authenticate, profileController.updateUnit);
+router.patch("/unit", writeLimiter, authenticate, profileController.updateUnit);
 
-router.get("/export", authenticate, profileController.exportData);
+router.get("/export", readLimiter, authenticate, profileController.exportData);
 
-router.get("/:username", optionalAuth, profileController.getProfileByUsername);
+router.get(
+    "/:username",
+    readLimiter,
+    optionalAuth,
+    profileController.getProfileByUsername
+);
 
-router.delete("/delete-account", authenticate, profileController.deleteAccount);
+router.delete(
+    "/delete-account",
+    writeLimiter,
+    authenticate,
+    profileController.deleteAccount
+);
 
 export default router;

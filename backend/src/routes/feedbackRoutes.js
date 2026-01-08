@@ -2,7 +2,11 @@ import express from "express";
 import feedbackController from "../controllers/feedbackController.js";
 import { authenticate, authorize } from "../middlewares/authMiddleware.js";
 import { createFeedbackValidation } from "../validators/feedbackValidator.js";
-import { feedbackLimiter } from "../config/rateLimiter.js";
+import {
+    feedbackLimiter,
+    readLimiter,
+    writeLimiter,
+} from "../config/rateLimiter.js";
 
 const router = express.Router();
 
@@ -14,10 +18,16 @@ router.post(
     feedbackController.createFeedback
 );
 
-router.get("/my-feedbacks", authenticate, feedbackController.getUserFeedbacks);
+router.get(
+    "/my-feedbacks",
+    readLimiter,
+    authenticate,
+    feedbackController.getUserFeedbacks
+);
 
 router.get(
     "/all",
+    readLimiter,
     authenticate,
     authorize("administrador"),
     feedbackController.getAllFeedbacks
@@ -25,6 +35,7 @@ router.get(
 
 router.patch(
     "/:id/status",
+    writeLimiter,
     authenticate,
     authorize("administrador"),
     feedbackController.updateFeedbackStatus

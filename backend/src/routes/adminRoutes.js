@@ -1,6 +1,7 @@
 import express from "express";
 import adminController from "../controllers/adminController.js";
 import { authenticate, authorize } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import {
     updateRoleValidation,
     updateStatusValidation,
@@ -25,6 +26,7 @@ const validateRequest = (req, res, next) => {
 
 router.get(
     "/users",
+    readLimiter,
     authenticate,
     authorize("administrador"),
     adminController.getUsers
@@ -32,6 +34,7 @@ router.get(
 
 router.put(
     "/users/:id/role",
+    writeLimiter,
     authenticate,
     authorize("administrador"),
     updateRoleValidation,
@@ -41,6 +44,7 @@ router.put(
 
 router.put(
     "/users/:id/status",
+    writeLimiter,
     authenticate,
     authorize("administrador"),
     updateStatusValidation,

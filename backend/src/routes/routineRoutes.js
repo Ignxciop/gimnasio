@@ -1,6 +1,7 @@
 import { Router } from "express";
 import routineController from "../controllers/routineController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import {
     createRoutineValidation,
     updateRoutineValidation,
@@ -25,10 +26,11 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 
-router.get("/", authenticate, routineController.getAll);
-router.get("/:id", authenticate, routineController.getById);
+router.get("/", readLimiter, authenticate, routineController.getAll);
+router.get("/:id", readLimiter, authenticate, routineController.getById);
 router.post(
     "/",
+    writeLimiter,
     authenticate,
     createRoutineValidation,
     handleValidationErrors,
@@ -36,6 +38,7 @@ router.post(
 );
 router.put(
     "/:id",
+    writeLimiter,
     authenticate,
     updateRoutineValidation,
     handleValidationErrors,
@@ -43,6 +46,7 @@ router.put(
 );
 router.patch(
     "/:id/move",
+    writeLimiter,
     authenticate,
     moveRoutineValidation,
     handleValidationErrors,
@@ -50,11 +54,12 @@ router.patch(
 );
 router.patch(
     "/reorder",
+    writeLimiter,
     authenticate,
     reorderRoutineValidation,
     handleValidationErrors,
     routineController.reorder
 );
-router.delete("/:id", authenticate, routineController.delete);
+router.delete("/:id", writeLimiter, authenticate, routineController.delete);
 
 export default router;

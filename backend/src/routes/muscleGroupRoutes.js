@@ -1,6 +1,7 @@
 import { Router } from "express";
 import muscleGroupController from "../controllers/muscleGroupController.js";
 import { authenticate, authorize } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import {
     createMuscleGroupValidation,
     updateMuscleGroupValidation,
@@ -27,6 +28,7 @@ const handleValidationErrors = (req, res, next) => {
 
 router.get(
     "/",
+    readLimiter,
     authenticate,
     authorize("administrador", "manager"),
     muscleGroupController.getAll
@@ -34,6 +36,7 @@ router.get(
 
 router.get(
     "/:id",
+    readLimiter,
     authenticate,
     authorize("administrador", "manager"),
     getMuscleGroupByIdValidation,
@@ -43,6 +46,7 @@ router.get(
 
 router.post(
     "/",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     createMuscleGroupValidation,
@@ -52,6 +56,7 @@ router.post(
 
 router.put(
     "/:id",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     updateMuscleGroupValidation,
@@ -61,6 +66,7 @@ router.put(
 
 router.delete(
     "/:id",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     deleteMuscleGroupValidation,

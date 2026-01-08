@@ -1,6 +1,7 @@
 import { Router } from "express";
 import folderController from "../controllers/folderController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import {
     createFolderValidation,
     updateFolderValidation,
@@ -24,10 +25,11 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 
-router.get("/", authenticate, folderController.getAll);
-router.get("/:id", authenticate, folderController.getById);
+router.get("/", readLimiter, authenticate, folderController.getAll);
+router.get("/:id", readLimiter, authenticate, folderController.getById);
 router.post(
     "/",
+    writeLimiter,
     authenticate,
     createFolderValidation,
     handleValidationErrors,
@@ -35,14 +37,16 @@ router.post(
 );
 router.put(
     "/:id",
+    writeLimiter,
     authenticate,
     updateFolderValidation,
     handleValidationErrors,
     folderController.update
 );
-router.delete("/:id", authenticate, folderController.delete);
+router.delete("/:id", writeLimiter, authenticate, folderController.delete);
 router.patch(
     "/reorder",
+    writeLimiter,
     authenticate,
     reorderFolderValidation,
     handleValidationErrors,

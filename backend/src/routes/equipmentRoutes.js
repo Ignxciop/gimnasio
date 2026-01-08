@@ -1,6 +1,7 @@
 import { Router } from "express";
 import equipmentController from "../controllers/equipmentController.js";
 import { authenticate, authorize } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import {
     createEquipmentValidation,
     updateEquipmentValidation,
@@ -27,6 +28,7 @@ const handleValidationErrors = (req, res, next) => {
 
 router.get(
     "/",
+    readLimiter,
     authenticate,
     authorize("administrador", "manager"),
     equipmentController.getAll
@@ -34,6 +36,7 @@ router.get(
 
 router.get(
     "/:id",
+    readLimiter,
     authenticate,
     authorize("administrador", "manager"),
     getEquipmentByIdValidation,
@@ -43,6 +46,7 @@ router.get(
 
 router.post(
     "/",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     createEquipmentValidation,
@@ -52,6 +56,7 @@ router.post(
 
 router.put(
     "/:id",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     updateEquipmentValidation,
@@ -61,6 +66,7 @@ router.put(
 
 router.delete(
     "/:id",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     deleteEquipmentValidation,

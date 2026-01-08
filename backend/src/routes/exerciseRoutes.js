@@ -2,7 +2,11 @@ import { Router } from "express";
 import exerciseController from "../controllers/exerciseController.js";
 import { authenticate, authorize } from "../middlewares/authMiddleware.js";
 import { upload } from "../config/multer.js";
-import { uploadLimiter } from "../config/rateLimiter.js";
+import {
+    uploadLimiter,
+    readLimiter,
+    writeLimiter,
+} from "../config/rateLimiter.js";
 import {
     createExerciseValidation,
     updateExerciseValidation,
@@ -46,10 +50,11 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 
-router.get("/", authenticate, exerciseController.getAll);
+router.get("/", readLimiter, authenticate, exerciseController.getAll);
 
 router.get(
     "/:id",
+    readLimiter,
     authenticate,
     getExerciseByIdValidation,
     handleValidationErrors,
@@ -58,6 +63,7 @@ router.get(
 
 router.post(
     "/",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     uploadLimiter,
@@ -70,6 +76,7 @@ router.post(
 
 router.put(
     "/:id",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     uploadLimiter,
@@ -82,6 +89,7 @@ router.put(
 
 router.delete(
     "/:id",
+    writeLimiter,
     authenticate,
     authorize("administrador", "manager"),
     deleteExerciseValidation,

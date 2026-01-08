@@ -119,7 +119,6 @@ app.get("/api/auth/csrf-token", (req, res) => {
     }
 });
 
-app.use("/api/", generalLimiter);
 app.use(
     "/api/resources",
     cors(corsOptions),

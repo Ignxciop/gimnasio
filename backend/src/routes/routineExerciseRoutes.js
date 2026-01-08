@@ -1,6 +1,7 @@
 import { Router } from "express";
 import routineExerciseController from "../controllers/routineExerciseController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
+import { readLimiter, writeLimiter } from "../config/rateLimiter.js";
 import {
     createRoutineExerciseValidation,
     updateRoutineExerciseValidation,
@@ -27,12 +28,14 @@ const handleValidationErrors = (req, res, next) => {
 
 router.get(
     "/routines/:routineId/exercises",
+    readLimiter,
     authenticate,
     routineExerciseController.getAllByRoutine
 );
 
 router.post(
     "/routines/:routineId/exercises",
+    writeLimiter,
     authenticate,
     createRoutineExerciseValidation,
     handleValidationErrors,
@@ -41,6 +44,7 @@ router.post(
 
 router.put(
     "/routine-exercises/:id",
+    writeLimiter,
     authenticate,
     updateRoutineExerciseValidation,
     handleValidationErrors,
@@ -49,6 +53,7 @@ router.put(
 
 router.delete(
     "/routine-exercises/:id",
+    writeLimiter,
     authenticate,
     deleteRoutineExerciseValidation,
     handleValidationErrors,
@@ -57,6 +62,7 @@ router.delete(
 
 router.patch(
     "/routine-exercises/reorder",
+    writeLimiter,
     authenticate,
     reorderRoutineExerciseValidation,
     handleValidationErrors,
