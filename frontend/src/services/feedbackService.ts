@@ -14,7 +14,7 @@ export interface FeedbackResponse {
 
 const createFeedback = async (
     feedbackData: CreateFeedbackRequest,
-    token: string
+    token: string,
 ): Promise<Feedback> => {
     const response = await fetch(`${API_BASE_URL}/feedback`, {
         method: "POST",
@@ -54,7 +54,7 @@ const getUserFeedbacks = async (token: string): Promise<Feedback[]> => {
 const getAllFeedbacks = async (
     token: string,
     type?: string,
-    status?: string
+    status?: string,
 ): Promise<FeedbackWithUser[]> => {
     const params = new URLSearchParams();
     if (type) params.append("type", type);
@@ -83,7 +83,7 @@ const getAllFeedbacks = async (
 const updateFeedbackStatus = async (
     feedbackId: number,
     statusData: UpdateFeedbackStatusRequest,
-    token: string
+    token: string,
 ): Promise<Feedback> => {
     const response = await fetch(
         `${API_BASE_URL}/feedback/${feedbackId}/status`,
@@ -94,7 +94,7 @@ const updateFeedbackStatus = async (
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(statusData),
-        }
+        },
     );
 
     const data = await response.json();
@@ -106,9 +106,28 @@ const updateFeedbackStatus = async (
     return data.data;
 };
 
+const deleteFeedback = async (
+    feedbackId: number,
+    token: string,
+): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/feedback/${feedbackId}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || "Error al eliminar feedback");
+    }
+};
+
 export const feedbackService = {
     createFeedback,
     getUserFeedbacks,
     getAllFeedbacks,
     updateFeedbackStatus,
+    deleteFeedback,
 };
