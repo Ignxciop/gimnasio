@@ -36,7 +36,7 @@ class RoutineExerciseService {
         repsMax,
         weight,
         restTime,
-        userId
+        userId,
     ) {
         const routine = await prisma.routine.findFirst({
             where: { id: routineId, userId },
@@ -103,7 +103,16 @@ class RoutineExerciseService {
         return routineExercise;
     }
 
-    async update(id, sets, repsMin, repsMax, weight, restTime, userId) {
+    async update(
+        id,
+        sets,
+        repsMin,
+        repsMax,
+        weight,
+        restTime,
+        exerciseId,
+        userId,
+    ) {
         const existing = await prisma.routineExercise.findFirst({
             where: {
                 id,
@@ -117,6 +126,19 @@ class RoutineExerciseService {
             throw error;
         }
 
+        // Verificar que el ejercicio existe si se está cambiando
+        if (exerciseId && exerciseId !== existing.exerciseId) {
+            const exercise = await prisma.exercise.findUnique({
+                where: { id: exerciseId },
+            });
+
+            if (!exercise) {
+                const error = new Error("Ejercicio no encontrado");
+                error.statusCode = 404;
+                throw error;
+            }
+        }
+
         const routineExercise = await prisma.routineExercise.update({
             where: { id },
             data: {
@@ -125,6 +147,8 @@ class RoutineExerciseService {
                 repsMax,
                 weight,
                 restTime,
+                ...(exerciseId &&
+                    exerciseId !== existing.exerciseId && { exerciseId }),
             },
             include: {
                 exercise: {
@@ -170,7 +194,7 @@ class RoutineExerciseService {
 
         if (!routineExercise) {
             const error = new Error(
-                "No tienes permiso para reordenar estos ejercicios"
+                "No tienes permiso para reordenar estos ejercicios",
             );
             error.statusCode = 403;
             throw error;

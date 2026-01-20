@@ -13,17 +13,17 @@ export const createRoutineExerciseValidation = [
     body("repsMin")
         .isInt({ min: 1, max: 1000 })
         .withMessage(
-            "Las repeticiones mínimas deben ser un número entre 1 y 1000"
+            "Las repeticiones mínimas deben ser un número entre 1 y 1000",
         ),
     body("repsMax")
         .isInt({ min: 1, max: 1000 })
         .withMessage(
-            "Las repeticiones máximas deben ser un número entre 1 y 1000"
+            "Las repeticiones máximas deben ser un número entre 1 y 1000",
         )
         .custom((value, { req }) => {
             if (value < req.body.repsMin) {
                 throw new Error(
-                    "Las repeticiones máximas deben ser mayores o iguales a las mínimas"
+                    "Las repeticiones máximas deben ser mayores o iguales a las mínimas",
                 );
             }
             return true;
@@ -35,7 +35,7 @@ export const createRoutineExerciseValidation = [
     body("restTime")
         .isInt({ min: 0, max: 600 })
         .withMessage(
-            "El tiempo de descanso debe ser un número entre 0 y 600 segundos"
+            "El tiempo de descanso debe ser un número entre 0 y 600 segundos",
         ),
 ];
 
@@ -43,23 +43,27 @@ export const updateRoutineExerciseValidation = [
     param("id")
         .isInt({ min: 1 })
         .withMessage("El ID debe ser un número entero positivo"),
+    body("exerciseId")
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage("El ID de ejercicio debe ser un número entero positivo"),
     body("sets")
         .isInt({ min: 1, max: 100 })
         .withMessage("Las series deben ser un número entre 1 y 100"),
     body("repsMin")
         .isInt({ min: 1, max: 1000 })
         .withMessage(
-            "Las repeticiones mínimas deben ser un número entre 1 y 1000"
+            "Las repeticiones mínimas deben ser un número entre 1 y 1000",
         ),
     body("repsMax")
         .isInt({ min: 1, max: 1000 })
         .withMessage(
-            "Las repeticiones máximas deben ser un número entre 1 y 1000"
+            "Las repeticiones máximas deben ser un número entre 1 y 1000",
         )
         .custom((value, { req }) => {
             if (value < req.body.repsMin) {
                 throw new Error(
-                    "Las repeticiones máximas deben ser mayores o iguales a las mínimas"
+                    "Las repeticiones máximas deben ser mayores o iguales a las mínimas",
                 );
             }
             return true;
@@ -71,7 +75,7 @@ export const updateRoutineExerciseValidation = [
     body("restTime")
         .isInt({ min: 0, max: 600 })
         .withMessage(
-            "El tiempo de descanso debe ser un número entre 0 y 600 segundos"
+            "El tiempo de descanso debe ser un número entre 0 y 600 segundos",
         ),
 ];
 

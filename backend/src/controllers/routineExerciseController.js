@@ -32,7 +32,7 @@ class RoutineExerciseController {
                 repsMax,
                 weight || null,
                 restTime,
-                userId
+                userId,
             );
 
             res.status(201).json({
@@ -48,7 +48,8 @@ class RoutineExerciseController {
     async update(req, res, next) {
         try {
             const id = parseInt(req.params.id);
-            const { sets, repsMin, repsMax, weight, restTime } = req.body;
+            const { sets, repsMin, repsMax, weight, restTime, exerciseId } =
+                req.body;
             const userId = req.user.userId;
 
             const routineExercise = await routineExerciseService.update(
@@ -58,7 +59,8 @@ class RoutineExerciseController {
                 repsMax,
                 weight || null,
                 restTime,
-                userId
+                exerciseId || null,
+                userId,
             );
 
             res.status(200).json({
