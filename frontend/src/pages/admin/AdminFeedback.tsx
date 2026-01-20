@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Select } from "../../components/ui/Select";
 import { SearchInput } from "../../components/ui/SearchInput";
+import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { feedbackService } from "../../services/feedbackService";
 import { authService } from "../../services/authService";
 import { useFetch } from "../../hooks/useFetch";
@@ -11,6 +12,7 @@ import {
     CheckCircle2,
     XCircle,
     Clock,
+    Trash2,
 } from "lucide-react";
 import type {
     FeedbackWithUser,
@@ -28,6 +30,8 @@ export const AdminFeedback: React.FC = () => {
     const [typeFilter, setTypeFilter] = useState<string>("all");
     const [statusFilter, setStatusFilter] = useState<string>("all");
     const [selectedFeedback, setSelectedFeedback] =
+        useState<FeedbackWithUser | null>(null);
+    const [feedbackToDelete, setFeedbackToDelete] =
         useState<FeedbackWithUser | null>(null);
 
     const { showToast } = useToast();
@@ -53,7 +57,7 @@ export const AdminFeedback: React.FC = () => {
 
     const handleStatusChange = async (
         feedbackId: number,
-        newStatus: string
+        newStatus: string,
     ) => {
         const token = authService.getToken();
         if (!token) return;
@@ -65,7 +69,7 @@ export const AdminFeedback: React.FC = () => {
             await feedbackService.updateFeedbackStatus(
                 feedbackId,
                 statusData,
-                token
+                token,
             );
             showToast("success", "Estado actualizado correctamente");
             feedbacksFetch.execute();
@@ -77,7 +81,28 @@ export const AdminFeedback: React.FC = () => {
                 "error",
                 error instanceof Error
                     ? error.message
-                    : "Error al actualizar estado"
+                    : "Error al actualizar estado",
+            );
+        }
+    };
+
+    const handleDeleteFeedback = async () => {
+        if (!feedbackToDelete) return;
+
+        const token = authService.getToken();
+        if (!token) return;
+
+        try {
+            await feedbackService.deleteFeedback(feedbackToDelete.id, token);
+            showToast("success", "Feedback eliminado correctamente");
+            feedbacksFetch.execute();
+            setFeedbackToDelete(null);
+        } catch (error) {
+            showToast(
+                "error",
+                error instanceof Error
+                    ? error.message
+                    : "Error al eliminar feedback",
             );
         }
     };
@@ -256,7 +281,7 @@ export const AdminFeedback: React.FC = () => {
                                 </div>
                                 <div className="feedback-card__date">
                                     {new Date(
-                                        feedback.createdAt
+                                        feedback.createdAt,
                                     ).toLocaleDateString("es-ES", {
                                         year: "numeric",
                                         month: "short",
@@ -277,42 +302,59 @@ export const AdminFeedback: React.FC = () => {
                             </div>
 
                             <div className="feedback-card__footer">
-                                <div className="feedback-card__user">
-                                    <span className="feedback-card__user-name">
-                                        {feedback.user.name}{" "}
-                                        {feedback.user.lastname}
-                                    </span>
-                                    <span className="feedback-card__username">
-                                        @{feedback.user.username}
-                                    </span>
+                                <div className="feedback-card__footer-left">
+                                    <div className="feedback-card__user">
+                                        <span className="feedback-card__user-name">
+                                            {feedback.user.name}{" "}
+                                            {feedback.user.lastname}
+                                        </span>
+                                        <span className="feedback-card__username">
+                                            @{feedback.user.username}
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <Select
-                                    value={feedback.status}
-                                    onChange={(value) => {
-                                        if (Array.isArray(value)) return;
-                                        handleStatusChange(feedback.id, value);
-                                    }}
-                                    options={[
-                                        {
-                                            value: "pending",
-                                            label: "Pendiente",
-                                        },
-                                        {
-                                            value: "in_review",
-                                            label: "En Revisión",
-                                        },
-                                        {
-                                            value: "resolved",
-                                            label: "Resuelto",
-                                        },
-                                        {
-                                            value: "dismissed",
-                                            label: "Descartado",
-                                        },
-                                    ]}
-                                    className="feedback-card__status-select"
-                                />
+                                <div className="feedback-card__footer-right">
+                                    <Select
+                                        value={feedback.status}
+                                        onChange={(value) => {
+                                            if (Array.isArray(value)) return;
+                                            handleStatusChange(
+                                                feedback.id,
+                                                value,
+                                            );
+                                        }}
+                                        options={[
+                                            {
+                                                value: "pending",
+                                                label: "Pendiente",
+                                            },
+                                            {
+                                                value: "in_review",
+                                                label: "En Revisión",
+                                            },
+                                            {
+                                                value: "resolved",
+                                                label: "Resuelto",
+                                            },
+                                            {
+                                                value: "dismissed",
+                                                label: "Descartado",
+                                            },
+                                        ]}
+                                        className="feedback-card__status-select"
+                                    />
+
+                                    <button
+                                        onClick={() =>
+                                            setFeedbackToDelete(feedback)
+                                        }
+                                        className="feedback-card__delete-btn"
+                                        title="Eliminar feedback"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -329,6 +371,17 @@ export const AdminFeedback: React.FC = () => {
                         )}
                 </div>
             )}
+
+            <ConfirmDialog
+                isOpen={!!feedbackToDelete}
+                onClose={() => setFeedbackToDelete(null)}
+                onConfirm={handleDeleteFeedback}
+                title="Eliminar feedback"
+                message={`¿Seguro que deseas eliminar este feedback de ${feedbackToDelete?.user.name} ${feedbackToDelete?.user.lastname}? Esta acción no se puede deshacer.`}
+                confirmText="Sí, eliminar"
+                cancelText="Cancelar"
+                variant="danger"
+            />
         </section>
     );
 };
