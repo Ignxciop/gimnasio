@@ -33,6 +33,12 @@
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
+.search-input__field:focus:not(:focus-visible) {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-border);
+    box-shadow: none;
+}
+
 .search-input__field::placeholder {
     color: var(--color-text-secondary);
 }
