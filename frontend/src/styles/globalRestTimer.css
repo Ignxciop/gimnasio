@@ -1,0 +1,107 @@
+/* Global Rest Timer */
+.global-rest-timer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease-out;
+}
+
+.global-rest-timer-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+.global-rest-timer-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.global-rest-timer-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 50px;
+    text-align: center;
+}
+
+.global-rest-timer-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.global-rest-timer .btn-adjust-time,
+.global-rest-timer .btn-stop-timer {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+}
+
+.global-rest-timer .btn-adjust-time:hover,
+.global-rest-timer .btn-stop-timer:hover {
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.global-rest-timer .btn-stop-timer {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.global-rest-timer .btn-stop-timer:hover {
+    background: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .global-rest-timer {
+        top: 16px;
+        right: 16px;
+        padding: 10px 12px;
+    }
+
+    .global-rest-timer-content {
+        gap: 8px;
+    }
+
+    .global-rest-timer-value {
+        font-size: 1.1rem;
+        min-width: 45px;
+    }
+
+    .global-rest-timer .btn-adjust-time,
+    .global-rest-timer .btn-stop-timer {
+        padding: 3px 6px;
+        font-size: 0.7rem;
+    }
+}

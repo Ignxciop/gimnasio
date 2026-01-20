@@ -3,66 +3,68 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
 import { UnitProvider } from "./contexts/UnitContext";
+import { GlobalRestTimer } from "./components/GlobalRestTimer";
+import "../styles/globalRestTimer.css";
 import { LOADING_MESSAGES } from "./config/messages";
 
 const Login = lazy(() =>
-    import("./pages/Login").then((m) => ({ default: m.Login }))
+    import("./pages/Login").then((m) => ({ default: m.Login })),
 );
 const Register = lazy(() =>
-    import("./pages/Register").then((m) => ({ default: m.Register }))
+    import("./pages/Register").then((m) => ({ default: m.Register })),
 );
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Home = lazy(() =>
-    import("./pages/Home").then((m) => ({ default: m.Home }))
+    import("./pages/Home").then((m) => ({ default: m.Home })),
 );
 const Profile = lazy(() =>
-    import("./pages/Profile").then((m) => ({ default: m.Profile }))
+    import("./pages/Profile").then((m) => ({ default: m.Profile })),
 );
 const Statistics = lazy(() =>
-    import("./pages/Statistics").then((m) => ({ default: m.Statistics }))
+    import("./pages/Statistics").then((m) => ({ default: m.Statistics })),
 );
 const AdminLayout = lazy(() =>
-    import("./layouts/AdminLayout").then((m) => ({ default: m.AdminLayout }))
+    import("./layouts/AdminLayout").then((m) => ({ default: m.AdminLayout })),
 );
 const AdminUsers = lazy(() =>
-    import("./pages/admin/AdminUsers").then((m) => ({ default: m.AdminUsers }))
+    import("./pages/admin/AdminUsers").then((m) => ({ default: m.AdminUsers })),
 );
 const AdminFeedback = lazy(() =>
     import("./pages/admin/AdminFeedback").then((m) => ({
         default: m.AdminFeedback,
-    }))
+    })),
 );
 const AdminDashboard = lazy(() =>
     import("./pages/admin/AdminDashboard").then((m) => ({
         default: m.AdminDashboard,
-    }))
+    })),
 );
 const AdminAudit = lazy(() =>
     import("./pages/admin/AdminAudit").then((m) => ({
         default: m.AdminAudit,
-    }))
+    })),
 );
 const GestionLayout = lazy(() =>
     import("./layouts/GestionLayout").then((m) => ({
         default: m.GestionLayout,
-    }))
+    })),
 );
 const GestionExercises = lazy(() =>
     import("./pages/gestion/GestionExercises").then((m) => ({
         default: m.GestionExercises,
-    }))
+    })),
 );
 const GestionEquipment = lazy(() =>
     import("./pages/gestion/GestionEquipment").then((m) => ({
         default: m.GestionEquipment,
-    }))
+    })),
 );
 const GestionMuscleGroups = lazy(() =>
     import("./pages/gestion/GestionMuscleGroups").then((m) => ({
         default: m.GestionMuscleGroups,
-    }))
+    })),
 );
 const Rutinas = lazy(() => import("./pages/Rutinas"));
 const RoutineDetail = lazy(() => import("./pages/RoutineDetail"));
@@ -132,6 +134,7 @@ function App() {
                             </div>
                         }
                     >
+                        <GlobalRestTimer />
                         <Routes>
                             <Route
                                 path="/login"

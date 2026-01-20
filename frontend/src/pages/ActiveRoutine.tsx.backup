@@ -2,10 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Plus } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
-import { useToast } from "../hooks/useToast";
-import { useModal } from "../hooks/useModal";
-import { useApiCall } from "../hooks/useApiCall";
-import { useUnit } from "../hooks/useUnit";
 import { useGlobalRestTimer } from "../hooks/useGlobalRestTimer";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { VideoThumbnail } from "../components/ui/VideoThumbnail";
@@ -80,12 +76,9 @@ export default function ActiveRoutine() {
     const [weightInputs, setWeightInputs] = useState<Record<number, string>>(
         {},
     );
-    const {
-        restTimer,
-        startRestTimer,
-        adjustRestTime: adjustGlobalRestTime,
-    } = useGlobalRestTimer();
+    const { restTimer, startRestTimer, stopRestTimer, adjustRestTime: adjustGlobalRestTime } = useGlobalRestTimer();
     const [restTimes, setRestTimes] = useState<Record<number, number>>({});
+    const [removingSetId, setRemovingSetId] = useState<number | null>(null);
     const [previousActiveRoutine, setPreviousActiveRoutine] =
         useState<ActiveRoutine | null>(null);
 
@@ -153,6 +146,7 @@ export default function ActiveRoutine() {
         errorMessage: "Error al eliminar serie",
         onSuccess: () => {
             // El estado ya se actualizó optimísticamente en handleRemoveSet
+            setRemovingSetId(null);
             setPreviousActiveRoutine(null);
         },
         onError: () => {
@@ -160,6 +154,7 @@ export default function ActiveRoutine() {
             if (previousActiveRoutine) {
                 setActiveRoutine(previousActiveRoutine);
             }
+            setRemovingSetId(null);
             setPreviousActiveRoutine(null);
         },
     });
@@ -281,6 +276,7 @@ export default function ActiveRoutine() {
             );
             const restTime = restTimes[set.exerciseId] || 60;
             startRestTimer(set.exerciseId, restTime, Number(routineId));
+        }
         }
     };
 
@@ -557,6 +553,7 @@ export default function ActiveRoutine() {
 
         const token = authService.getToken();
         if (!token) return;
+        setRemovingSetId(setId);
         await removeSet.execute(setId, token);
     };
 
@@ -865,4 +862,5 @@ export default function ActiveRoutine() {
             </div>
         </MainLayout>
     );
+
 }

@@ -64,7 +64,7 @@ export default function RoutineDetail() {
                 }
             },
             onError: () => navigate("/rutinas"),
-        }
+        },
     );
 
     const addExercise = useApiCall(routineExerciseService.create, {
@@ -120,7 +120,7 @@ export default function RoutineDetail() {
     };
 
     const handleEditExercise = async (
-        data: Omit<RoutineExerciseFormData, "exerciseId">
+        data: Omit<RoutineExerciseFormData, "exerciseId">,
     ) => {
         const token = authService.getToken();
         if (!token || !editExerciseModal.editingItem) return;
@@ -128,7 +128,7 @@ export default function RoutineDetail() {
         await updateExercise.execute(
             editExerciseModal.editingItem.id,
             data,
-            token
+            token,
         );
     };
 
@@ -143,7 +143,7 @@ export default function RoutineDetail() {
 
     const handleExerciseMouseDown = (
         e: React.MouseEvent,
-        exercise: RoutineExercise
+        exercise: RoutineExercise,
     ) => {
         const target = e.target as HTMLElement;
         if (!target.closest(".drag-icon")) return;
@@ -187,7 +187,7 @@ export default function RoutineDetail() {
 
     const handleTouchStart = (
         e: React.TouchEvent,
-        exercise: RoutineExercise
+        exercise: RoutineExercise,
     ) => {
         const target = e.target as HTMLElement;
         if (!target.closest(".drag-icon")) return;
@@ -209,7 +209,7 @@ export default function RoutineDetail() {
         setLongPressTarget({ id: exercise.id });
     };
 
-    const handleTouchMove = (e: React.TouchEvent) => {
+    const handleTouchMove = (_e: React.TouchEvent) => {
         if (longPressTimer && !isTouchDragging) {
             clearTimeout(longPressTimer);
             setLongPressTimer(null);
@@ -248,7 +248,7 @@ export default function RoutineDetail() {
         }
 
         const targetId = parseInt(
-            exerciseCard.getAttribute("data-exercise-id") || "0"
+            exerciseCard.getAttribute("data-exercise-id") || "0",
         );
         const exercises = exercisesFetch.data || [];
         const targetExercise = exercises.find((ex) => ex.id === targetId);
@@ -263,10 +263,10 @@ export default function RoutineDetail() {
         const token = authService.getToken();
         if (token) {
             const draggedIndex = exercises.findIndex(
-                (ex) => ex.id === draggedExercise.id
+                (ex) => ex.id === draggedExercise.id,
             );
             const targetIndex = exercises.findIndex(
-                (ex) => ex.id === targetExercise.id
+                (ex) => ex.id === targetExercise.id,
             );
 
             const reordered = [...exercises];
@@ -288,7 +288,7 @@ export default function RoutineDetail() {
 
     const handleDrop = async (
         e: React.DragEvent,
-        targetExercise: RoutineExercise
+        targetExercise: RoutineExercise,
     ) => {
         e.preventDefault();
 
@@ -307,10 +307,10 @@ export default function RoutineDetail() {
 
         const exercises = exercisesFetch.data || [];
         const draggedIndex = exercises.findIndex(
-            (ex) => ex.id === draggedExercise.id
+            (ex) => ex.id === draggedExercise.id,
         );
         const targetIndex = exercises.findIndex(
-            (ex) => ex.id === targetExercise.id
+            (ex) => ex.id === targetExercise.id,
         );
 
         const reordered = [...exercises];
@@ -387,7 +387,7 @@ export default function RoutineDetail() {
                                 ? `${formatWeight(
                                       unit === "lbs"
                                           ? kgToLbs(routineExercise.weight)
-                                          : routineExercise.weight
+                                          : routineExercise.weight,
                                   )} ${unit}`
                                 : undefined;
 
@@ -406,7 +406,7 @@ export default function RoutineDetail() {
                                     weightDisplay={weightDisplay}
                                     onEdit={() =>
                                         editExerciseModal.openEditModal(
-                                            routineExercise
+                                            routineExercise,
                                         )
                                     }
                                     onDelete={() =>
@@ -423,7 +423,7 @@ export default function RoutineDetail() {
                                     onMouseDown={(e) =>
                                         handleExerciseMouseDown(
                                             e,
-                                            routineExercise
+                                            routineExercise,
                                         )
                                     }
                                     onMouseUp={handleExerciseMouseUp}
