@@ -67,6 +67,11 @@ export default function ActiveRoutine() {
     const { unit } = useUnit();
     const cancelModal = useModal();
     const completeModal = useModal();
+    const removeSetModal = useModal();
+    const [setToRemove, setSetToRemove] = useState<{
+        setId: number;
+        exerciseId: number;
+    } | null>(null);
     const [activeRoutine, setActiveRoutine] = useState<ActiveRoutine | null>(
         null,
     );
@@ -533,8 +538,15 @@ export default function ActiveRoutine() {
         await addSet.execute(exerciseId, token);
     };
 
-    const handleRemoveSet = async (setId: number, exerciseId: number) => {
-        if (!activeRoutine) return;
+    const handleRemoveSet = (setId: number, exerciseId: number) => {
+        setSetToRemove({ setId, exerciseId });
+        removeSetModal.open();
+    };
+
+    const confirmRemoveSet = async () => {
+        if (!setToRemove || !activeRoutine) return;
+
+        const { setId, exerciseId } = setToRemove;
 
         const exerciseSets = activeRoutine.sets.filter(
             (s) => s.exerciseId === exerciseId,
@@ -558,6 +570,9 @@ export default function ActiveRoutine() {
         const token = authService.getToken();
         if (!token) return;
         await removeSet.execute(setId, token);
+
+        // Limpiar estado
+        setSetToRemove(null);
     };
 
     const handleCompleteWorkout = async () => {
@@ -861,6 +876,20 @@ export default function ActiveRoutine() {
                     confirmText="Sí, finalizar"
                     cancelText="Cancelar"
                     variant="warning"
+                />
+
+                <ConfirmDialog
+                    isOpen={removeSetModal.isOpen}
+                    onClose={() => {
+                        removeSetModal.closeModal();
+                        setSetToRemove(null);
+                    }}
+                    onConfirm={confirmRemoveSet}
+                    title="Eliminar serie"
+                    message="¿Seguro que deseas eliminar esta serie? Esta acción no se puede deshacer."
+                    confirmText="Sí, eliminar"
+                    cancelText="Cancelar"
+                    variant="danger"
                 />
             </div>
         </MainLayout>
