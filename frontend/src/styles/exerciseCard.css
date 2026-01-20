@@ -1,0 +1,294 @@
+/* Exercise Card - Mobile First Design */
+.exercise-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0;
+    backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    padding: 0.75rem 0.5rem;
+    position: relative;
+    transition: all 0.15s ease;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.exercise-card.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.exercise-card.long-press-active {
+    animation: liftUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    cursor: grabbing;
+    z-index: 1000;
+}
+
+@keyframes liftUp {
+    0% {
+        transform: scale(1) translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    100% {
+        transform: scale(1.03) translateY(-4px);
+        box-shadow:
+            0 12px 24px rgba(0, 0, 0, 0.4),
+            0 0 0 2px var(--accent-start);
+    }
+}
+
+/* Drag Handle */
+.exercise-card-drag {
+    position: absolute;
+    top: 0.375rem;
+    left: 0.375rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.125rem;
+    background: transparent;
+    border-radius: 4px;
+    backdrop-filter: none;
+}
+
+.drag-icon {
+    color: rgba(255, 255, 255, 0.4);
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.drag-icon:hover {
+    color: var(--accent-mid);
+}
+
+.drag-icon:active {
+    cursor: grabbing;
+}
+
+.long-press-active .drag-icon {
+    color: var(--accent-start);
+    transform: scale(1.15);
+}
+
+/* Main Content */
+.exercise-card-main {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.625rem;
+    align-items: start;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Thumbnail */
+.exercise-card-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.exercise-thumbnail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Exercise Info */
+.exercise-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    min-width: 0;
+}
+
+.exercise-card-name {
+    margin: 0;
+    font-size: 0.938rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Stats Row */
+.exercise-card-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+    font-size: 0.813rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    white-space: nowrap;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.stat-separator {
+    color: var(--text-secondary);
+    font-weight: 300;
+}
+
+/* Meta Badges */
+.exercise-card-meta {
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    display: inline-block;
+    padding: 0.188rem 0.438rem;
+    font-size: 0.688rem;
+    font-weight: 500;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.rest-badge {
+    background: rgba(59, 130, 246, 0.15);
+    color: rgb(96, 165, 250);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.muscle-badge {
+    background: rgba(220, 38, 38, 0.15);
+    color: var(--accent-mid);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.equipment-badge {
+    background: rgba(234, 88, 12, 0.15);
+    color: rgb(251, 146, 60);
+    border: 1px solid rgba(234, 88, 12, 0.2);
+}
+
+/* Actions */
+.exercise-card-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.375rem;
+    z-index: 10;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+}
+
+.action-btn.danger:hover {
+    background: rgba(220, 38, 38, 0.2);
+    color: var(--accent-mid);
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+    .exercise-card {
+        padding: 1.25rem;
+    }
+
+    .exercise-card-thumbnail {
+        width: 85px;
+        height: 85px;
+    }
+
+    .exercise-card-name {
+        font-size: 1.063rem;
+    }
+
+    .exercise-card-stats {
+        font-size: 0.875rem;
+    }
+
+    .meta-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        max-width: 150px;
+    }
+
+    .action-btn {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .exercise-card {
+        padding: 1.5rem;
+    }
+
+    .exercise-card-thumbnail {
+        width: 100px;
+        height: 100px;
+    }
+
+    .exercise-card-main {
+        gap: 1rem;
+    }
+
+    .exercise-card-info {
+        gap: 0.5rem;
+    }
+
+    .exercise-card-name {
+        font-size: 1.125rem;
+    }
+
+    .exercise-card-stats {
+        font-size: 0.938rem;
+    }
+
+    .meta-badge {
+        font-size: 0.813rem;
+        max-width: 180px;
+    }
+
+    .action-btn {
+        width: 2.125rem;
+        height: 2.125rem;
+    }
+}
