@@ -8,6 +8,7 @@ interface ExerciseCardProps {
     isDragging: boolean;
     isLongPressActive: boolean;
     weightDisplay?: string;
+    isEditingDisabled?: boolean;
     onEdit: () => void;
     onDelete: () => void;
     onDragStart: (e: React.DragEvent) => void;
@@ -26,6 +27,7 @@ export function ExerciseCard({
     isDragging,
     isLongPressActive,
     weightDisplay,
+    isEditingDisabled = false,
     onEdit,
     onDelete,
     onDragStart,
@@ -131,20 +133,44 @@ export function ExerciseCard({
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
-                        onEdit();
+                        if (!isEditingDisabled) {
+                            onEdit();
+                        }
                     }}
-                    className="action-btn"
-                    aria-label="Editar ejercicio"
+                    className={`action-btn ${isEditingDisabled ? "disabled" : ""}`}
+                    disabled={isEditingDisabled}
+                    aria-label={
+                        isEditingDisabled
+                            ? "No se puede editar mientras hay una rutina activa"
+                            : "Editar ejercicio"
+                    }
+                    title={
+                        isEditingDisabled
+                            ? "Finaliza o cancela la rutina activa para poder editar"
+                            : "Editar ejercicio"
+                    }
                 >
                     <Pencil size={16} />
                 </button>
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
-                        onDelete();
+                        if (!isEditingDisabled) {
+                            onDelete();
+                        }
                     }}
-                    className="action-btn danger"
-                    aria-label="Eliminar ejercicio"
+                    className={`action-btn danger ${isEditingDisabled ? "disabled" : ""}`}
+                    disabled={isEditingDisabled}
+                    aria-label={
+                        isEditingDisabled
+                            ? "No se puede eliminar mientras hay una rutina activa"
+                            : "Eliminar ejercicio"
+                    }
+                    title={
+                        isEditingDisabled
+                            ? "Finaliza o cancela la rutina activa para poder eliminar"
+                            : "Eliminar ejercicio"
+                    }
                 >
                     <Trash2 size={16} />
                 </button>

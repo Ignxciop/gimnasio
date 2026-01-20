@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 import { getVideoUrl } from "../config/constants";
 import { useUnit } from "../hooks/useUnit";
+import { useFetch } from "../hooks/useFetch";
+import { exerciseService } from "../services/exerciseService";
 import { kgToLbs, lbsToKg, formatWeight } from "../utils/unitConverter";
 import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
@@ -9,12 +11,17 @@ import type {
     RoutineExercise,
     RoutineExerciseFormData,
 } from "../types/routineExercise";
+import type { Exercise } from "../services/exerciseService";
 import "./editRoutineExerciseModal.css";
 
 interface EditRoutineExerciseModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: Omit<RoutineExerciseFormData, "exerciseId">) => void;
+    onSubmit: (
+        data: Omit<RoutineExerciseFormData, "exerciseId"> & {
+            exerciseId?: number;
+        },
+    ) => void;
     routineExercise: RoutineExercise | null;
 }
 
@@ -33,10 +40,19 @@ export default function EditRoutineExerciseModal({
         restTime: 60,
     });
     const [weightInput, setWeightInput] = useState<string>("");
+    const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+        null,
+    );
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const exercisesFetch = useFetch<Exercise[]>({
+        fetchFn: exerciseService.getAll,
+    });
 
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = "hidden";
+            exercisesFetch.execute();
             if (routineExercise) {
                 setFormData({
                     sets: routineExercise.sets,
@@ -51,7 +67,9 @@ export default function EditRoutineExerciseModal({
                         : routineExercise.weight
                     : "";
                 setWeightInput(displayWeight.toString());
+                setSelectedExercise(routineExercise.exercise || null);
             }
+            setSearchTerm("");
         } else {
             document.body.style.overflow = "";
         }
@@ -70,8 +88,25 @@ export default function EditRoutineExerciseModal({
             weightInKg = unit === "lbs" ? lbsToKg(inputValue) : inputValue;
         }
 
-        onSubmit({ ...formData, weight: weightInKg });
+        const submitData: Omit<RoutineExerciseFormData, "exerciseId"> & {
+            exerciseId?: number;
+        } = { ...formData, weight: weightInKg };
+
+        // Incluir exerciseId solo si se cambió el ejercicio
+        if (
+            selectedExercise &&
+            selectedExercise.id !== routineExercise?.exercise?.id
+        ) {
+            submitData.exerciseId = selectedExercise.id;
+        }
+
+        onSubmit(submitData);
     };
+
+    const filteredExercises =
+        exercisesFetch.data?.filter((ex) =>
+            ex.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        ) || [];
 
     if (!isOpen || !routineExercise) return null;
 
@@ -88,14 +123,10 @@ export default function EditRoutineExerciseModal({
                     </button>
                 </div>
 
-                {routineExercise.exercise?.videoPath && (
+                {selectedExercise?.videoPath && (
                     <div className="exercise-video-container">
                         <video
-                            src={
-                                getVideoUrl(
-                                    routineExercise.exercise.videoPath
-                                ) || ""
-                            }
+                            src={getVideoUrl(selectedExercise.videoPath) || ""}
                             autoPlay
                             loop
                             muted
@@ -104,8 +135,65 @@ export default function EditRoutineExerciseModal({
                     </div>
                 )}
 
-                <div className="exercise-name-display">
-                    {routineExercise.exercise?.name}
+                <div className="form-group">
+                    <label>
+                        Ejercicio <span className="required">*</span>
+                    </label>
+                    <div className="exercise-search">
+                        <div className="search-input-wrapper">
+                            <input
+                                type="text"
+                                placeholder="Buscar ejercicio..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="search-input"
+                            />
+                            <Search size={18} className="search-icon" />
+                        </div>
+                        <div className="exercise-list">
+                            {filteredExercises.length > 0 ? (
+                                filteredExercises.map((exercise) => (
+                                    <div
+                                        key={exercise.id}
+                                        className={`exercise-list-item ${
+                                            selectedExercise?.id === exercise.id
+                                                ? "selected"
+                                                : ""
+                                        }`}
+                                        onClick={() => {
+                                            setSelectedExercise(exercise);
+                                            setSearchTerm("");
+                                        }}
+                                    >
+                                        {exercise.videoPath && (
+                                            <div className="exercise-list-thumbnail">
+                                                <video
+                                                    src={
+                                                        getVideoUrl(
+                                                            exercise.videoPath,
+                                                        ) || ""
+                                                    }
+                                                    className="exercise-list-video"
+                                                />
+                                            </div>
+                                        )}
+                                        <div className="exercise-list-info">
+                                            <span className="exercise-list-name">
+                                                {exercise.name}
+                                            </span>
+                                            <span className="exercise-list-equipment">
+                                                {exercise.equipment?.name}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="exercise-list-empty">
+                                    No se encontraron ejercicios
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="modal-form">

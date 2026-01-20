@@ -7,7 +7,8 @@ import { API_BASE_URL } from "../config/constants";
 const handleError = (error: any, defaultMessage: string) => {
     if (error.errors && Array.isArray(error.errors)) {
         throw new Error(
-            error.errors.map((e: any) => e.message).join(", ") || defaultMessage
+            error.errors.map((e: any) => e.message).join(", ") ||
+                defaultMessage,
         );
     }
     throw new Error(error.message || defaultMessage);
@@ -16,7 +17,7 @@ const handleError = (error: any, defaultMessage: string) => {
 export const routineExerciseService = {
     async getAllByRoutine(
         routineId: number,
-        token: string
+        token: string,
     ): Promise<RoutineExercise[]> {
         try {
             const response = await fetch(
@@ -25,7 +26,7 @@ export const routineExerciseService = {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                }
+                },
             );
 
             if (!response.ok) {
@@ -40,7 +41,7 @@ export const routineExerciseService = {
                 throw error;
             }
             throw new Error(
-                "No se pudieron cargar los ejercicios. Intenta nuevamente"
+                "No se pudieron cargar los ejercicios. Intenta nuevamente",
             );
         }
     },
@@ -48,7 +49,7 @@ export const routineExerciseService = {
     async create(
         routineId: number,
         data: RoutineExerciseFormData,
-        token: string
+        token: string,
     ): Promise<RoutineExercise> {
         try {
             const response = await fetch(
@@ -60,7 +61,7 @@ export const routineExerciseService = {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(data),
-                }
+                },
             );
 
             if (!response.ok) {
@@ -75,25 +76,30 @@ export const routineExerciseService = {
                 throw error;
             }
             throw new Error(
-                "No se pudo agregar el ejercicio. Intenta nuevamente"
+                "No se pudo agregar el ejercicio. Intenta nuevamente",
             );
         }
     },
 
     async update(
         id: number,
-        data: Omit<RoutineExerciseFormData, "exerciseId">,
-        token: string
+        data: Omit<RoutineExerciseFormData, "exerciseId"> & {
+            exerciseId?: number;
+        },
+        token: string,
     ): Promise<RoutineExercise> {
         try {
-            const response = await fetch(`${API_BASE_URL}/routine-exercises/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
+            const response = await fetch(
+                `${API_BASE_URL}/routine-exercises/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(data),
                 },
-                body: JSON.stringify(data),
-            });
+            );
 
             if (!response.ok) {
                 const error = await response.json();
@@ -107,19 +113,22 @@ export const routineExerciseService = {
                 throw error;
             }
             throw new Error(
-                "No se pudo actualizar el ejercicio. Intenta nuevamente"
+                "No se pudo actualizar el ejercicio. Intenta nuevamente",
             );
         }
     },
 
     async delete(id: number, token: string): Promise<void> {
         try {
-            const response = await fetch(`${API_BASE_URL}/routine-exercises/${id}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
+            const response = await fetch(
+                `${API_BASE_URL}/routine-exercises/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 },
-            });
+            );
 
             if (!response.ok) {
                 const error = await response.json();
@@ -130,14 +139,14 @@ export const routineExerciseService = {
                 throw error;
             }
             throw new Error(
-                "No se pudo eliminar el ejercicio. Intenta nuevamente"
+                "No se pudo eliminar el ejercicio. Intenta nuevamente",
             );
         }
     },
 
     async reorder(
         items: Array<{ id: number; order: number }>,
-        token: string
+        token: string,
     ): Promise<void> {
         try {
             const response = await fetch(
@@ -149,7 +158,7 @@ export const routineExerciseService = {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({ items }),
-                }
+                },
             );
 
             if (!response.ok) {
@@ -161,7 +170,7 @@ export const routineExerciseService = {
                 throw error;
             }
             throw new Error(
-                "No se pudo actualizar el orden. Intenta nuevamente"
+                "No se pudo actualizar el orden. Intenta nuevamente",
             );
         }
     },

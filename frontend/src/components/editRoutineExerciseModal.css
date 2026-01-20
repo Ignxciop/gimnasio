@@ -4,6 +4,122 @@
     overflow-y: auto;
 }
 
+.exercise-search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 2.75rem 0.75rem 0.75rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent-mid);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.exercise-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.exercise-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.exercise-list-item:last-child {
+    border-bottom: none;
+}
+
+.exercise-list-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.exercise-list-item.selected {
+    background: linear-gradient(
+        135deg,
+        rgba(220, 20, 60, 0.2),
+        rgba(255, 69, 0, 0.2)
+    );
+    border-color: var(--accent-mid);
+}
+
+.exercise-list-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.exercise-list-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.exercise-list-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.exercise-list-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+}
+
+.exercise-list-equipment {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.exercise-list-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
 .exercise-video-container {
     max-width: 350px;
     margin: 0 auto 1rem;
@@ -16,18 +132,6 @@
     width: 100%;
     height: auto;
     display: block;
-}
-
-.exercise-name-display {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 1.125rem;
-    font-weight: 600;
-    text-align: center;
 }
 
 .form-row {

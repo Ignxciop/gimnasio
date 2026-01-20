@@ -120,7 +120,9 @@ export default function RoutineDetail() {
     };
 
     const handleEditExercise = async (
-        data: Omit<RoutineExerciseFormData, "exerciseId">,
+        data: Omit<RoutineExerciseFormData, "exerciseId"> & {
+            exerciseId?: number;
+        },
     ) => {
         const token = authService.getToken();
         if (!token || !editExerciseModal.editingItem) return;
@@ -350,6 +352,21 @@ export default function RoutineDetail() {
     return (
         <MainLayout>
             <div className="routine-detail-container">
+                {activeRoutineId && (
+                    <div className="active-routine-warning">
+                        <div className="warning-content">
+                            <span className="warning-icon">⚠️</span>
+                            <div className="warning-text">
+                                <strong>Rutina activa en progreso</strong>
+                                <p>
+                                    Finaliza o cancela tu rutina activa para
+                                    poder editar esta rutina.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="routine-detail-header">
                     <div className="routine-title-section">
                         <h1>{routine.name}</h1>
@@ -369,7 +386,13 @@ export default function RoutineDetail() {
                         </button>
                         <button
                             onClick={() => addExerciseModal.openModal()}
-                            className="btn-add-exercise"
+                            className={`btn-add-exercise ${activeRoutineId ? "disabled" : ""}`}
+                            disabled={!!activeRoutineId}
+                            title={
+                                activeRoutineId
+                                    ? "Finaliza o cancela la rutina activa para poder agregar ejercicios"
+                                    : "Agregar ejercicio"
+                            }
                         >
                             <Plus size={20} />
                             Agregar Ejercicio
@@ -404,6 +427,7 @@ export default function RoutineDetail() {
                                         routineExercise.id
                                     }
                                     weightDisplay={weightDisplay}
+                                    isEditingDisabled={!!activeRoutineId}
                                     onEdit={() =>
                                         editExerciseModal.openEditModal(
                                             routineExercise,
