@@ -72,7 +72,7 @@ class ActiveRoutineService {
             historicalMaxWeights.map((item) => [
                 item.exerciseId,
                 item._max.actualWeight,
-            ])
+            ]),
         );
 
         const activeRoutine = await prisma.activeRoutine.create({
@@ -92,6 +92,7 @@ class ActiveRoutineService {
                                 targetWeight,
                                 targetRepsMin: routineEx.repsMin,
                                 targetRepsMax: routineEx.repsMax,
+                                restTime: routineEx.restTime,
                                 order: routineEx.order * 100 + i,
                             });
                         }
@@ -142,7 +143,7 @@ class ActiveRoutineService {
             set.exerciseId,
             finalWeight,
             finalReps,
-            userId
+            userId,
         );
 
         const updatedSet = await prisma.activeRoutineSet.update({
@@ -231,7 +232,7 @@ class ActiveRoutineService {
         if (allSets.length === 0) return true;
 
         const maxWeight = Math.max(
-            ...allSets.map((s) => Number(s.actualWeight || 0))
+            ...allSets.map((s) => Number(s.actualWeight || 0)),
         );
         const maxReps = Math.max(...allSets.map((s) => s.actualReps || 0));
 
@@ -255,7 +256,7 @@ class ActiveRoutineService {
                     },
                 },
                 data: { order: set.order },
-            })
+            }),
         );
 
         await prisma.$transaction(updates);
@@ -272,7 +273,7 @@ class ActiveRoutineService {
         }
 
         const exerciseSets = activeRoutine.sets.filter(
-            (s) => s.exerciseId === exerciseId
+            (s) => s.exerciseId === exerciseId,
         );
 
         if (exerciseSets.length === 0) {
@@ -333,7 +334,7 @@ class ActiveRoutineService {
 
         if (exerciseSets.length <= 1) {
             const error = new Error(
-                "No puedes eliminar la única serie del ejercicio"
+                "No puedes eliminar la única serie del ejercicio",
             );
             error.statusCode = 400;
             throw error;
@@ -354,7 +355,7 @@ class ActiveRoutineService {
             prisma.activeRoutineSet.update({
                 where: { id: s.id },
                 data: { order: index },
-            })
+            }),
         );
 
         await prisma.$transaction(updates);
@@ -507,7 +508,7 @@ class ActiveRoutineService {
             routineName: ar.routine.name,
             date: ar.endTime,
             duration: Math.floor(
-                (new Date(ar.endTime) - new Date(ar.startTime)) / 1000
+                (new Date(ar.endTime) - new Date(ar.startTime)) / 1000,
             ),
             completedSets: ar.sets.length,
         }));
@@ -558,7 +559,7 @@ class ActiveRoutineService {
             startTime: ar.startTime,
             endTime: ar.endTime,
             duration: Math.floor(
-                (new Date(ar.endTime) - new Date(ar.startTime)) / 1000
+                (new Date(ar.endTime) - new Date(ar.startTime)) / 1000,
             ),
             sets: ar.sets,
         }));
@@ -646,7 +647,7 @@ class ActiveRoutineService {
         });
 
         const previousStartDate = new Date(
-            Date.UTC(year, month - 2, 1, 0, 0, 0)
+            Date.UTC(year, month - 2, 1, 0, 0, 0),
         );
         const previousEndDate = startDate;
 
@@ -708,15 +709,15 @@ class ActiveRoutineService {
             comparison: {
                 workouts: calculateChange(
                     currentStats.totalWorkouts,
-                    previousStats.totalWorkouts
+                    previousStats.totalWorkouts,
                 ),
                 time: calculateChange(
                     currentStats.totalTime,
-                    previousStats.totalTime
+                    previousStats.totalTime,
                 ),
                 volume: calculateChange(
                     currentStats.totalVolume,
-                    previousStats.totalVolume
+                    previousStats.totalVolume,
                 ),
             },
         };
