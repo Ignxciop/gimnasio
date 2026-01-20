@@ -156,16 +156,37 @@
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
     line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .feedback-card__description {
     font-size: 0.95rem;
     color: rgba(255, 255, 255, 0.7);
     line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-height: 120px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.feedback-card__description::-webkit-scrollbar {
+    width: 4px;
+}
+
+.feedback-card__description::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.feedback-card__description::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.feedback-card__description::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .feedback-card__footer {
@@ -199,6 +220,8 @@
     font-size: 0.9rem;
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .feedback-card__username {
