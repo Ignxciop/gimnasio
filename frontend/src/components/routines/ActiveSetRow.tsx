@@ -105,7 +105,7 @@ export function ActiveSetRow({
                     value={set.actualReps ?? ""}
                     onChange={(e) => onRepsChange(e.target.value)}
                     disabled={set.completed}
-                    placeholder={set.targetRepsMax.toString()}
+                    placeholder={`${set.targetRepsMin}-${set.targetRepsMax}`}
                 />
                 <label className="input-label">REPS</label>
             </div>
