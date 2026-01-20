@@ -30,6 +30,7 @@ interface ActiveRoutineSet {
     completed: boolean;
     isPR: boolean;
     order: number;
+    restTime: number;
     exercise: {
         id: number;
         name: string;
@@ -222,8 +223,9 @@ export default function ActiveRoutine() {
 
         const initialRestTimes: Record<number, number> = {};
         exerciseGroups.forEach(([exerciseId, sets]) => {
-            if (sets.length > 0 && sets[0].exercise) {
-                initialRestTimes[Number(exerciseId)] = 60;
+            if (sets.length > 0) {
+                // Usar el restTime del primer set de cada ejercicio
+                initialRestTimes[Number(exerciseId)] = sets[0].restTime;
             }
         });
         setRestTimes((prev) => ({ ...initialRestTimes, ...prev }));

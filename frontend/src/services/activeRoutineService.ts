@@ -12,6 +12,7 @@ interface ActiveRoutineSet {
     completed: boolean;
     isPR: boolean;
     order: number;
+    restTime: number;
     exercise: {
         id: number;
         name: string;
@@ -82,7 +83,7 @@ export const activeRoutineService = {
         setId: number,
         actualWeight: number | null,
         actualReps: number | null,
-        token: string
+        token: string,
     ): Promise<ActiveRoutineSet> {
         const response = await fetch(
             `${API_BASE_URL}/active-routines/sets/${setId}`,
@@ -93,7 +94,7 @@ export const activeRoutineService = {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ actualWeight, actualReps }),
-            }
+            },
         );
 
         if (!response.ok) {
@@ -107,7 +108,7 @@ export const activeRoutineService = {
 
     async uncompleteSet(
         setId: number,
-        token: string
+        token: string,
     ): Promise<ActiveRoutineSet> {
         const response = await fetch(
             `${API_BASE_URL}/active-routines/sets/${setId}/complete`,
@@ -116,7 +117,7 @@ export const activeRoutineService = {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            }
+            },
         );
 
         if (!response.ok) {
@@ -130,7 +131,7 @@ export const activeRoutineService = {
 
     async reorderSets(
         sets: { id: number; order: number }[],
-        token: string
+        token: string,
     ): Promise<void> {
         const response = await fetch(
             `${API_BASE_URL}/active-routines/reorder`,
@@ -141,7 +142,7 @@ export const activeRoutineService = {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ sets }),
-            }
+            },
         );
 
         if (!response.ok) {
@@ -159,7 +160,7 @@ export const activeRoutineService = {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-            }
+            },
         );
 
         if (!response.ok) {
@@ -176,7 +177,7 @@ export const activeRoutineService = {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            }
+            },
         );
 
         if (!response.ok) {
@@ -212,7 +213,7 @@ export const activeRoutineService = {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            }
+            },
         );
 
         if (!response.ok) {
@@ -223,7 +224,7 @@ export const activeRoutineService = {
 
     async deleteCompleted(
         activeRoutineId: number,
-        token: string
+        token: string,
     ): Promise<void> {
         const response = await fetch(
             `${API_BASE_URL}/active-routines/completed/${activeRoutineId}`,
@@ -232,13 +233,13 @@ export const activeRoutineService = {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            }
+            },
         );
 
         if (!response.ok) {
             const error = await response.json();
             throw new Error(
-                error.message || "Error al eliminar rutina completada"
+                error.message || "Error al eliminar rutina completada",
             );
         }
     },
