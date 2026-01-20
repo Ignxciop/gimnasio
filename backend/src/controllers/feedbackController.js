@@ -9,7 +9,7 @@ export const createFeedback = async (req, res, next) => {
             userId,
             type,
             description,
-            title
+            title,
         );
 
         res.status(201).json({
@@ -60,7 +60,7 @@ export const updateFeedbackStatus = async (req, res, next) => {
 
         const feedback = await feedbackService.updateFeedbackStatus(
             parseInt(id),
-            status
+            status,
         );
 
         res.status(200).json({
@@ -73,9 +73,25 @@ export const updateFeedbackStatus = async (req, res, next) => {
     }
 };
 
+export const deleteFeedback = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        await feedbackService.deleteFeedback(parseInt(id));
+
+        res.status(200).json({
+            success: true,
+            message: "Feedback eliminado correctamente",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     createFeedback,
     getUserFeedbacks,
     getAllFeedbacks,
     updateFeedbackStatus,
+    deleteFeedback,
 };
