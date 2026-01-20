@@ -34,6 +34,16 @@
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
     gap: 1rem;
+    align-items: start;
+}
+
+.gestion-exercises__filters > * {
+    min-height: 44px;
+}
+
+.gestion-exercises__filters > *:nth-child(2),
+.gestion-exercises__filters > *:nth-child(3) {
+    min-width: 180px;
 }
 
 .gestion-table {
@@ -226,6 +236,25 @@
     .gestion-table__th--secondary,
     .gestion-table__td--secondary {
         display: none;
+    }
+}
+
+@media (max-width: 1200px) and (min-width: 1025px) {
+    .gestion-exercises__filters {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "search search" "equipment muscle";
+    }
+
+    .gestion-exercises__filters > *:first-child {
+        grid-area: search;
+    }
+
+    .gestion-exercises__filters > *:nth-child(2) {
+        grid-area: equipment;
+    }
+
+    .gestion-exercises__filters > *:nth-child(3) {
+        grid-area: muscle;
     }
 }
 

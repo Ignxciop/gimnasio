@@ -18,6 +18,16 @@
     transition: all 0.3s ease;
     width: 100%;
     text-align: left;
+    min-width: 0; /* Allow flex shrinking */
+}
+
+.select__value,
+.select__placeholder {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .select:hover:not(.select--disabled) {
