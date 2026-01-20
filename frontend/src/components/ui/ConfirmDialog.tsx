@@ -24,7 +24,6 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     cancelText = "Cancelar",
     variant = "danger",
 }) => {
-    console.log("ConfirmDialog render:", { isOpen, title, message });
     const handleConfirm = () => {
         onConfirm();
         onClose();

@@ -73,13 +73,6 @@ export default function ActiveRoutine() {
         exerciseId: number;
     } | null>(null);
 
-    // Debug: monitor modal state changes
-    useEffect(() => {
-        console.log("Modal state changed:", {
-            isOpen: isRemoveModalOpen,
-            setToRemove,
-        });
-    }, [isRemoveModalOpen, setToRemove]);
     const [activeRoutine, setActiveRoutine] = useState<ActiveRoutine | null>(
         null,
     );
@@ -547,15 +540,8 @@ export default function ActiveRoutine() {
     };
 
     const handleRemoveSet = (setId: number, exerciseId: number) => {
-        console.log("handleRemoveSet called with:", { setId, exerciseId });
-        console.log("Setting setToRemove:", { setId, exerciseId });
         setSetToRemove({ setId, exerciseId });
-        console.log("Setting modal open");
         setIsRemoveModalOpen(true);
-        console.log("Modal state after open:", {
-            isOpen: true,
-            setToRemove: { setId, exerciseId },
-        });
     };
 
     const confirmRemoveSet = async () => {
@@ -897,7 +883,6 @@ export default function ActiveRoutine() {
                 <ConfirmDialog
                     isOpen={isRemoveModalOpen}
                     onClose={() => {
-                        console.log("Closing remove set modal");
                         setIsRemoveModalOpen(false);
                         setSetToRemove(null);
                     }}

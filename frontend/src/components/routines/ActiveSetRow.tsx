@@ -116,7 +116,6 @@ export function ActiveSetRow({
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Remove button clicked for set:", set.id);
                     onRemove();
                 }}
                 className="btn-remove-set"
