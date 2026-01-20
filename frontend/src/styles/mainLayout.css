@@ -6,9 +6,9 @@
 
 .main-layout__content {
     flex: 1;
-    padding: var(--spacing-2xl);
+    padding: 0;
     background-color: var(--color-bg-primary);
-    padding-bottom: calc(var(--spacing-2xl) + 5rem);
+    padding-bottom: 5rem;
 }
 
 @media (max-width: 768px) {
@@ -21,7 +21,7 @@
     }
 
     .main-layout__content {
-        padding: var(--spacing-lg);
-        padding-bottom: calc(var(--spacing-lg) + 5rem);
+        padding: 8px;
+        padding-bottom: 5rem;
     }
 }
