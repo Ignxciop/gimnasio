@@ -1,15 +1,16 @@
 .search-input {
     position: relative;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
 
 .search-input__icon {
     position: absolute;
     left: var(--spacing-md);
-    top: 50%;
-    transform: translateY(-50%);
     color: var(--color-text-secondary);
     pointer-events: none;
+    z-index: 1;
 }
 
 .search-input__field {
@@ -22,6 +23,7 @@
     font-size: var(--font-size-base);
     color: var(--color-text-primary);
     transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 .search-input__field:focus {
