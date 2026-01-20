@@ -4,7 +4,7 @@ export const createFeedback = async (
     userId,
     type,
     description,
-    title = null
+    title = null,
 ) => {
     return await prisma.feedback.create({
         data: {
@@ -60,9 +60,16 @@ export const updateFeedbackStatus = async (feedbackId, status) => {
     });
 };
 
+export const deleteFeedback = async (feedbackId) => {
+    return await prisma.feedback.delete({
+        where: { id: feedbackId },
+    });
+};
+
 export default {
     createFeedback,
     getUserFeedbacks,
     getAllFeedbacks,
     updateFeedbackStatus,
+    deleteFeedback,
 };
