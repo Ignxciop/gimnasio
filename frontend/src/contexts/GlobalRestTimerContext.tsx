@@ -11,8 +11,10 @@ export interface RestTimerState {
     exerciseId: number;
     timeLeft: number;
     routineId: number;
-    startTime: number;
+    savedAt: number; // timestamp when timer was saved
 }
+
+const REST_TIMER_KEY = "active_rest_timer";
 
 interface GlobalRestTimerContextType {
     restTimer: RestTimerState | null;
@@ -35,62 +37,102 @@ export function GlobalRestTimerProvider({
     children: React.ReactNode;
 }) {
     const [restTimer, setRestTimer] = useState<RestTimerState | null>(null);
-    const workerRef = useRef<Worker | null>(null);
-    const [isWorkerReady, setIsWorkerReady] = useState(false);
+    const intervalRef = useRef<number | null>(null);
+    const hasLoadedRef = useRef(false);
 
-    // Initialize Web Worker for timer
+    // Load existing timer from localStorage on mount
     useEffect(() => {
-        if ("Worker" in window) {
-            // Create web worker for timer
-            workerRef.current = new Worker("/rest-timer-worker.js");
+        if (hasLoadedRef.current) return; // Prevent loading multiple times
+        hasLoadedRef.current = true;
 
-            workerRef.current.onmessage = (event) => {
-                const { type, data } = event.data;
+        const saved = localStorage.getItem(REST_TIMER_KEY);
+        if (saved) {
+            try {
+                const parsed: RestTimerState = JSON.parse(saved);
+                if (parsed.savedAt && parsed.timeLeft) {
+                    const elapsed = Math.floor(
+                        (Date.now() - parsed.savedAt) / 1000,
+                    );
+                    const remaining = Math.max(0, parsed.timeLeft - elapsed);
 
-                switch (type) {
-                    case "TIMER_UPDATE":
-                        setRestTimer((prev) =>
-                            prev ? { ...prev, timeLeft: data.timeLeft } : null,
-                        );
-                        break;
+                    if (remaining > 0) {
+                        const resumedTimer = {
+                            ...parsed,
+                            timeLeft: remaining,
+                            savedAt: Date.now(),
+                        };
+                        setRestTimer(resumedTimer);
 
-                    case "TIMER_FINISHED":
-                        setRestTimer(null);
-                        // Dispatch custom event for components to listen
-                        window.dispatchEvent(
-                            new CustomEvent("restTimerFinished", {
-                                detail: {
-                                    exerciseId: data.exerciseId,
-                                    routineId: data.routineId,
-                                },
-                            }),
-                        );
-                        break;
+                        // Start the interval for the resumed timer
+                        intervalRef.current = window.setInterval(() => {
+                            setRestTimer((prev) => {
+                                if (!prev || prev.timeLeft <= 1) {
+                                    if (intervalRef.current) {
+                                        clearInterval(intervalRef.current);
+                                        intervalRef.current = null;
+                                    }
 
-                    case "TIMER_LOADED":
-                        setRestTimer(data);
-                        break;
+                                    if (prev) {
+                                        // Timer finished
+                                        localStorage.removeItem(REST_TIMER_KEY);
+
+                                        // Show notification
+                                        if (
+                                            "Notification" in window &&
+                                            Notification.permission ===
+                                                "granted"
+                                        ) {
+                                            new Notification(
+                                                "¡Descanso terminado!",
+                                                {
+                                                    body: "Es hora de continuar con tu ejercicio",
+                                                    icon: "/favicon.ico",
+                                                    tag: "rest-timer-finished",
+                                                    requireInteraction: true,
+                                                },
+                                            );
+                                        }
+
+                                        // Dispatch event
+                                        window.dispatchEvent(
+                                            new CustomEvent(
+                                                "restTimerFinished",
+                                                {
+                                                    detail: {
+                                                        exerciseId:
+                                                            prev.exerciseId,
+                                                        routineId:
+                                                            prev.routineId,
+                                                    },
+                                                },
+                                            ),
+                                        );
+                                    }
+
+                                    return null;
+                                }
+
+                                const updatedTimer = {
+                                    ...prev,
+                                    timeLeft: prev.timeLeft - 1,
+                                    savedAt: Date.now(),
+                                };
+                                localStorage.setItem(
+                                    REST_TIMER_KEY,
+                                    JSON.stringify(updatedTimer),
+                                );
+                                console.log("Updated timer:", updatedTimer);
+                                return updatedTimer;
+                            });
+                        }, 1000);
+                    } else {
+                        localStorage.removeItem(REST_TIMER_KEY);
+                    }
                 }
-            };
-
-            workerRef.current.onerror = (error) => {
-                console.error("Rest timer worker error:", error);
-            };
-
-            setIsWorkerReady(true);
-
-            // Load existing timer
-            workerRef.current.postMessage({ type: "LOAD_TIMER" });
-
-            return () => {
-                if (workerRef.current) {
-                    workerRef.current.terminate();
-                }
-            };
-        } else {
-            // Fallback for browsers without Worker support
-            console.warn("Web Workers not supported, using fallback timer");
-            setIsWorkerReady(true);
+            } catch (error) {
+                console.error("Error loading saved rest timer:", error);
+                localStorage.removeItem(REST_TIMER_KEY);
+            }
         }
     }, []);
 
@@ -105,34 +147,164 @@ export function GlobalRestTimerProvider({
         }
     }, []);
 
+    // Handle page visibility changes
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                // Page became hidden, stop the interval to save resources
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = null;
+                }
+            } else {
+                // Page became visible, restart the interval if there's an active timer
+                if (restTimer && !intervalRef.current) {
+                    intervalRef.current = window.setInterval(() => {
+                        setRestTimer((prev) => {
+                            if (!prev || prev.timeLeft <= 1) {
+                                if (intervalRef.current) {
+                                    clearInterval(intervalRef.current);
+                                    intervalRef.current = null;
+                                }
+
+                                if (prev) {
+                                    // Timer finished
+                                    localStorage.removeItem(REST_TIMER_KEY);
+
+                                    // Show notification
+                                    if (
+                                        "Notification" in window &&
+                                        Notification.permission === "granted"
+                                    ) {
+                                        new Notification(
+                                            "¡Descanso terminado!",
+                                            {
+                                                body: "Es hora de continuar con tu ejercicio",
+                                                icon: "/favicon.ico",
+                                                tag: "rest-timer-finished",
+                                                requireInteraction: true,
+                                            },
+                                        );
+                                    }
+
+                                    // Dispatch event
+                                    window.dispatchEvent(
+                                        new CustomEvent("restTimerFinished", {
+                                            detail: {
+                                                exerciseId: prev.exerciseId,
+                                                routineId: prev.routineId,
+                                            },
+                                        }),
+                                    );
+                                }
+
+                                return null;
+                            }
+
+                            const timerUpdate = {
+                                ...prev,
+                                timeLeft: prev.timeLeft - 1,
+                                savedAt: Date.now(),
+                            };
+                            localStorage.setItem(
+                                REST_TIMER_KEY,
+                                JSON.stringify(timerUpdate),
+                            );
+                            return timerUpdate;
+                        });
+                    }, 1000);
+                }
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => {
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange,
+            );
+        };
+    }, [restTimer]);
+
     const startRestTimer = useCallback(
         (exerciseId: number, timeLeft: number, routineId: number) => {
-            if (!isWorkerReady) return;
-
             const newTimer: RestTimerState = {
                 exerciseId,
                 timeLeft,
                 routineId,
-                startTime: Date.now(),
+                savedAt: Date.now(),
             };
 
             setRestTimer(newTimer);
+            localStorage.setItem(REST_TIMER_KEY, JSON.stringify(newTimer));
 
-            if (workerRef.current) {
-                workerRef.current.postMessage({
-                    type: "START_TIMER",
-                    data: { exerciseId, timeLeft, routineId },
-                });
+            // Start the interval
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
             }
+
+            intervalRef.current = window.setInterval(() => {
+                setRestTimer((prev) => {
+                    if (!prev || prev.timeLeft <= 1) {
+                        if (intervalRef.current) {
+                            clearInterval(intervalRef.current);
+                            intervalRef.current = null;
+                        }
+
+                        if (prev) {
+                            // Timer finished
+                            localStorage.removeItem(REST_TIMER_KEY);
+
+                            // Show notification
+                            if (
+                                "Notification" in window &&
+                                Notification.permission === "granted"
+                            ) {
+                                new Notification("¡Descanso terminado!", {
+                                    body: "Es hora de continuar con tu ejercicio",
+                                    icon: "/favicon.ico",
+                                    tag: "rest-timer-finished",
+                                    requireInteraction: true,
+                                });
+                            }
+
+                            // Dispatch event
+                            window.dispatchEvent(
+                                new CustomEvent("restTimerFinished", {
+                                    detail: {
+                                        exerciseId: prev.exerciseId,
+                                        routineId: prev.routineId,
+                                    },
+                                }),
+                            );
+                        }
+
+                        return null;
+                    }
+
+                    const updatedTimer = {
+                        ...prev,
+                        timeLeft: prev.timeLeft - 1,
+                        savedAt: Date.now(),
+                    };
+                    localStorage.setItem(
+                        REST_TIMER_KEY,
+                        JSON.stringify(updatedTimer),
+                    );
+                    return updatedTimer;
+                });
+            }, 1000);
         },
-        [isWorkerReady],
+        [],
     );
 
     const stopRestTimer = useCallback(() => {
         setRestTimer(null);
+        localStorage.removeItem(REST_TIMER_KEY);
 
-        if (workerRef.current) {
-            workerRef.current.postMessage({ type: "STOP_TIMER" });
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
         }
     }, []);
 
@@ -141,17 +313,25 @@ export function GlobalRestTimerProvider({
             if (!restTimer) return;
 
             const newTime = Math.max(0, restTimer.timeLeft + delta);
-            setRestTimer({
+            const adjustedTimer = {
                 ...restTimer,
                 timeLeft: newTime,
-                startTime: Date.now() - (restTimer.timeLeft - newTime) * 1000,
-            });
+                savedAt: Date.now(),
+            };
 
-            if (workerRef.current) {
-                workerRef.current.postMessage({
-                    type: "ADJUST_TIME",
-                    data: { delta, originalTimeLeft: restTimer.timeLeft },
-                });
+            setRestTimer(adjustedTimer);
+
+            if (newTime > 0) {
+                localStorage.setItem(
+                    REST_TIMER_KEY,
+                    JSON.stringify(adjustedTimer),
+                );
+            } else {
+                localStorage.removeItem(REST_TIMER_KEY);
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = null;
+                }
             }
         },
         [restTimer],
