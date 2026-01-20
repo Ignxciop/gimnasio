@@ -15,14 +15,14 @@ router.post(
     authenticate,
     feedbackLimiter,
     createFeedbackValidation,
-    feedbackController.createFeedback
+    feedbackController.createFeedback,
 );
 
 router.get(
     "/my-feedbacks",
     readLimiter,
     authenticate,
-    feedbackController.getUserFeedbacks
+    feedbackController.getUserFeedbacks,
 );
 
 router.get(
@@ -30,7 +30,7 @@ router.get(
     readLimiter,
     authenticate,
     authorize("administrador"),
-    feedbackController.getAllFeedbacks
+    feedbackController.getAllFeedbacks,
 );
 
 router.patch(
@@ -38,7 +38,15 @@ router.patch(
     writeLimiter,
     authenticate,
     authorize("administrador"),
-    feedbackController.updateFeedbackStatus
+    feedbackController.updateFeedbackStatus,
+);
+
+router.delete(
+    "/:id",
+    writeLimiter,
+    authenticate,
+    authorize("administrador"),
+    feedbackController.deleteFeedback,
 );
 
 export default router;
