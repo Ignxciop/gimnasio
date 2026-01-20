@@ -18,6 +18,18 @@ export function useGlobalRestTimer() {
         if (saved) {
             try {
                 const parsed: RestTimerState = JSON.parse(saved);
+
+                // Validar que los datos sean correctos
+                if (
+                    !parsed.startTime ||
+                    typeof parsed.startTime !== "number" ||
+                    !parsed.timeLeft ||
+                    typeof parsed.timeLeft !== "number"
+                ) {
+                    localStorage.removeItem(REST_TIMER_KEY);
+                    return;
+                }
+
                 const elapsed = Math.floor(
                     (Date.now() - parsed.startTime) / 1000,
                 );
@@ -27,8 +39,7 @@ export function useGlobalRestTimer() {
                     setRestTimer({
                         ...parsed,
                         timeLeft: remaining,
-                        startTime:
-                            Date.now() - (parsed.timeLeft - remaining) * 1000,
+                        startTime: Date.now() - remaining * 1000,
                     });
                 } else {
                     // Timer expiró, limpiarlo
