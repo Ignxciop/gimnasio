@@ -115,7 +115,6 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1rem;
     padding-bottom: 0.75rem;
 }
 
@@ -160,6 +159,27 @@
     font-size: 0.75rem;
     color: var(--text-secondary);
     font-weight: 500;
+}
+
+/* Rest Time Section between Exercise and Sets */
+.rest-time-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+    gap: 0.5rem;
+    border-radius: 8px;
+}
+
+.rest-time-icon {
+    color: var(--accent-start);
+    flex-shrink: 0;
+}
+
+.rest-time-label {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .btn-add-set {
