@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, GripVertical, X, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, X, Plus } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
@@ -8,11 +8,12 @@ import { useApiCall } from "../hooks/useApiCall";
 import { useUnit } from "../hooks/useUnit";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { VideoThumbnail } from "../components/ui/VideoThumbnail";
+import ActiveSetRow from "../components/routines/ActiveSetRow";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
 import { formatTime } from "../utils/dateHelpers";
-import { kgToLbs, lbsToKg, formatWeight } from "../utils/unitConverter";
+import { formatWeight, kgToLbs, lbsToKg } from "../utils/unitConverter";
 import { LOADING_MESSAGES, ERROR_MESSAGES } from "../config/messages";
 import "../styles/activeRoutine.css";
 
@@ -78,6 +79,11 @@ export default function ActiveRoutine() {
     const [weightInputs, setWeightInputs] = useState<Record<number, string>>(
         {}
     );
+    const [restTimer, setRestTimer] = useState<{
+        exerciseId: number;
+        timeLeft: number;
+    } | null>(null);
+    const [restTimes, setRestTimes] = useState<Record<number, number>>({});
 
     const fetchActiveRoutine = useApiCall(activeRoutineService.getActive, {
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH,
@@ -179,6 +185,39 @@ export default function ActiveRoutine() {
         return () => clearInterval(interval);
     }, [activeRoutine]);
 
+    useEffect(() => {
+        if (!restTimer || restTimer.timeLeft <= 0) return;
+
+        const interval = setInterval(() => {
+            setRestTimer((prev) => {
+                if (!prev || prev.timeLeft <= 1) return null;
+                return { ...prev, timeLeft: prev.timeLeft - 1 };
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [restTimer]);
+
+    useEffect(() => {
+        if (!activeRoutine) return;
+        const exerciseGroups = Object.entries(
+            activeRoutine.sets.reduce((acc, set) => {
+                const key = set.exerciseId;
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(set);
+                return acc;
+            }, {} as Record<number, ActiveRoutineSet[]>)
+        );
+
+        const initialRestTimes: Record<number, number> = {};
+        exerciseGroups.forEach(([exerciseId, sets]) => {
+            if (sets.length > 0 && sets[0].exercise) {
+                initialRestTimes[Number(exerciseId)] = 60;
+            }
+        });
+        setRestTimes((prev) => ({ ...initialRestTimes, ...prev }));
+    }, [activeRoutine]);
+
     const handleWeightChange = (setId: number, value: string) => {
         if (!activeRoutine) return;
 
@@ -235,7 +274,26 @@ export default function ActiveRoutine() {
                 set.actualReps,
                 token
             );
+            const restTime = restTimes[set.exerciseId] || 60;
+            setRestTimer({
+                exerciseId: set.exerciseId,
+                timeLeft: restTime,
+            });
         }
+    };
+
+    const adjustRestTime = (delta: number) => {
+        if (!restTimer) return;
+        setRestTimer((prev) => {
+            if (!prev) return null;
+            const newTime = Math.max(0, prev.timeLeft + delta);
+            return { ...prev, timeLeft: newTime };
+        });
+    };
+
+    const handleRestTimeChange = (exerciseId: number, value: string) => {
+        const time = value === "" ? 60 : Math.max(0, Number(value));
+        setRestTimes((prev) => ({ ...prev, [exerciseId]: time }));
     };
 
     const handleDragStart = (_e: React.DragEvent, set: ActiveRoutineSet) => {
@@ -617,6 +675,24 @@ export default function ActiveRoutine() {
                                             </span>
                                         </div>
                                     </div>
+                                    <div className="rest-time-input">
+                                        <input
+                                            type="number"
+                                            value={
+                                                restTimes[Number(exerciseId)] ||
+                                                60
+                                            }
+                                            onChange={(e) =>
+                                                handleRestTimeChange(
+                                                    Number(exerciseId),
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="input-rest-time"
+                                            min="0"
+                                        />
+                                        <span className="rest-label">s</span>
+                                    </div>
                                     <button
                                         onClick={() =>
                                             handleAddSet(Number(exerciseId))
@@ -627,28 +703,70 @@ export default function ActiveRoutine() {
                                         <Plus size={18} />
                                     </button>
                                 </div>
-                                <div className="sets-group">
+                                <div className="sets-list-container">
                                     {sets
                                         .sort((a, b) => a.order - b.order)
                                         .map((set, index) => (
-                                            <div
+                                            <ActiveSetRow
                                                 key={set.id}
-                                                data-set-id={set.id}
-                                                className={`set-card ${
-                                                    set.completed
-                                                        ? "completed"
-                                                        : ""
-                                                } ${set.isPR ? "pr" : ""} ${
+                                                set={set}
+                                                index={index}
+                                                unit={unit}
+                                                weightInput={
+                                                    weightInputs[set.id]
+                                                }
+                                                isDragging={
                                                     draggedSet?.id === set.id
-                                                        ? "dragging"
-                                                        : ""
-                                                } ${
+                                                }
+                                                isLongPressActive={
                                                     longPressActive?.id ===
                                                     set.id
-                                                        ? "long-press-active"
-                                                        : ""
-                                                }`}
-                                                draggable
+                                                }
+                                                onWeightChange={(value) =>
+                                                    handleWeightChange(
+                                                        set.id,
+                                                        value
+                                                    )
+                                                }
+                                                onWeightBlur={() => {
+                                                    if (
+                                                        weightInputs[set.id] !==
+                                                            undefined &&
+                                                        set.actualWeight !==
+                                                            null
+                                                    ) {
+                                                        const formatted =
+                                                            formatWeight(
+                                                                unit === "lbs"
+                                                                    ? kgToLbs(
+                                                                          set.actualWeight
+                                                                      )
+                                                                    : set.actualWeight
+                                                            ).toString();
+                                                        setWeightInputs(
+                                                            (prev) => ({
+                                                                ...prev,
+                                                                [set.id]:
+                                                                    formatted,
+                                                            })
+                                                        );
+                                                    }
+                                                }}
+                                                onRepsChange={(value) =>
+                                                    handleRepsChange(
+                                                        set.id,
+                                                        value
+                                                    )
+                                                }
+                                                onComplete={() =>
+                                                    handleCompleteSet(set.id)
+                                                }
+                                                onRemove={() =>
+                                                    handleRemoveSet(
+                                                        set.id,
+                                                        set.exerciseId
+                                                    )
+                                                }
                                                 onDragStart={(e) =>
                                                     handleDragStart(e, set)
                                                 }
@@ -661,144 +779,45 @@ export default function ActiveRoutine() {
                                                 }
                                                 onTouchMove={handleTouchMove}
                                                 onTouchEnd={handleTouchEnd}
-                                            >
-                                                <GripVertical
-                                                    size={16}
-                                                    className="drag-handle"
-                                                />
-                                                <div className="set-content">
-                                                    <span className="set-number">
-                                                        {index + 1}
-                                                    </span>
-                                                    <div className="input-wrapper">
-                                                        <label className="input-label">
-                                                            {unit.toUpperCase()}
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            className="set-input"
-                                                            value={
-                                                                weightInputs[
-                                                                    set.id
-                                                                ] !== undefined
-                                                                    ? weightInputs[
-                                                                          set.id
-                                                                      ]
-                                                                    : set.actualWeight !==
-                                                                      null
-                                                                    ? formatWeight(
-                                                                          unit ===
-                                                                              "lbs"
-                                                                              ? kgToLbs(
-                                                                                    set.actualWeight
-                                                                                )
-                                                                              : set.actualWeight
-                                                                      ).toString()
-                                                                    : ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleWeightChange(
-                                                                    set.id,
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                            onBlur={() => {
-                                                                if (
-                                                                    weightInputs[
-                                                                        set.id
-                                                                    ] !==
-                                                                        undefined &&
-                                                                    set.actualWeight !==
-                                                                        null
-                                                                ) {
-                                                                    const formatted =
-                                                                        formatWeight(
-                                                                            unit ===
-                                                                                "lbs"
-                                                                                ? kgToLbs(
-                                                                                      set.actualWeight
-                                                                                  )
-                                                                                : set.actualWeight
-                                                                        ).toString();
-                                                                    setWeightInputs(
-                                                                        (
-                                                                            prev
-                                                                        ) => ({
-                                                                            ...prev,
-                                                                            [set.id]:
-                                                                                formatted,
-                                                                        })
-                                                                    );
-                                                                }
-                                                            }}
-                                                            disabled={
-                                                                set.completed
-                                                            }
-                                                            placeholder={
-                                                                set.targetWeight
-                                                                    ? formatWeight(
-                                                                          unit ===
-                                                                              "lbs"
-                                                                              ? kgToLbs(
-                                                                                    set.targetWeight
-                                                                                )
-                                                                              : set.targetWeight
-                                                                      ).toString()
-                                                                    : "0"
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <div className="input-wrapper">
-                                                        <label className="input-label">
-                                                            REPS
-                                                        </label>
-                                                        <input
-                                                            type="number"
-                                                            className="set-input"
-                                                            value={
-                                                                set.actualReps ??
-                                                                ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleRepsChange(
-                                                                    set.id,
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                            disabled={
-                                                                set.completed
-                                                            }
-                                                            placeholder={set.targetRepsMax.toString()}
-                                                        />
-                                                    </div>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleCompleteSet(
-                                                                set.id
-                                                            )
-                                                        }
-                                                        className="btn-complete-set"
-                                                    >
-                                                        <Check size={18} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleRemoveSet(
-                                                                set.id,
-                                                                set.exerciseId
-                                                            )
-                                                        }
-                                                        className="btn-remove-set"
-                                                        title="Eliminar serie"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            />
                                         ))}
                                 </div>
+                                {restTimer &&
+                                    restTimer.exerciseId ===
+                                        Number(exerciseId) && (
+                                        <div className="rest-timer">
+                                            <button
+                                                onClick={() =>
+                                                    adjustRestTime(-15)
+                                                }
+                                                className="btn-adjust-time"
+                                            >
+                                                -15
+                                            </button>
+                                            <div className="rest-timer-display">
+                                                <div className="rest-timer-label">
+                                                    Descanso
+                                                </div>
+                                                <div className="rest-timer-value">
+                                                    {Math.floor(
+                                                        restTimer.timeLeft / 60
+                                                    )}
+                                                    :
+                                                    {(restTimer.timeLeft % 60)
+                                                        .toString()
+                                                        .padStart(2, "0")}
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() =>
+                                                    adjustRestTime(15)
+                                                }
+                                                className="btn-adjust-time"
+                                            >
+                                                +15
+                                            </button>
+                                        </div>
+                                    )}
                             </div>
                         ))}
                 </div>
