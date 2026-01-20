@@ -4,6 +4,7 @@ import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
 import { UnitProvider } from "./contexts/UnitContext";
 import { GlobalRestTimerProvider } from "./contexts/GlobalRestTimerContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { GlobalRestTimer } from "./components/GlobalRestTimer";
 import "./styles/globalRestTimer.css";
 import { LOADING_MESSAGES } from "./config/messages";
@@ -238,11 +239,11 @@ function App() {
                                 <Route
                                     path="/admin"
                                     element={
-                                        isAuthenticated ? (
+                                        <ProtectedRoute
+                                            requiredRoles={["administrador"]}
+                                        >
                                             <AdminLayout />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
+                                        </ProtectedRoute>
                                     }
                                 >
                                     <Route index element={<AdminDashboard />} />
@@ -263,11 +264,15 @@ function App() {
                                 <Route
                                     path="/gestion"
                                     element={
-                                        isAuthenticated ? (
+                                        <ProtectedRoute
+                                            requiredRoles={[
+                                                "manager",
+                                                "administrador",
+                                            ]}
+                                            requireAnyRole={true}
+                                        >
                                             <GestionLayout />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
+                                        </ProtectedRoute>
                                     }
                                 >
                                     <Route
