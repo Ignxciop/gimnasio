@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, X, Plus } from "lucide-react";
+import { ArrowLeft, X, Plus, Clock } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
@@ -617,13 +617,8 @@ export default function ActiveRoutine() {
             return;
         }
 
-        const incompleteSets = activeRoutine.sets.filter((s) => !s.completed);
-        if (incompleteSets.length > 0) {
-            completeModal.openModal();
-            return;
-        }
-
-        await confirmCompleteWorkout();
+        // Siempre mostrar modal de confirmación
+        completeModal.openModal();
     };
 
     const confirmCompleteWorkout = async () => {
@@ -726,24 +721,6 @@ export default function ActiveRoutine() {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="rest-time-input">
-                                        <input
-                                            type="number"
-                                            value={
-                                                restTimes[Number(exerciseId)] ||
-                                                60
-                                            }
-                                            onChange={(e) =>
-                                                handleRestTimeChange(
-                                                    Number(exerciseId),
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="input-rest-time"
-                                            min="0"
-                                        />
-                                        <span className="rest-label">s</span>
-                                    </div>
                                     <button
                                         onClick={() =>
                                             handleAddSet(Number(exerciseId))
@@ -753,6 +730,30 @@ export default function ActiveRoutine() {
                                     >
                                         <Plus size={18} />
                                     </button>
+                                </div>
+                                <div className="rest-time-section">
+                                    <Clock
+                                        size={16}
+                                        className="rest-time-icon"
+                                    />
+                                    <span className="rest-time-label">
+                                        Descanso:
+                                    </span>
+                                    <input
+                                        type="number"
+                                        value={
+                                            restTimes[Number(exerciseId)] || 60
+                                        }
+                                        onChange={(e) =>
+                                            handleRestTimeChange(
+                                                Number(exerciseId),
+                                                e.target.value,
+                                            )
+                                        }
+                                        className="input-rest-time"
+                                        min="0"
+                                    />
+                                    <span className="rest-label">s</span>
                                 </div>
                                 <div className="sets-list-container">
                                     {sets
@@ -900,12 +901,18 @@ export default function ActiveRoutine() {
                     onClose={completeModal.closeModal}
                     onConfirm={confirmCompleteWorkout}
                     title="Finalizar entrenamiento"
-                    message={`Tienes ${
-                        activeRoutine.sets.filter((s) => !s.completed).length
-                    } series sin completar. ¿Deseas finalizar igualmente?`}
+                    message={
+                        activeRoutine.sets.filter((s) => !s.completed)
+                            .length === 0
+                            ? "¡Felicitaciones! Has completado todas las series. ¿Deseas finalizar el entrenamiento?"
+                            : `Tienes ${
+                                  activeRoutine.sets.filter((s) => !s.completed)
+                                      .length
+                              } series sin completar. ¿Deseas finalizar igualmente?`
+                    }
                     confirmText="Sí, finalizar"
                     cancelText="Cancelar"
-                    variant="warning"
+                    variant="danger"
                 />
 
                 <ConfirmDialog
