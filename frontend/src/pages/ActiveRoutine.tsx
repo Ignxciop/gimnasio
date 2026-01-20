@@ -90,6 +90,7 @@ export default function ActiveRoutine() {
     const {
         restTimer,
         startRestTimer,
+        stopRestTimer,
         adjustRestTime: adjustGlobalRestTime,
     } = useGlobalRestTimer();
     const [restTimes, setRestTimes] = useState<Record<number, number>>({});
@@ -627,6 +628,9 @@ export default function ActiveRoutine() {
         const token = authService.getToken();
         if (!token) return;
 
+        // Stop any active rest timer before completing the workout
+        stopRestTimer();
+
         await completeRoutine.execute(activeRoutine.id, token);
     };
 
@@ -886,6 +890,9 @@ export default function ActiveRoutine() {
                     onConfirm={async () => {
                         const token = authService.getToken();
                         if (!token || !activeRoutine) return;
+
+                        // Stop any active rest timer before canceling the routine
+                        stopRestTimer();
 
                         await cancelRoutine.execute(activeRoutine.id, token);
                     }}
