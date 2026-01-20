@@ -67,7 +67,7 @@ export default function ActiveRoutine() {
     const cancelModal = useModal();
     const completeModal = useModal();
     const [activeRoutine, setActiveRoutine] = useState<ActiveRoutine | null>(
-        null
+        null,
     );
     const [elapsedTime, setElapsedTime] = useState(0);
     const [draggedSet, setDraggedSet] = useState<ActiveRoutineSet | null>(null);
@@ -77,13 +77,16 @@ export default function ActiveRoutine() {
     const [longPressActive, setLongPressActive] =
         useState<ActiveRoutineSet | null>(null);
     const [weightInputs, setWeightInputs] = useState<Record<number, string>>(
-        {}
+        {},
     );
     const [restTimer, setRestTimer] = useState<{
         exerciseId: number;
         timeLeft: number;
     } | null>(null);
     const [restTimes, setRestTimes] = useState<Record<number, number>>({});
+    const [removingSetId, setRemovingSetId] = useState<number | null>(null);
+    const [previousActiveRoutine, setPreviousActiveRoutine] =
+        useState<ActiveRoutine | null>(null);
 
     const fetchActiveRoutine = useApiCall(activeRoutineService.getActive, {
         errorMessage: ERROR_MESSAGES.ACTIVE_ROUTINE.FETCH,
@@ -105,7 +108,7 @@ export default function ActiveRoutine() {
             setActiveRoutine({
                 ...activeRoutine,
                 sets: activeRoutine.sets.map((s) =>
-                    s.id === updatedSet.id ? { ...s, ...updatedSet } : s
+                    s.id === updatedSet.id ? { ...s, ...updatedSet } : s,
                 ),
             });
             if (updatedSet.isPR) {
@@ -121,7 +124,7 @@ export default function ActiveRoutine() {
             setActiveRoutine({
                 ...activeRoutine,
                 sets: activeRoutine.sets.map((s) =>
-                    s.id === updatedSet.id ? { ...s, ...updatedSet } : s
+                    s.id === updatedSet.id ? { ...s, ...updatedSet } : s,
                 ),
             });
         },
@@ -147,6 +150,19 @@ export default function ActiveRoutine() {
     const removeSet = useApiCall(activeRoutineService.removeSet, {
         successMessage: "Serie eliminada",
         errorMessage: "Error al eliminar serie",
+        onSuccess: () => {
+            // El estado ya se actualizó optimísticamente en handleRemoveSet
+            setRemovingSetId(null);
+            setPreviousActiveRoutine(null);
+        },
+        onError: () => {
+            // Si hay error, revertir el cambio optimístico
+            if (previousActiveRoutine) {
+                setActiveRoutine(previousActiveRoutine);
+            }
+            setRemovingSetId(null);
+            setPreviousActiveRoutine(null);
+        },
     });
 
     const completeRoutine = useApiCall(activeRoutineService.complete, {
@@ -201,12 +217,15 @@ export default function ActiveRoutine() {
     useEffect(() => {
         if (!activeRoutine) return;
         const exerciseGroups = Object.entries(
-            activeRoutine.sets.reduce((acc, set) => {
-                const key = set.exerciseId;
-                if (!acc[key]) acc[key] = [];
-                acc[key].push(set);
-                return acc;
-            }, {} as Record<number, ActiveRoutineSet[]>)
+            activeRoutine.sets.reduce(
+                (acc, set) => {
+                    const key = set.exerciseId;
+                    if (!acc[key]) acc[key] = [];
+                    acc[key].push(set);
+                    return acc;
+                },
+                {} as Record<number, ActiveRoutineSet[]>,
+            ),
         );
 
         const initialRestTimes: Record<number, number> = {};
@@ -237,7 +256,7 @@ export default function ActiveRoutine() {
                 sets: activeRoutine.sets.map((set) =>
                     set.id === setId
                         ? { ...set, actualWeight: weightInKg }
-                        : set
+                        : set,
                 ),
             });
         }
@@ -251,7 +270,7 @@ export default function ActiveRoutine() {
         setActiveRoutine({
             ...activeRoutine,
             sets: activeRoutine.sets.map((set) =>
-                set.id === setId ? { ...set, actualReps: reps } : set
+                set.id === setId ? { ...set, actualReps: reps } : set,
             ),
         });
     };
@@ -272,7 +291,7 @@ export default function ActiveRoutine() {
                 setId,
                 set.actualWeight,
                 set.actualReps,
-                token
+                token,
             );
             const restTime = restTimes[set.exerciseId] || 60;
             setRestTimer({
@@ -339,7 +358,7 @@ export default function ActiveRoutine() {
 
     const handleDrop = async (
         e: React.DragEvent,
-        targetSet: ActiveRoutineSet
+        targetSet: ActiveRoutineSet,
     ) => {
         e.preventDefault();
 
@@ -370,10 +389,10 @@ export default function ActiveRoutine() {
             .sort((a, b) => a.order - b.order);
 
         const draggedIndex = exerciseSets.findIndex(
-            (s) => s.id === draggedSet.id
+            (s) => s.id === draggedSet.id,
         );
         const targetIndex = exerciseSets.findIndex(
-            (s) => s.id === targetSet.id
+            (s) => s.id === targetSet.id,
         );
 
         const reordered = [...exerciseSets];
@@ -394,7 +413,7 @@ export default function ActiveRoutine() {
 
         const updatedSets = activeRoutine.sets.map((set) => {
             const updated = reorderedWithUpdatedOrder.find(
-                (rs) => rs.id === set.id
+                (rs) => rs.id === set.id,
             );
             return updated || set;
         });
@@ -431,7 +450,7 @@ export default function ActiveRoutine() {
         const touch = e.changedTouches[0];
         const elementBelow = document.elementFromPoint(
             touch.clientX,
-            touch.clientY
+            touch.clientY,
         );
 
         const setCard = elementBelow?.closest(".set-card");
@@ -487,7 +506,7 @@ export default function ActiveRoutine() {
             .sort((a, b) => a.order - b.order);
 
         const draggedIndex = exerciseSets.findIndex(
-            (s) => s.id === currentDraggedSet.id
+            (s) => s.id === currentDraggedSet.id,
         );
         const targetIndex = exerciseSets.findIndex((s) => s.id === target.id);
 
@@ -509,7 +528,7 @@ export default function ActiveRoutine() {
 
         const updatedSets = activeRoutine.sets.map((set) => {
             const updated = reorderedWithUpdatedOrder.find(
-                (rs) => rs.id === set.id
+                (rs) => rs.id === set.id,
             );
             return updated || set;
         });
@@ -540,7 +559,7 @@ export default function ActiveRoutine() {
         if (!activeRoutine) return;
 
         const exerciseSets = activeRoutine.sets.filter(
-            (s) => s.exerciseId === exerciseId
+            (s) => s.exerciseId === exerciseId,
         );
 
         if (exerciseSets.length <= 1) {
@@ -548,20 +567,20 @@ export default function ActiveRoutine() {
             return;
         }
 
+        // Guardar estado anterior para posible reversión
+        setPreviousActiveRoutine(activeRoutine);
+
+        // Actualizar estado optimísticamente
+        const updatedSets = activeRoutine.sets.filter((s) => s.id !== setId);
+        setActiveRoutine({
+            ...activeRoutine,
+            sets: updatedSets,
+        });
+
         const token = authService.getToken();
         if (!token) return;
-
-        const result = await removeSet.execute(setId, token);
-        if (result !== undefined) {
-            const updatedSets = activeRoutine.sets.filter(
-                (s) => s.id !== setId
-            );
-
-            setActiveRoutine({
-                ...activeRoutine,
-                sets: updatedSets,
-            });
-        }
+        setRemovingSetId(setId);
+        await removeSet.execute(setId, token);
     };
 
     const handleCompleteWorkout = async () => {
@@ -571,7 +590,7 @@ export default function ActiveRoutine() {
         if (completedSets.length === 0) {
             showToast(
                 "error",
-                "Debes completar al menos 1 serie para finalizar"
+                "Debes completar al menos 1 serie para finalizar",
             );
             return;
         }
@@ -630,22 +649,32 @@ export default function ActiveRoutine() {
 
                 <div className="sets-list">
                     {Object.entries(
-                        activeRoutine.sets.reduce((acc, set) => {
-                            const exerciseId = set.exerciseId;
-                            if (!acc[exerciseId]) {
-                                acc[exerciseId] = {
-                                    exercise: set.exercise,
-                                    sets: [],
-                                    minOrder: set.order,
-                                };
-                            }
-                            acc[exerciseId].sets.push(set);
-                            acc[exerciseId].minOrder = Math.min(
-                                acc[exerciseId].minOrder,
-                                set.order
-                            );
-                            return acc;
-                        }, {} as Record<number, { exercise: (typeof activeRoutine.sets)[0]["exercise"]; sets: typeof activeRoutine.sets; minOrder: number }>)
+                        activeRoutine.sets.reduce(
+                            (acc, set) => {
+                                const exerciseId = set.exerciseId;
+                                if (!acc[exerciseId]) {
+                                    acc[exerciseId] = {
+                                        exercise: set.exercise,
+                                        sets: [],
+                                        minOrder: set.order,
+                                    };
+                                }
+                                acc[exerciseId].sets.push(set);
+                                acc[exerciseId].minOrder = Math.min(
+                                    acc[exerciseId].minOrder,
+                                    set.order,
+                                );
+                                return acc;
+                            },
+                            {} as Record<
+                                number,
+                                {
+                                    exercise: (typeof activeRoutine.sets)[0]["exercise"];
+                                    sets: typeof activeRoutine.sets;
+                                    minOrder: number;
+                                }
+                            >,
+                        ),
                     )
                         .sort(([, a], [, b]) => a.minOrder - b.minOrder)
                         .map(([exerciseId, { exercise, sets }]) => (
@@ -656,7 +685,7 @@ export default function ActiveRoutine() {
                                             <VideoThumbnail
                                                 src={
                                                     getVideoUrl(
-                                                        exercise.videoPath
+                                                        exercise.videoPath,
                                                     ) || ""
                                                 }
                                                 className="exercise-thumbnail-video"
@@ -685,7 +714,7 @@ export default function ActiveRoutine() {
                                             onChange={(e) =>
                                                 handleRestTimeChange(
                                                     Number(exerciseId),
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }
                                             className="input-rest-time"
@@ -725,7 +754,7 @@ export default function ActiveRoutine() {
                                                 onWeightChange={(value) =>
                                                     handleWeightChange(
                                                         set.id,
-                                                        value
+                                                        value,
                                                     )
                                                 }
                                                 onWeightBlur={() => {
@@ -739,23 +768,23 @@ export default function ActiveRoutine() {
                                                             formatWeight(
                                                                 unit === "lbs"
                                                                     ? kgToLbs(
-                                                                          set.actualWeight
+                                                                          set.actualWeight,
                                                                       )
-                                                                    : set.actualWeight
+                                                                    : set.actualWeight,
                                                             ).toString();
                                                         setWeightInputs(
                                                             (prev) => ({
                                                                 ...prev,
                                                                 [set.id]:
                                                                     formatted,
-                                                            })
+                                                            }),
                                                         );
                                                     }
                                                 }}
                                                 onRepsChange={(value) =>
                                                     handleRepsChange(
                                                         set.id,
-                                                        value
+                                                        value,
                                                     )
                                                 }
                                                 onComplete={() =>
@@ -764,7 +793,7 @@ export default function ActiveRoutine() {
                                                 onRemove={() =>
                                                     handleRemoveSet(
                                                         set.id,
-                                                        set.exerciseId
+                                                        set.exerciseId,
                                                     )
                                                 }
                                                 onDragStart={(e) =>
@@ -800,7 +829,7 @@ export default function ActiveRoutine() {
                                                 </div>
                                                 <div className="rest-timer-value">
                                                     {Math.floor(
-                                                        restTimer.timeLeft / 60
+                                                        restTimer.timeLeft / 60,
                                                     )}
                                                     :
                                                     {(restTimer.timeLeft % 60)
