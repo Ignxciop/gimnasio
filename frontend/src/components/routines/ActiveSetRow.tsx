@@ -113,7 +113,12 @@ export function ActiveSetRow({
                 <Check size={16} />
             </button>
             <button
-                onClick={onRemove}
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Remove button clicked for set:", set.id);
+                    onRemove();
+                }}
                 className="btn-remove-set"
                 title="Eliminar serie"
             >

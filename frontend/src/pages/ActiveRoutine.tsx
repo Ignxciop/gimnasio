@@ -67,11 +67,19 @@ export default function ActiveRoutine() {
     const { unit } = useUnit();
     const cancelModal = useModal();
     const completeModal = useModal();
-    const removeSetModal = useModal();
+    const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
     const [setToRemove, setSetToRemove] = useState<{
         setId: number;
         exerciseId: number;
     } | null>(null);
+
+    // Debug: monitor modal state changes
+    useEffect(() => {
+        console.log("Modal state changed:", {
+            isOpen: isRemoveModalOpen,
+            setToRemove,
+        });
+    }, [isRemoveModalOpen, setToRemove]);
     const [activeRoutine, setActiveRoutine] = useState<ActiveRoutine | null>(
         null,
     );
@@ -539,8 +547,15 @@ export default function ActiveRoutine() {
     };
 
     const handleRemoveSet = (setId: number, exerciseId: number) => {
+        console.log("handleRemoveSet called with:", { setId, exerciseId });
+        console.log("Setting setToRemove:", { setId, exerciseId });
         setSetToRemove({ setId, exerciseId });
-        removeSetModal.open();
+        console.log("Setting modal open");
+        setIsRemoveModalOpen(true);
+        console.log("Modal state after open:", {
+            isOpen: true,
+            setToRemove: { setId, exerciseId },
+        });
     };
 
     const confirmRemoveSet = async () => {
@@ -573,6 +588,7 @@ export default function ActiveRoutine() {
 
         // Limpiar estado
         setSetToRemove(null);
+        setIsRemoveModalOpen(false);
     };
 
     const handleCompleteWorkout = async () => {
@@ -879,9 +895,10 @@ export default function ActiveRoutine() {
                 />
 
                 <ConfirmDialog
-                    isOpen={removeSetModal.isOpen}
+                    isOpen={isRemoveModalOpen}
                     onClose={() => {
-                        removeSetModal.closeModal();
+                        console.log("Closing remove set modal");
+                        setIsRemoveModalOpen(false);
                         setSetToRemove(null);
                     }}
                     onConfirm={confirmRemoveSet}
