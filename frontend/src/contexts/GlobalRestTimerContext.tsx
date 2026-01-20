@@ -16,6 +16,46 @@ export interface RestTimerState {
 
 const REST_TIMER_KEY = "active_rest_timer";
 
+// Play a short, non-annoying completion sound for rest timer
+function playRestTimerCompletionSound() {
+    try {
+        // Create audio context
+        const audioContext = new (
+            window.AudioContext || (window as any).webkitAudioContext
+        )();
+
+        // Create oscillator for a gentle beep
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        // Connect nodes
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Configure sound: gentle, short beep
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // 800Hz - pleasant tone
+        oscillator.type = "sine"; // Smooth sine wave
+
+        // Gentle volume envelope
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(
+            0.1,
+            audioContext.currentTime + 0.01,
+        ); // Quick fade in
+        gainNode.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioContext.currentTime + 0.3,
+        ); // Quick fade out
+
+        // Play for 300ms
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+        // Silently fail if audio is not supported or fails
+        console.warn("Could not play rest timer completion sound:", error);
+    }
+}
+
 interface GlobalRestTimerContextType {
     restTimer: RestTimerState | null;
     startRestTimer: (
@@ -211,6 +251,8 @@ export function GlobalRestTimerProvider({
                                                 },
                                             );
                                         }
+                                        // Play completion sound
+                                        playRestTimerCompletionSound();
 
                                         // Dispatch event
                                         window.dispatchEvent(
@@ -260,6 +302,9 @@ export function GlobalRestTimerProvider({
                                 requireInteraction: true,
                             });
                         }
+
+                        // Play completion sound
+                        playRestTimerCompletionSound();
 
                         // Dispatch event
                         window.dispatchEvent(
@@ -326,6 +371,9 @@ export function GlobalRestTimerProvider({
                                     requireInteraction: true,
                                 });
                             }
+
+                            // Play completion sound
+                            playRestTimerCompletionSound();
 
                             // Dispatch event
                             window.dispatchEvent(
