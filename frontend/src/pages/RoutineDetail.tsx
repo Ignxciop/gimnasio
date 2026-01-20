@@ -1,31 +1,23 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-    ArrowLeft,
-    Plus,
-    GripVertical,
-    Trash2,
-    Edit,
-    Play,
-} from "lucide-react";
+import { ArrowLeft, Plus, Play } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useFetch } from "../hooks/useFetch";
 import { useModal } from "../hooks/useModal";
 import { useApiCall } from "../hooks/useApiCall";
 import { useUnit } from "../hooks/useUnit";
-import { VideoThumbnail } from "../components/ui/VideoThumbnail";
 import { routineService } from "../services/routineService";
 import { routineExerciseService } from "../services/routineExerciseService";
 import { activeRoutineService } from "../services/activeRoutineService";
 import { authService } from "../services/authService";
-import { getVideoUrl } from "../config/constants";
-import { kgToLbs, formatWeight } from "../utils/unitConverter";
+import { formatWeight, kgToLbs } from "../utils/unitConverter";
 import {
-    LOADING_MESSAGES,
     ERROR_MESSAGES,
     SUCCESS_MESSAGES,
+    LOADING_MESSAGES,
 } from "../config/messages";
 import "../styles/routineDetail.css";
+import "../styles/exerciseCard.css";
 import type { Routine } from "../types/routine";
 import type {
     RoutineExercise,
@@ -33,6 +25,7 @@ import type {
 } from "../types/routineExercise";
 import AddExerciseModal from "../components/AddExerciseModal";
 import EditRoutineExerciseModal from "../components/EditRoutineExerciseModal";
+import ExerciseCard from "../components/routines/ExerciseCard";
 
 export default function RoutineDetail() {
     const { id } = useParams();
@@ -44,8 +37,9 @@ export default function RoutineDetail() {
         useState<RoutineExercise | null>(null);
     const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
     const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
-    const [longPressActive, setLongPressActive] =
-        useState<RoutineExercise | null>(null);
+    const [longPressTarget, setLongPressTarget] = useState<{
+        id: number;
+    } | null>(null);
 
     const addExerciseModal = useModal();
     const editExerciseModal = useModal<RoutineExercise>();
@@ -147,9 +141,44 @@ export default function RoutineDetail() {
         await deleteExercise.execute(exerciseId, token);
     };
 
-    const handleDragStart = (exercise: RoutineExercise) => {
+    const handleExerciseMouseDown = (
+        e: React.MouseEvent,
+        exercise: RoutineExercise
+    ) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".drag-icon")) return;
+
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+        }
+
+        const timer = window.setTimeout(() => {
+            setLongPressTarget({ id: exercise.id });
+        }, 500);
+
+        setLongPressTimer(timer);
+    };
+
+    const handleExerciseMouseUp = () => {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+        }
+        setLongPressTarget(null);
+    };
+
+    const handleDragStart = (e: React.DragEvent, exercise: RoutineExercise) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".drag-icon")) return;
+
         setDraggedExercise(exercise);
         document.body.style.overflow = "hidden";
+    };
+
+    const handleDragEnd = () => {
+        setDraggedExercise(null);
+        setLongPressTarget(null);
+        document.body.style.overflow = "";
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -161,39 +190,41 @@ export default function RoutineDetail() {
         exercise: RoutineExercise
     ) => {
         const target = e.target as HTMLElement;
-        if (!target.closest(".drag-handle")) return;
+        if (!target.closest(".drag-icon")) return;
 
         e.stopPropagation();
 
-        setLongPressActive(exercise);
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+        }
 
-        const timer = setTimeout(() => {
+        const timer = window.setTimeout(() => {
             setDraggedExercise(exercise);
             setIsTouchDragging(true);
-            setLongPressActive(null);
+            setLongPressTarget(null);
             document.body.style.overflow = "hidden";
-        }, 400);
+        }, 500);
 
         setLongPressTimer(timer);
+        setLongPressTarget({ id: exercise.id });
     };
 
     const handleTouchMove = (e: React.TouchEvent) => {
         if (longPressTimer && !isTouchDragging) {
             clearTimeout(longPressTimer);
             setLongPressTimer(null);
-            setLongPressActive(null);
+            setLongPressTarget(null);
             return;
         }
 
         if (!isTouchDragging) return;
-        e.preventDefault();
     };
 
     const handleTouchEnd = async (e: React.TouchEvent) => {
         if (longPressTimer) {
             clearTimeout(longPressTimer);
             setLongPressTimer(null);
-            setLongPressActive(null);
+            setLongPressTarget(null);
         }
 
         if (!isTouchDragging || !draggedExercise) {
@@ -320,14 +351,7 @@ export default function RoutineDetail() {
         <MainLayout>
             <div className="routine-detail-container">
                 <div className="routine-detail-header">
-                    <button
-                        onClick={() => navigate("/rutinas")}
-                        className="btn-back"
-                    >
-                        <ArrowLeft size={20} />
-                        Volver
-                    </button>
-                    <div className="routine-info">
+                    <div className="routine-title-section">
                         <h1>{routine.name}</h1>
                         {routine.description && (
                             <p className="routine-description">
@@ -335,13 +359,22 @@ export default function RoutineDetail() {
                             </p>
                         )}
                     </div>
-                    <button
-                        onClick={() => addExerciseModal.openModal()}
-                        className="btn-add-exercise"
-                    >
-                        <Plus size={20} />
-                        Agregar Ejercicio
-                    </button>
+                    <div className="routine-actions-section">
+                        <button
+                            onClick={() => navigate("/rutinas")}
+                            className="btn-back"
+                        >
+                            <ArrowLeft size={20} />
+                            Volver
+                        </button>
+                        <button
+                            onClick={() => addExerciseModal.openModal()}
+                            className="btn-add-exercise"
+                        >
+                            <Plus size={20} />
+                            Agregar Ejercicio
+                        </button>
+                    </div>
                 </div>
 
                 <div className="exercises-list">
@@ -349,121 +382,59 @@ export default function RoutineDetail() {
                         <div className="loading">Cargando ejercicios...</div>
                     ) : exercisesFetch.data &&
                       exercisesFetch.data.length > 0 ? (
-                        exercisesFetch.data.map((routineExercise) => (
-                            <div
-                                key={routineExercise.id}
-                                data-exercise-id={routineExercise.id}
-                                className={`exercise-card ${
-                                    draggedExercise?.id === routineExercise.id
-                                        ? "dragging"
-                                        : ""
-                                } ${
-                                    longPressActive?.id === routineExercise.id
-                                        ? "long-press-active"
-                                        : ""
-                                }`}
-                                draggable
-                                onDragStart={() =>
-                                    handleDragStart(routineExercise)
-                                }
-                                onTouchStart={(e) =>
-                                    handleTouchStart(e, routineExercise)
-                                }
-                                onTouchMove={handleTouchMove}
-                                onTouchEnd={handleTouchEnd}
-                                onDragOver={handleDragOver}
-                                onDrop={(e) => handleDrop(e, routineExercise)}
-                            >
-                                <div className="exercise-card-content">
-                                    <GripVertical
-                                        size={20}
-                                        className="drag-handle"
-                                    />
-                                    {routineExercise.exercise?.videoPath && (
-                                        <div className="exercise-thumbnail">
-                                            <VideoThumbnail
-                                                src={
-                                                    getVideoUrl(
-                                                        routineExercise.exercise
-                                                            .videoPath
-                                                    ) || ""
-                                                }
-                                                className="exercise-thumbnail-video"
-                                            />
-                                        </div>
-                                    )}
-                                    <div className="exercise-info">
-                                        <h3>
-                                            {routineExercise.exercise?.name}
-                                        </h3>
-                                        <div className="exercise-details">
-                                            <span className="detail-badge">
-                                                {routineExercise.sets} series
-                                            </span>
-                                            <span className="detail-badge">
-                                                {routineExercise.repsMin ===
-                                                routineExercise.repsMax
-                                                    ? `${routineExercise.repsMin} reps`
-                                                    : `${routineExercise.repsMin}-${routineExercise.repsMax} reps`}
-                                            </span>
-                                            {routineExercise.weight && (
-                                                <span className="detail-badge">
-                                                    {formatWeight(
-                                                        unit === "lbs"
-                                                            ? kgToLbs(
-                                                                  routineExercise.weight
-                                                              )
-                                                            : routineExercise.weight
-                                                    )}{" "}
-                                                    {unit}
-                                                </span>
-                                            )}
-                                            <span className="detail-badge">
-                                                {routineExercise.restTime}s
-                                                descanso
-                                            </span>
-                                        </div>
-                                        <div className="exercise-meta">
-                                            <span>
-                                                {
-                                                    routineExercise.exercise
-                                                        ?.muscleGroup?.name
-                                                }
-                                            </span>
-                                            <span>•</span>
-                                            <span>
-                                                {
-                                                    routineExercise.exercise
-                                                        ?.equipment?.name
-                                                }
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="exercise-actions">
-                                    <button
-                                        onClick={() =>
-                                            editExerciseModal.openEditModal(
-                                                routineExercise
-                                            )
-                                        }
-                                        className="btn-edit"
-                                    >
-                                        <Edit size={18} />
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            handleDeleteExercise(
-                                                routineExercise.id
-                                            )
-                                        }
-                                        className="btn-delete"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        ))
+                        exercisesFetch.data.map((routineExercise) => {
+                            const weightDisplay = routineExercise.weight
+                                ? `${formatWeight(
+                                      unit === "lbs"
+                                          ? kgToLbs(routineExercise.weight)
+                                          : routineExercise.weight
+                                  )} ${unit}`
+                                : undefined;
+
+                            return (
+                                <ExerciseCard
+                                    key={routineExercise.id}
+                                    exercise={routineExercise}
+                                    isDragging={
+                                        draggedExercise?.id ===
+                                        routineExercise.id
+                                    }
+                                    isLongPressActive={
+                                        longPressTarget?.id ===
+                                        routineExercise.id
+                                    }
+                                    weightDisplay={weightDisplay}
+                                    onEdit={() =>
+                                        editExerciseModal.openEditModal(
+                                            routineExercise
+                                        )
+                                    }
+                                    onDelete={() =>
+                                        handleDeleteExercise(routineExercise.id)
+                                    }
+                                    onDragStart={(e) =>
+                                        handleDragStart(e, routineExercise)
+                                    }
+                                    onDragEnd={handleDragEnd}
+                                    onDragOver={handleDragOver}
+                                    onDrop={(e) =>
+                                        handleDrop(e, routineExercise)
+                                    }
+                                    onMouseDown={(e) =>
+                                        handleExerciseMouseDown(
+                                            e,
+                                            routineExercise
+                                        )
+                                    }
+                                    onMouseUp={handleExerciseMouseUp}
+                                    onTouchStart={(e) =>
+                                        handleTouchStart(e, routineExercise)
+                                    }
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                />
+                            );
+                        })
                     ) : (
                         <div className="empty-state">
                             <p>No hay ejercicios en esta rutina</p>
