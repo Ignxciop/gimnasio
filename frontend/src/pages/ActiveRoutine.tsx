@@ -231,6 +231,32 @@ export default function ActiveRoutine() {
         setRestTimes((prev) => ({ ...initialRestTimes, ...prev }));
     }, [activeRoutine]);
 
+    // Listen for rest timer finished event from Service Worker
+    useEffect(() => {
+        const handleRestTimerFinished = (event: CustomEvent) => {
+            const { routineId } = event.detail;
+            if (Number(routineId) === Number(activeId)) {
+                showToast(
+                    "success",
+                    "¡Descanso terminado! Es hora de continuar.",
+                );
+                // The timer state will be automatically cleared by the context
+            }
+        };
+
+        window.addEventListener(
+            "restTimerFinished",
+            handleRestTimerFinished as EventListener,
+        );
+
+        return () => {
+            window.removeEventListener(
+                "restTimerFinished",
+                handleRestTimerFinished as EventListener,
+            );
+        };
+    }, [activeId, showToast]);
+
     const handleWeightChange = (setId: number, value: string) => {
         if (!activeRoutine) return;
 

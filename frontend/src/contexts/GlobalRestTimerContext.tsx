@@ -4,6 +4,7 @@ import React, {
     useState,
     useEffect,
     useCallback,
+    useRef,
 } from "react";
 
 export interface RestTimerState {
@@ -12,8 +13,6 @@ export interface RestTimerState {
     routineId: number;
     startTime: number;
 }
-
-const REST_TIMER_KEY = "active_rest_timer";
 
 interface GlobalRestTimerContextType {
     restTimer: RestTimerState | null;
@@ -36,72 +35,80 @@ export function GlobalRestTimerProvider({
     children: React.ReactNode;
 }) {
     const [restTimer, setRestTimer] = useState<RestTimerState | null>(null);
+    const workerRef = useRef<Worker | null>(null);
+    const [isWorkerReady, setIsWorkerReady] = useState(false);
 
-    // Cargar timer desde localStorage al inicializar
+    // Initialize Web Worker for timer
     useEffect(() => {
-        const saved = localStorage.getItem(REST_TIMER_KEY);
-        if (saved) {
-            try {
-                const parsed: RestTimerState = JSON.parse(saved);
+        if ("Worker" in window) {
+            // Create web worker for timer
+            workerRef.current = new Worker("/rest-timer-worker.js");
 
-                // Validar que los datos sean correctos
-                if (
-                    !parsed.startTime ||
-                    typeof parsed.startTime !== "number" ||
-                    !parsed.timeLeft ||
-                    typeof parsed.timeLeft !== "number"
-                ) {
-                    localStorage.removeItem(REST_TIMER_KEY);
-                    return;
+            workerRef.current.onmessage = (event) => {
+                const { type, data } = event.data;
+
+                switch (type) {
+                    case "TIMER_UPDATE":
+                        setRestTimer((prev) =>
+                            prev ? { ...prev, timeLeft: data.timeLeft } : null,
+                        );
+                        break;
+
+                    case "TIMER_FINISHED":
+                        setRestTimer(null);
+                        // Dispatch custom event for components to listen
+                        window.dispatchEvent(
+                            new CustomEvent("restTimerFinished", {
+                                detail: {
+                                    exerciseId: data.exerciseId,
+                                    routineId: data.routineId,
+                                },
+                            }),
+                        );
+                        break;
+
+                    case "TIMER_LOADED":
+                        setRestTimer(data);
+                        break;
                 }
+            };
 
-                const elapsed = Math.floor(
-                    (Date.now() - parsed.startTime) / 1000,
-                );
-                const remaining = Math.max(0, parsed.timeLeft - elapsed);
+            workerRef.current.onerror = (error) => {
+                console.error("Rest timer worker error:", error);
+            };
 
-                if (remaining > 0) {
-                    setRestTimer({
-                        ...parsed,
-                        timeLeft: remaining,
-                        startTime: Date.now() - remaining * 1000,
-                    });
-                } else {
-                    // Timer expiró, limpiarlo
-                    localStorage.removeItem(REST_TIMER_KEY);
+            setIsWorkerReady(true);
+
+            // Load existing timer
+            workerRef.current.postMessage({ type: "LOAD_TIMER" });
+
+            return () => {
+                if (workerRef.current) {
+                    workerRef.current.terminate();
                 }
-            } catch (error) {
-                console.error("Error parsing saved rest timer:", error);
-                localStorage.removeItem(REST_TIMER_KEY);
-            }
+            };
+        } else {
+            // Fallback for browsers without Worker support
+            console.warn("Web Workers not supported, using fallback timer");
+            setIsWorkerReady(true);
         }
     }, []);
 
-    // Guardar timer en localStorage cuando cambia
+    // Request notification permission
     useEffect(() => {
-        if (restTimer) {
-            localStorage.setItem(REST_TIMER_KEY, JSON.stringify(restTimer));
-        } else {
-            localStorage.removeItem(REST_TIMER_KEY);
-        }
-    }, [restTimer]);
-
-    // Actualizar countdown
-    useEffect(() => {
-        if (!restTimer || restTimer.timeLeft <= 0) return;
-
-        const interval = setInterval(() => {
-            setRestTimer((prev) => {
-                if (!prev || prev.timeLeft <= 1) return null;
-                return { ...prev, timeLeft: prev.timeLeft - 1 };
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission().then((permission) => {
+                if (permission === "granted") {
+                    console.log("Notification permission granted");
+                }
             });
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [restTimer]);
+        }
+    }, []);
 
     const startRestTimer = useCallback(
         (exerciseId: number, timeLeft: number, routineId: number) => {
+            if (!isWorkerReady) return;
+
             const newTimer: RestTimerState = {
                 exerciseId,
                 timeLeft,
@@ -110,25 +117,45 @@ export function GlobalRestTimerProvider({
             };
 
             setRestTimer(newTimer);
+
+            if (workerRef.current) {
+                workerRef.current.postMessage({
+                    type: "START_TIMER",
+                    data: { exerciseId, timeLeft, routineId },
+                });
+            }
         },
-        [],
+        [isWorkerReady],
     );
 
     const stopRestTimer = useCallback(() => {
         setRestTimer(null);
+
+        if (workerRef.current) {
+            workerRef.current.postMessage({ type: "STOP_TIMER" });
+        }
     }, []);
 
-    const adjustRestTime = useCallback((delta: number) => {
-        setRestTimer((prev) => {
-            if (!prev) return null;
-            const newTime = Math.max(0, prev.timeLeft + delta);
-            return {
-                ...prev,
+    const adjustRestTime = useCallback(
+        (delta: number) => {
+            if (!restTimer) return;
+
+            const newTime = Math.max(0, restTimer.timeLeft + delta);
+            setRestTimer({
+                ...restTimer,
                 timeLeft: newTime,
-                startTime: Date.now() - (prev.timeLeft - newTime) * 1000,
-            };
-        });
-    }, []);
+                startTime: Date.now() - (restTimer.timeLeft - newTime) * 1000,
+            });
+
+            if (workerRef.current) {
+                workerRef.current.postMessage({
+                    type: "ADJUST_TIME",
+                    data: { delta, originalTimeLeft: restTimer.timeLeft },
+                });
+            }
+        },
+        [restTimer],
+    );
 
     const value = {
         restTimer,
