@@ -26,6 +26,7 @@ import type {
 import AddExerciseModal from "../components/AddExerciseModal";
 import EditRoutineExerciseModal from "../components/EditRoutineExerciseModal";
 import ExerciseCard from "../components/routines/ExerciseCard";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 
 export default function RoutineDetail() {
     const { id } = useParams();
@@ -43,6 +44,7 @@ export default function RoutineDetail() {
 
     const addExerciseModal = useModal();
     const editExerciseModal = useModal<RoutineExercise>();
+    const deleteExerciseModal = useModal<number>();
 
     const exercisesFetch = useFetch<RoutineExercise[]>({
         fetchFn: (token: string) =>
@@ -135,12 +137,18 @@ export default function RoutineDetail() {
     };
 
     const handleDeleteExercise = async (exerciseId: number) => {
-        if (!confirm("¿Estás seguro de eliminar este ejercicio?")) return;
+        deleteExerciseModal.openEditModal(exerciseId);
+    };
+
+    const handleConfirmDeleteExercise = async () => {
+        const exerciseId = deleteExerciseModal.editingItem;
+        if (!exerciseId) return;
 
         const token = authService.getToken();
         if (!token) return;
 
         await deleteExercise.execute(exerciseId, token);
+        deleteExerciseModal.closeModal();
     };
 
     const handleExerciseMouseDown = (
@@ -493,6 +501,17 @@ export default function RoutineDetail() {
                 onClose={editExerciseModal.closeModal}
                 onSubmit={handleEditExercise}
                 routineExercise={editExerciseModal.editingItem}
+            />
+
+            <ConfirmDialog
+                isOpen={deleteExerciseModal.isOpen}
+                onClose={deleteExerciseModal.closeModal}
+                onConfirm={handleConfirmDeleteExercise}
+                title="Eliminar ejercicio"
+                message="¿Estás seguro de que quieres eliminar este ejercicio de la rutina?"
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                variant="danger"
             />
         </MainLayout>
     );
