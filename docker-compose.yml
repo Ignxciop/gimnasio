@@ -1,7 +1,7 @@
-version: "3.8"
+version: "1.0"
 
 services:
-    backend:
+    backend-gimnasio:
         build:
             context: ./backend
             dockerfile: Dockerfile
@@ -27,7 +27,7 @@ services:
             - gimnasio-network
             - default
 
-    frontend:
+    frontend-gimnasio:
         build:
             context: ./frontend
             dockerfile: Dockerfile
@@ -37,11 +37,11 @@ services:
         environment:
             API_URL: ${API_URL}
         depends_on:
-            - backend
+            - backend-gimnasio
         networks:
             - gimnasio-network
 
-    cloudflared:
+    cloudflared-gimnasio:
         image: cloudflare/cloudflared:latest
         restart: unless-stopped
         environment:
@@ -54,8 +54,8 @@ services:
             - --no-autoupdate
             - run
         depends_on:
-            - frontend
-            - backend
+            - frontend-gimnasio
+            - backend-gimnasio
 
 volumes:
     backend-resources:
@@ -67,4 +67,3 @@ networks:
     default:
         name: dokploy-network
         external: true
-# Build: 20260107-201500
