@@ -156,16 +156,15 @@ export default function RoutineDetail() {
         exercise: RoutineExercise,
     ) => {
         const target = e.target as HTMLElement;
-        if (!target.closest(".drag-icon")) return;
-
-        if (longPressTimer) {
-            clearTimeout(longPressTimer);
+        if (!target.closest(".drag-icon")) {
+            return;
         }
-
+        if (longPressTimer) {
+            return;
+        }
         const timer = window.setTimeout(() => {
             setLongPressTarget({ id: exercise.id });
         }, 500);
-
         setLongPressTimer(timer);
     };
 
@@ -174,21 +173,24 @@ export default function RoutineDetail() {
             clearTimeout(longPressTimer);
             setLongPressTimer(null);
         }
-        setLongPressTarget(null);
+        if (!draggedExercise) {
+            setLongPressTarget(null);
+        }
     };
 
     const handleDragStart = (e: React.DragEvent, exercise: RoutineExercise) => {
-        const target = e.target as HTMLElement;
-        if (!target.closest(".drag-icon")) return;
-
-        setDraggedExercise(exercise);
-        document.body.style.overflow = "hidden";
+        if (longPressTarget?.id === exercise.id) {
+            setDraggedExercise(exercise);
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", exercise.id.toString());
+            }
+        }
     };
 
     const handleDragEnd = () => {
         setDraggedExercise(null);
         setLongPressTarget(null);
-        document.body.style.overflow = "";
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -200,100 +202,77 @@ export default function RoutineDetail() {
         exercise: RoutineExercise,
     ) => {
         const target = e.target as HTMLElement;
-        if (!target.closest(".drag-icon")) return;
-
-        e.stopPropagation();
-
-        if (longPressTimer) {
-            clearTimeout(longPressTimer);
+        if (!target.closest(".drag-icon")) {
+            return;
         }
-
+        if (longPressTimer) {
+            return;
+        }
         const timer = window.setTimeout(() => {
+            setLongPressTarget({ id: exercise.id });
             setDraggedExercise(exercise);
             setIsTouchDragging(true);
-            setLongPressTarget(null);
-            document.body.style.overflow = "hidden";
         }, 500);
-
         setLongPressTimer(timer);
-        setLongPressTarget({ id: exercise.id });
     };
 
     const handleTouchMove = (_e: React.TouchEvent) => {
-        if (longPressTimer && !isTouchDragging) {
-            clearTimeout(longPressTimer);
-            setLongPressTimer(null);
-            setLongPressTarget(null);
-            return;
-        }
-
-        if (!isTouchDragging) return;
+        if (!isTouchDragging || !draggedExercise) return;
     };
 
     const handleTouchEnd = async (e: React.TouchEvent) => {
         if (longPressTimer) {
             clearTimeout(longPressTimer);
             setLongPressTimer(null);
-            setLongPressTarget(null);
         }
 
         if (!isTouchDragging || !draggedExercise) {
             setIsTouchDragging(false);
             setDraggedExercise(null);
-            document.body.style.overflow = "";
+            setLongPressTarget(null);
             return;
         }
-
-        e.stopPropagation();
 
         const touch = e.changedTouches[0];
         const element = document.elementFromPoint(touch.clientX, touch.clientY);
 
         const exerciseCard = element?.closest(".exercise-card");
-        if (!exerciseCard) {
-            setIsTouchDragging(false);
-            setDraggedExercise(null);
-            document.body.style.overflow = "";
-            return;
-        }
-
-        const targetId = parseInt(
-            exerciseCard.getAttribute("data-exercise-id") || "0",
-        );
-        const exercises = exercisesFetch.data || [];
-        const targetExercise = exercises.find((ex) => ex.id === targetId);
-
-        if (!targetExercise || targetExercise.id === draggedExercise.id) {
-            setIsTouchDragging(false);
-            setDraggedExercise(null);
-            document.body.style.overflow = "";
-            return;
-        }
-
-        const token = authService.getToken();
-        if (token) {
-            const draggedIndex = exercises.findIndex(
-                (ex) => ex.id === draggedExercise.id,
+        if (exerciseCard) {
+            const targetId = parseInt(
+                exerciseCard.getAttribute("data-exercise-id") || "0",
             );
-            const targetIndex = exercises.findIndex(
-                (ex) => ex.id === targetExercise.id,
-            );
+            const exercises = exercisesFetch.data || [];
+            const targetExercise = exercises.find((ex) => ex.id === targetId);
 
-            const reordered = [...exercises];
-            reordered.splice(draggedIndex, 1);
-            reordered.splice(targetIndex, 0, draggedExercise);
+            if (targetExercise && targetExercise.id !== draggedExercise.id) {
+                const token = authService.getToken();
+                if (token) {
+                    const draggedIndex = exercises.findIndex(
+                        (ex) => ex.id === draggedExercise.id,
+                    );
+                    const targetIndex = exercises.findIndex(
+                        (ex) => ex.id === targetExercise.id,
+                    );
 
-            const updatedExercises = reordered.map((exercise, index) => ({
-                id: exercise.id,
-                order: index,
-            }));
+                    const reordered = [...exercises];
+                    reordered.splice(draggedIndex, 1);
+                    reordered.splice(targetIndex, 0, draggedExercise);
 
-            await reorderExercises.execute(updatedExercises, token);
+                    const updatedExercises = reordered.map(
+                        (exercise, index) => ({
+                            id: exercise.id,
+                            order: index,
+                        }),
+                    );
+
+                    await reorderExercises.execute(updatedExercises, token);
+                }
+            }
         }
 
         setIsTouchDragging(false);
         setDraggedExercise(null);
-        document.body.style.overflow = "";
+        setLongPressTarget(null);
     };
 
     const handleDrop = async (
@@ -304,14 +283,12 @@ export default function RoutineDetail() {
 
         if (!draggedExercise || draggedExercise.id === targetExercise.id) {
             setDraggedExercise(null);
-            document.body.style.overflow = "";
             return;
         }
 
         const token = authService.getToken();
         if (!token) {
             setDraggedExercise(null);
-            document.body.style.overflow = "";
             return;
         }
 
@@ -334,7 +311,6 @@ export default function RoutineDetail() {
 
         await reorderExercises.execute(updatedExercises, token);
         setDraggedExercise(null);
-        document.body.style.overflow = "";
     };
 
     const handleStartWorkout = async () => {
