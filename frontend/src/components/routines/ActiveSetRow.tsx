@@ -28,6 +28,8 @@ interface ActiveSetRowProps {
     onDragStart: (e: React.DragEvent) => void;
     onDragOver: (e: React.DragEvent) => void;
     onDrop: (e: React.DragEvent) => void;
+    onMouseDown: (e: React.MouseEvent) => void;
+    onMouseUp: () => void;
     onTouchStart: (e: React.TouchEvent) => void;
     onTouchMove: (e: React.TouchEvent) => void;
     onTouchEnd: (e: React.TouchEvent) => void;
@@ -48,6 +50,8 @@ export function ActiveSetRow({
     onDragStart,
     onDragOver,
     onDrop,
+    onMouseDown,
+    onMouseUp,
     onTouchStart,
     onTouchMove,
     onTouchEnd,
@@ -79,6 +83,8 @@ export function ActiveSetRow({
             onDragStart={onDragStart}
             onDragOver={onDragOver}
             onDrop={onDrop}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}

@@ -82,8 +82,9 @@ export default function ActiveRoutine() {
     const [isTouchDragging, setIsTouchDragging] = useState<boolean>(false);
     const draggedSetRef = useRef<ActiveRoutineSet | null>(null);
     const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
-    const [longPressActive, setLongPressActive] =
-        useState<ActiveRoutineSet | null>(null);
+    const [longPressTarget, setLongPressTarget] = useState<{
+        id: number;
+    } | null>(null);
     const [weightInputs, setWeightInputs] = useState<Record<number, string>>(
         {},
     );
@@ -329,40 +330,58 @@ export default function ActiveRoutine() {
     };
 
     const handleDragStart = (_e: React.DragEvent, set: ActiveRoutineSet) => {
-        setDraggedSet(set);
-        draggedSetRef.current = set;
-        document.body.style.overflow = "hidden";
+        if (longPressTarget?.id === set.id) {
+            setDraggedSet(set);
+            draggedSetRef.current = set;
+            if (_e.dataTransfer) {
+                _e.dataTransfer.effectAllowed = "move";
+                _e.dataTransfer.setData("text/plain", set.id.toString());
+            }
+        }
+    };
+
+    const handleSetMouseDown = (e: React.MouseEvent, set: ActiveRoutineSet) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".drag-handle")) return;
+
+        if (longPressTimer) {
+            return;
+        }
+        const timer = window.setTimeout(() => {
+            setLongPressTarget({ id: set.id });
+        }, 500);
+        setLongPressTimer(timer);
+    };
+
+    const handleSetMouseUp = () => {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+        }
+        if (!draggedSet) {
+            setLongPressTarget(null);
+        }
     };
 
     const handleTouchStart = (e: React.TouchEvent, set: ActiveRoutineSet) => {
         const target = e.target as HTMLElement;
-        if (!target.closest(".drag-handle")) return;
-
-        e.stopPropagation();
-
-        setLongPressActive(set);
-
-        const timer = setTimeout(() => {
+        if (!target.closest(".drag-handle")) {
+            return;
+        }
+        if (longPressTimer) {
+            return;
+        }
+        const timer = window.setTimeout(() => {
+            setLongPressTarget({ id: set.id });
             setDraggedSet(set);
             draggedSetRef.current = set;
             setIsTouchDragging(true);
-            setLongPressActive(null);
-            document.body.style.overflow = "hidden";
-        }, 400);
-
+        }, 500);
         setLongPressTimer(timer);
     };
 
-    const handleTouchMove = (e: React.TouchEvent) => {
-        if (longPressTimer && !isTouchDragging) {
-            clearTimeout(longPressTimer);
-            setLongPressTimer(null);
-            setLongPressActive(null);
-            return;
-        }
-
-        if (!isTouchDragging) return;
-        e.preventDefault();
+    const handleTouchMove = (_e: React.TouchEvent) => {
+        if (!isTouchDragging || !draggedSet) return;
     };
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -378,14 +397,12 @@ export default function ActiveRoutine() {
         if (!draggedSet || draggedSet.id === targetSet.id || !activeRoutine) {
             setDraggedSet(null);
             draggedSetRef.current = null;
-            document.body.style.overflow = "";
             return;
         }
 
         if (draggedSet.exerciseId !== targetSet.exerciseId) {
             setDraggedSet(null);
             draggedSetRef.current = null;
-            document.body.style.overflow = "";
             return;
         }
 
@@ -393,7 +410,6 @@ export default function ActiveRoutine() {
         if (!token) {
             setDraggedSet(null);
             draggedSetRef.current = null;
-            document.body.style.overflow = "";
             return;
         }
 
@@ -440,123 +456,95 @@ export default function ActiveRoutine() {
 
         setDraggedSet(null);
         draggedSetRef.current = null;
-        document.body.style.overflow = "";
     };
 
     const handleTouchEnd = async (e: React.TouchEvent) => {
         if (longPressTimer) {
             clearTimeout(longPressTimer);
             setLongPressTimer(null);
-            setLongPressActive(null);
         }
 
         if (!isTouchDragging || !draggedSetRef.current) {
             setIsTouchDragging(false);
             setDraggedSet(null);
             draggedSetRef.current = null;
-            document.body.style.overflow = "";
+            setLongPressTarget(null);
             return;
         }
-
-        e.stopPropagation();
 
         const touch = e.changedTouches[0];
-        const elementBelow = document.elementFromPoint(
-            touch.clientX,
-            touch.clientY,
-        );
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
 
-        const setCard = elementBelow?.closest(".set-card");
-
-        if (!setCard) {
-            setIsTouchDragging(false);
-            setDraggedSet(null);
-            draggedSetRef.current = null;
-            document.body.style.overflow = "";
-            return;
-        }
-
-        const targetId = parseInt(setCard.getAttribute("data-set-id") || "0");
-        const currentDraggedSet = draggedSetRef.current;
-
-        if (!activeRoutine) {
-            setIsTouchDragging(false);
-            setDraggedSet(null);
-            draggedSetRef.current = null;
-            document.body.style.overflow = "";
-            return;
-        }
-
-        const target = activeRoutine.sets.find((s) => s.id === targetId);
-
-        if (!target || currentDraggedSet.id === target.id) {
-            setIsTouchDragging(false);
-            setDraggedSet(null);
-            draggedSetRef.current = null;
-            document.body.style.overflow = "";
-            return;
-        }
-
-        if (currentDraggedSet.exerciseId !== target.exerciseId) {
-            setIsTouchDragging(false);
-            setDraggedSet(null);
-            draggedSetRef.current = null;
-            document.body.style.overflow = "";
-            return;
-        }
-
-        const token = authService.getToken();
-        if (!token) {
-            setIsTouchDragging(false);
-            setDraggedSet(null);
-            draggedSetRef.current = null;
-            document.body.style.overflow = "";
-            return;
-        }
-
-        const exerciseSets = activeRoutine.sets
-            .filter((s) => s.exerciseId === currentDraggedSet.exerciseId)
-            .sort((a, b) => a.order - b.order);
-
-        const draggedIndex = exerciseSets.findIndex(
-            (s) => s.id === currentDraggedSet.id,
-        );
-        const targetIndex = exerciseSets.findIndex((s) => s.id === target.id);
-
-        const reordered = [...exerciseSets];
-        reordered.splice(draggedIndex, 1);
-        reordered.splice(targetIndex, 0, currentDraggedSet);
-
-        const minOrder = exerciseSets[0].order;
-
-        const reorderedWithUpdatedOrder = reordered.map((set, idx) => ({
-            ...set,
-            order: minOrder + idx,
-        }));
-
-        const setsToUpdate = reorderedWithUpdatedOrder.map((s) => ({
-            id: s.id,
-            order: s.order,
-        }));
-
-        const updatedSets = activeRoutine.sets.map((set) => {
-            const updated = reorderedWithUpdatedOrder.find(
-                (rs) => rs.id === set.id,
+        const setCard = element?.closest(".set-card");
+        if (setCard) {
+            const targetId = parseInt(
+                setCard.getAttribute("data-set-id") || "0",
             );
-            return updated || set;
-        });
+            const sets = activeRoutine?.sets || [];
+            const targetSet = sets.find((s) => s.id === targetId);
 
-        setActiveRoutine({
-            ...activeRoutine,
-            sets: updatedSets,
-        });
+            if (
+                targetSet &&
+                draggedSetRef.current &&
+                targetSet.id !== draggedSetRef.current.id &&
+                targetSet.exerciseId === draggedSetRef.current.exerciseId
+            ) {
+                const token = authService.getToken();
+                if (token && activeRoutine) {
+                    const exerciseSets = activeRoutine.sets
+                        .filter(
+                            (s) =>
+                                s.exerciseId ===
+                                draggedSetRef.current!.exerciseId,
+                        )
+                        .sort((a, b) => a.order - b.order);
 
-        await reorderSets.execute(setsToUpdate, token);
+                    const draggedIndex = exerciseSets.findIndex(
+                        (s) => s.id === draggedSetRef.current!.id,
+                    );
+                    const targetIndex = exerciseSets.findIndex(
+                        (s) => s.id === targetSet.id,
+                    );
+
+                    const reordered = [...exerciseSets];
+                    reordered.splice(draggedIndex, 1);
+                    reordered.splice(targetIndex, 0, draggedSetRef.current);
+
+                    const minOrder = exerciseSets[0].order;
+
+                    const reorderedWithUpdatedOrder = reordered.map(
+                        (set, idx) => ({
+                            ...set,
+                            order: minOrder + idx,
+                        }),
+                    );
+
+                    const setsToUpdate = reorderedWithUpdatedOrder.map((s) => ({
+                        id: s.id,
+                        order: s.order,
+                    }));
+
+                    const updatedSets = activeRoutine.sets.map((set) => {
+                        const updated = reorderedWithUpdatedOrder.find(
+                            (rs) => rs.id === set.id,
+                        );
+                        return updated || set;
+                    });
+
+                    setActiveRoutine({
+                        ...activeRoutine,
+                        sets: updatedSets,
+                    });
+
+                    await reorderSets.execute(setsToUpdate, token);
+                }
+            }
+        }
 
         setIsTouchDragging(false);
         setDraggedSet(null);
         draggedSetRef.current = null;
-        document.body.style.overflow = "";
+        setLongPressTarget(null);
     };
 
     const handleAddSet = async (exerciseId: number) => {
@@ -775,7 +763,7 @@ export default function ActiveRoutine() {
                                                     draggedSet?.id === set.id
                                                 }
                                                 isLongPressActive={
-                                                    longPressActive?.id ===
+                                                    longPressTarget?.id ===
                                                     set.id
                                                 }
                                                 onWeightChange={(value) =>
@@ -830,6 +818,10 @@ export default function ActiveRoutine() {
                                                 onDrop={(e) =>
                                                     handleDrop(e, set)
                                                 }
+                                                onMouseDown={(e) =>
+                                                    handleSetMouseDown(e, set)
+                                                }
+                                                onMouseUp={handleSetMouseUp}
                                                 onTouchStart={(e) =>
                                                     handleTouchStart(e, set)
                                                 }
