@@ -6,6 +6,7 @@
 
 .main-layout__content {
     flex: 1;
+    margin-left: 220px;
     padding: 0;
     background-color: var(--color-bg-primary);
     padding-bottom: 5rem;
