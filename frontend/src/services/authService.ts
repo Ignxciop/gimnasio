@@ -15,7 +15,7 @@ export const authService = {
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
         const response = await api.post<LoginResponse>(
             "/auth/login",
-            credentials
+            credentials,
         );
         if (response.data.accessToken) {
             this.saveToken(response.data.accessToken);
@@ -39,8 +39,8 @@ export const authService = {
                     `${API_BASE_URL}/auth/csrf-token`,
                     {
                         method: "GET",
-                        credentials: "include",
-                    }
+                        credentials: "include", // Necesario para CSRF
+                    },
                 );
 
                 if (!csrfResponse.ok) {
@@ -49,16 +49,13 @@ export const authService = {
 
                 const { csrfToken } = await csrfResponse.json();
 
-                const response = await fetch(
-                    `${API_BASE_URL}/auth/refresh`,
-                    {
-                        method: "POST",
-                        credentials: "include",
-                        headers: {
-                            "x-csrf-token": csrfToken,
-                        },
-                    }
-                );
+                const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "x-csrf-token": csrfToken,
+                    },
+                });
 
                 if (!response.ok) {
                     throw new Error("Failed to refresh token");
@@ -79,13 +76,10 @@ export const authService = {
     },
 
     async logout(): Promise<void> {
-        const csrfResponse = await fetch(
-            `${API_BASE_URL}/auth/csrf-token`,
-            {
-                method: "GET",
-                credentials: "include",
-            }
-        );
+        const csrfResponse = await fetch(`${API_BASE_URL}/auth/csrf-token`, {
+            method: "GET",
+            credentials: "include",
+        });
 
         if (csrfResponse.ok) {
             const { csrfToken } = await csrfResponse.json();

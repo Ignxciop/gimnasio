@@ -11,13 +11,13 @@ const normalizeApiUrl = (url: string): string => {
     if (normalized.includes("/api/api")) {
         throw new Error(
             "❌ API_BASE_URL mal configurada: contiene doble /api. " +
-                "La variable debe ser: https://gimnasio-api.josenunez.cl/api"
+                "La variable debe ser: https://gimnasio-api.josenunez.cl/api",
         );
     }
 
     if (!import.meta.env.DEV && normalized.includes("localhost")) {
         console.warn(
-            "⚠️ WARNING: API_BASE_URL contiene localhost en producción"
+            "⚠️ WARNING: API_BASE_URL contiene localhost en producción",
         );
     }
 
@@ -36,11 +36,17 @@ const getApiUrl = (): string => {
 
     // Development fallback includes /api
     if (import.meta.env.DEV) {
+        // Detectar IP local para desarrollo móvil
+        const hostname = window.location.hostname;
+        if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+            // Si estamos accediendo desde una IP, usar esa misma IP para la API
+            return `http://${hostname}:3000/api`;
+        }
         return "http://localhost:3000/api";
     }
 
     throw new Error(
-        "API_BASE_URL not configured. Set API_URL environment variable with full path (e.g., https://gimnasio-api.josenunez.cl/api)"
+        "API_BASE_URL not configured. Set API_URL environment variable with full path (e.g., https://gimnasio-api.josenunez.cl/api)",
     );
 };
 

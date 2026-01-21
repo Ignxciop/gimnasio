@@ -72,8 +72,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 } else {
                     setGeneralError(error.message);
                 }
-            } else {
+            } else if (error instanceof Error) {
                 setGeneralError("Error de conexión. Intenta nuevamente.");
+            } else {
+                setGeneralError("Error desconocido. Intenta nuevamente.");
             }
         } finally {
             setIsLoading(false);

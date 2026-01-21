@@ -21,7 +21,7 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 
 export const fetchWithAuth = async (
     url: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
 ): Promise<Response> => {
     const token = tokenStorage.getToken();
 
@@ -34,10 +34,15 @@ export const fetchWithAuth = async (
         headers.set("Content-Type", "application/json");
     }
 
+    // No usar credentials para rutas de autenticación
+    const isAuthRoute =
+        url.includes("/auth/login") || url.includes("/auth/register");
+    const credentials = isAuthRoute ? "omit" : "include";
+
     const response = await fetch(url, {
         ...options,
         headers,
-        credentials: "include",
+        credentials,
     });
 
     if (response.status === 401 || response.status === 403) {
@@ -65,7 +70,7 @@ export const fetchWithAuth = async (
                                 ...options,
                                 headers,
                                 credentials: "include",
-                            })
+                            }),
                         );
                     },
                     reject,

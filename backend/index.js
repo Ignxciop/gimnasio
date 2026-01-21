@@ -33,8 +33,14 @@ app.set("trust proxy", true);
 const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
     : process.env.NODE_ENV === "production"
-    ? []
-    : ["http://localhost:5173"];
+      ? []
+      : [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            /^https?:\/\/.*:5173$/, // Permite cualquier IP en puerto 5173
+            /^https?:\/\/192\.168\.1\.\d+:5173$/, // Específicamente para la red local
+            "*", // PERMITIR CUALQUIER ORIGIN PARA TESTING
+        ];
 
 const corsOptions = {
     origin: (origin, callback) => {
@@ -43,11 +49,29 @@ const corsOptions = {
             allowedOrigins.length === 0
         ) {
             return callback(
-                new Error("CORS_ORIGIN not configured for production")
+                new Error("CORS_ORIGIN not configured for production"),
             );
         }
 
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Permitir requests sin origin (como mobile apps o curl)
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        // Verificar si el origin está permitido
+        const isAllowed = allowedOrigins.some((allowedOrigin) => {
+            if (allowedOrigin === "*") {
+                return true;
+            }
+            if (typeof allowedOrigin === "string") {
+                return allowedOrigin === origin;
+            } else if (allowedOrigin instanceof RegExp) {
+                return allowedOrigin.test(origin);
+            }
+            return false;
+        });
+
+        if (isAllowed) {
             callback(null, true);
         } else {
             callback(new Error(`Origin ${origin} not allowed by CORS`));
@@ -87,7 +111,7 @@ app.use(
         referrerPolicy: {
             policy: "strict-origin-when-cross-origin",
         },
-    })
+    }),
 );
 
 app.use(cors(corsOptions));
@@ -126,7 +150,7 @@ app.use(
         res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
         next();
     },
-    express.static(path.join(__dirname, "resources"))
+    express.static(path.join(__dirname, "resources")),
 );
 
 app.use("/api/auth", authRoutes);
