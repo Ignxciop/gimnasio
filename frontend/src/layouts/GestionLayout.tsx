@@ -10,9 +10,6 @@ export const GestionLayout: React.FC = () => {
             <div className="gestion-layout">
                 <header className="gestion-layout__header">
                     <h1 className="gestion-layout__title">Panel de Gestión</h1>
-                    <p className="gestion-layout__description">
-                        Administra ejercicios, equipamiento y grupos musculares
-                    </p>
 
                     <nav className="gestion-layout__tabs">
                         <NavLink
