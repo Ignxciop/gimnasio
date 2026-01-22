@@ -6,15 +6,22 @@
 .action-menu__trigger {
     background: none;
     border: none;
-    padding: 4px;
-    border-radius: 50%;
+    padding: 0;
+    border-radius: 0;
     cursor: pointer;
-    transition: background 0.15s;
-    color: var(--accent-mid, #e63946);
+    transition: color 0.15s;
+    color: var(--color-text-secondary, #d0d0d0);
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: unset;
+    min-height: unset;
 }
 .action-menu__trigger:hover,
 .action-menu__trigger:focus {
-    background: rgba(230, 57, 70, 0.08);
+    background: none;
+    color: var(--color-text-muted, #9ca3af);
 }
 
 .action-menu__dropdown {

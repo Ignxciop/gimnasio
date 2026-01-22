@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import "./actionMenu.css";
 import { MoreVertical } from "lucide-react";
 
 interface ActionMenuProps {
@@ -32,7 +33,7 @@ export function ActionMenu({ children }: ActionMenuProps) {
                 type="button"
                 onClick={() => setOpen((v) => !v)}
             >
-                <MoreVertical size={18} />
+                <MoreVertical size={16} strokeWidth={2} />
             </button>
             {open && <div className="action-menu__dropdown">{children}</div>}
         </div>
