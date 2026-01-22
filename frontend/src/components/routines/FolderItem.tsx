@@ -1,5 +1,6 @@
 import { GripVertical, Folder, Pencil, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
+import { ActionMenu } from "../ui/ActionMenu";
 
 interface FolderItemProps {
     folder: {
@@ -72,20 +73,18 @@ export function FolderItem({
                     </h3>
                 </div>
                 <div className="folder-right">
-                    <button
-                        onClick={onEdit}
-                        className="action-btn"
-                        aria-label="Editar"
-                    >
-                        <Pencil size={16} />
-                    </button>
-                    <button
-                        onClick={onDelete}
-                        className="action-btn danger"
-                        aria-label="Eliminar"
-                    >
-                        <Trash2 size={16} />
-                    </button>
+                    <ActionMenu>
+                        <button onClick={onEdit} type="button">
+                            <Pencil size={16} /> Editar
+                        </button>
+                        <button
+                            onClick={onDelete}
+                            type="button"
+                            className="danger"
+                        >
+                            <Trash2 size={16} /> Eliminar
+                        </button>
+                    </ActionMenu>
                 </div>
             </div>
             {folder.description && (
