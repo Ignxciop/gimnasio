@@ -73,7 +73,7 @@ export function FolderItem({
                     </h3>
                 </div>
                 <div className="folder-right">
-                    <ActionMenu>
+                    <ActionMenu menuId={`folder-${folder.id}`}>
                         <button onClick={onEdit} type="button">
                             <Pencil size={16} /> Editar
                         </button>

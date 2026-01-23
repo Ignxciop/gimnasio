@@ -4,7 +4,8 @@ import { authService } from "./services/authService";
 import { ToastProvider } from "./contexts/ToastContext";
 import { UnitProvider } from "./contexts/UnitContext";
 import { GlobalRestTimerProvider } from "./contexts/GlobalRestTimerContext";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ActionMenuProvider } from "./contexts/ActionMenuContext";
+// import { ProtectedRoute } from "./components/ProtectedRoute";
 import { GlobalRestTimer } from "./components/GlobalRestTimer";
 import "./styles/globalRestTimer.css";
 import { LOADING_MESSAGES } from "./config/messages";
@@ -15,6 +16,7 @@ const Login = lazy(() =>
 const Register = lazy(() =>
     import("./pages/Register").then((m) => ({ default: m.Register })),
 );
+
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -44,9 +46,7 @@ const AdminDashboard = lazy(() =>
     })),
 );
 const AdminAudit = lazy(() =>
-    import("./pages/admin/AdminAudit").then((m) => ({
-        default: m.AdminAudit,
-    })),
+    import("./pages/admin/AdminAudit").then((m) => ({ default: m.AdminAudit })),
 );
 const GestionLayout = lazy(() =>
     import("./layouts/GestionLayout").then((m) => ({
@@ -73,6 +73,7 @@ const RoutineDetail = lazy(() => import("./pages/RoutineDetail"));
 const ActiveRoutine = lazy(() => import("./pages/ActiveRoutine"));
 const WorkoutDay = lazy(() => import("./pages/WorkoutDay"));
 const CompletedRoutines = lazy(() => import("./pages/CompletedRoutines"));
+// import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -87,22 +88,7 @@ function App() {
             setIsAuthenticated(authenticated);
             setIsInitializing(false);
         };
-
         initAuth();
-    }, []);
-
-    // Register Service Worker for notifications
-    useEffect(() => {
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker
-                .register("/sw.js")
-                .then((registration) => {
-                    console.log("Service Worker registered:", registration);
-                })
-                .catch((error) => {
-                    console.error("Service Worker registration failed:", error);
-                });
-        }
     }, []);
 
     const handleLoginSuccess = () => {
@@ -134,232 +120,234 @@ function App() {
         <GlobalRestTimerProvider>
             <ToastProvider>
                 <UnitProvider>
-                    <BrowserRouter>
-                        <Suspense
-                            fallback={
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: "100vh",
-                                        fontSize: "1.2rem",
-                                        color: "#666",
-                                    }}
-                                >
-                                    {LOADING_MESSAGES.GENERIC}
-                                </div>
-                            }
-                        >
-                            <GlobalRestTimer />
-                            <Routes>
-                                <Route
-                                    path="/login"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Navigate to="/inicio" replace />
-                                        ) : (
-                                            <Login
-                                                onLoginSuccess={
-                                                    handleLoginSuccess
-                                                }
-                                            />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/register"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Navigate to="/inicio" replace />
-                                        ) : (
-                                            <Register
-                                                onRegisterSuccess={
-                                                    handleRegisterSuccess
-                                                }
-                                            />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/verificar-correo"
-                                    element={<VerifyEmail />}
-                                />
-
-                                <Route path="/terminos" element={<Terms />} />
-
-                                <Route
-                                    path="/privacidad"
-                                    element={<Privacy />}
-                                />
-
-                                <Route
-                                    path="/inicio"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Home />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/day/:year/:month/:day"
-                                    element={
-                                        isAuthenticated ? (
-                                            <WorkoutDay />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/perfil/:username"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Profile />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/perfil/:username/estadisticas"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Statistics />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/perfil/:username/rutinas"
-                                    element={
-                                        isAuthenticated ? (
-                                            <CompletedRoutines />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/admin"
-                                    element={
-                                        <ProtectedRoute
-                                            requiredRoles={["administrador"]}
-                                        >
+                    <ActionMenuProvider>
+                        <BrowserRouter>
+                            <Suspense
+                                fallback={
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            height: "100vh",
+                                            fontSize: "1.2rem",
+                                            color: "#666",
+                                        }}
+                                    >
+                                        {LOADING_MESSAGES.GENERIC}
+                                    </div>
+                                }
+                            >
+                                <GlobalRestTimer />
+                                <Routes>
+                                    <Route
+                                        path="/login"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Navigate
+                                                    to="/inicio"
+                                                    replace
+                                                />
+                                            ) : (
+                                                <Login
+                                                    onLoginSuccess={
+                                                        handleLoginSuccess
+                                                    }
+                                                />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="/register"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Navigate
+                                                    to="/inicio"
+                                                    replace
+                                                />
+                                            ) : (
+                                                <Register
+                                                    onRegisterSuccess={
+                                                        handleRegisterSuccess
+                                                    }
+                                                />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="/verificar-correo"
+                                        element={<VerifyEmail />}
+                                    />
+                                    <Route
+                                        path="/terminos"
+                                        element={<Terms />}
+                                    />
+                                    <Route
+                                        path="/privacidad"
+                                        element={<Privacy />}
+                                    />
+                                    <Route
+                                        path="/inicio"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Home />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="/day/:year/:month/:day"
+                                        element={
+                                            isAuthenticated ? (
+                                                <WorkoutDay />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="/perfil/:username"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Profile />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="/perfil/:username/estadisticas"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Statistics />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="/perfil/:username/rutinas"
+                                        element={
+                                            isAuthenticated ? (
+                                                <CompletedRoutines />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="/admin"
+                                        element={
+                                            /*
+                                            <ProtectedRoute requiredRoles={["administrador"]}>
+                                                <AdminLayout />
+                                            </ProtectedRoute>
+                                            */
                                             <AdminLayout />
-                                        </ProtectedRoute>
-                                    }
-                                >
-                                    <Route index element={<AdminDashboard />} />
+                                        }
+                                    >
+                                        <Route
+                                            index
+                                            element={<AdminDashboard />}
+                                        />
+                                        <Route
+                                            path="usuarios"
+                                            element={<AdminUsers />}
+                                        />
+                                        <Route
+                                            path="feedback"
+                                            element={<AdminFeedback />}
+                                        />
+                                        <Route
+                                            path="auditoria"
+                                            element={<AdminAudit />}
+                                        />
+                                    </Route>
                                     <Route
-                                        path="usuarios"
-                                        element={<AdminUsers />}
-                                    />
-                                    <Route
-                                        path="feedback"
-                                        element={<AdminFeedback />}
-                                    />
-                                    <Route
-                                        path="auditoria"
-                                        element={<AdminAudit />}
-                                    />
-                                </Route>
-
-                                <Route
-                                    path="/gestion"
-                                    element={
-                                        <ProtectedRoute
-                                            requiredRoles={[
-                                                "manager",
-                                                "administrador",
-                                            ]}
-                                            requireAnyRole={true}
-                                        >
+                                        path="/gestion"
+                                        element={
+                                            /*
+                                            <ProtectedRoute requiredRoles={["manager", "administrador"]} requireAnyRole={true}>
+                                                <GestionLayout />
+                                            </ProtectedRoute>
+                                            */
                                             <GestionLayout />
-                                        </ProtectedRoute>
-                                    }
-                                >
+                                        }
+                                    >
+                                        <Route
+                                            index
+                                            element={<GestionExercises />}
+                                        />
+                                        <Route
+                                            path="equipamiento"
+                                            element={<GestionEquipment />}
+                                        />
+                                        <Route
+                                            path="grupos-musculares"
+                                            element={<GestionMuscleGroups />}
+                                        />
+                                    </Route>
                                     <Route
-                                        index
-                                        element={<GestionExercises />}
+                                        path="/rutinas"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Rutinas />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
                                     />
                                     <Route
-                                        path="equipamiento"
-                                        element={<GestionEquipment />}
+                                        path="/rutinas/:id"
+                                        element={
+                                            isAuthenticated ? (
+                                                <RoutineDetail />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
                                     />
                                     <Route
-                                        path="grupos-musculares"
-                                        element={<GestionMuscleGroups />}
+                                        path="/rutinas/:routineId/activa/:activeId"
+                                        element={
+                                            isAuthenticated ? (
+                                                <ActiveRoutine />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
                                     />
-                                </Route>
-
-                                <Route
-                                    path="/rutinas"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Rutinas />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/rutinas/:id"
-                                    element={
-                                        isAuthenticated ? (
-                                            <RoutineDetail />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/rutinas/:routineId/activa/:activeId"
-                                    element={
-                                        isAuthenticated ? (
-                                            <ActiveRoutine />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="/"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Navigate to="/inicio" replace />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-
-                                <Route
-                                    path="*"
-                                    element={
-                                        isAuthenticated ? (
-                                            <Navigate to="/inicio" replace />
-                                        ) : (
-                                            <Navigate to="/login" replace />
-                                        )
-                                    }
-                                />
-                            </Routes>
-                        </Suspense>
-                    </BrowserRouter>
+                                    <Route
+                                        path="/"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Navigate
+                                                    to="/inicio"
+                                                    replace
+                                                />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
+                                    />
+                                    <Route
+                                        path="*"
+                                        element={
+                                            isAuthenticated ? (
+                                                <Navigate
+                                                    to="/inicio"
+                                                    replace
+                                                />
+                                            ) : (
+                                                <Navigate to="/login" replace />
+                                            )
+                                        }
+                                    />
+                                </Routes>
+                            </Suspense>
+                        </BrowserRouter>
+                    </ActionMenuProvider>
                 </UnitProvider>
             </ToastProvider>
         </GlobalRestTimerProvider>

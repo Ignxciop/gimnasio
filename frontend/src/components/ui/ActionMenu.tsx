@@ -1,29 +1,32 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
+import { useActionMenu } from "../../contexts/ActionMenuContext";
 import "./actionMenu.css";
 import { MoreVertical } from "lucide-react";
 
 interface ActionMenuProps {
     children: React.ReactNode;
+    menuId: string;
 }
 
-export function ActionMenu({ children }: ActionMenuProps) {
-    const [open, setOpen] = useState(false);
+export function ActionMenu({ children, menuId }: ActionMenuProps) {
+    const { openMenuId, setOpenMenuId } = useActionMenu();
     const menuRef = useRef<HTMLDivElement>(null);
 
     // Cierra el menú si se hace click fuera
     function handleClickOutside(e: MouseEvent) {
         if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-            setOpen(false);
+            setOpenMenuId(null);
         }
     }
 
-    // Efecto para cerrar al hacer click fuera
     React.useEffect(() => {
-        if (!open) return;
+        if (openMenuId !== menuId) return;
         document.addEventListener("mousedown", handleClickOutside);
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
-    }, [open]);
+    }, [openMenuId, menuId]);
+
+    const isOpen = openMenuId === menuId;
 
     return (
         <div className="action-menu" ref={menuRef}>
@@ -31,11 +34,11 @@ export function ActionMenu({ children }: ActionMenuProps) {
                 className="action-menu__trigger"
                 aria-label="Más acciones"
                 type="button"
-                onClick={() => setOpen((v) => !v)}
+                onClick={() => setOpenMenuId(isOpen ? null : menuId)}
             >
                 <MoreVertical size={16} strokeWidth={2} />
             </button>
-            {open && <div className="action-menu__dropdown">{children}</div>}
+            {isOpen && <div className="action-menu__dropdown">{children}</div>}
         </div>
     );
 }

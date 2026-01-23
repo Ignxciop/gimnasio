@@ -67,7 +67,7 @@ export function RoutineItem({
                 </span>
             </div>
             <div className="routine-right">
-                <ActionMenu>
+                <ActionMenu menuId={`routine-${routine.id}`}>
                     <button onClick={onEdit} type="button">
                         <Pencil size={16} /> Editar
                     </button>
