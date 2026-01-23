@@ -29,6 +29,23 @@ class UserService {
             throw error;
         }
 
+        // Bloqueo: ¿hay un código de verificación activo para este email o username?
+        const now = new Date();
+        const pendingVerification = await prisma.emailVerification.findFirst({
+            where: {
+                OR: [{ user: { email } }, { user: { username } }],
+                expiresAt: { gt: now },
+            },
+            include: { user: true },
+        });
+        if (pendingVerification) {
+            const error = new Error(
+                "Ya existe un código de verificación pendiente para este usuario. Debes esperar a que expire antes de volver a registrarte.",
+            );
+            error.statusCode = 429;
+            throw error;
+        }
+
         if (roleId) {
             const roleExists = await prisma.role.findUnique({
                 where: { id: roleId },
