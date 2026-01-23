@@ -33,7 +33,7 @@ export default function AddExerciseModal({
     });
     const [weightInput, setWeightInput] = useState<string>("");
     const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
-        null
+        null,
     );
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -84,7 +84,7 @@ export default function AddExerciseModal({
 
     const filteredExercises =
         exercisesFetch.data?.filter((ex) =>
-            ex.name.toLowerCase().includes(searchTerm.toLowerCase())
+            ex.name.toLowerCase().includes(searchTerm.toLowerCase()),
         ) || [];
 
     return (
@@ -157,7 +157,7 @@ export default function AddExerciseModal({
                                                     <video
                                                         src={
                                                             getVideoUrl(
-                                                                exercise.videoPath
+                                                                exercise.videoPath,
                                                             ) || ""
                                                         }
                                                         className="exercise-list-video"
@@ -206,54 +206,50 @@ export default function AddExerciseModal({
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group reps-group">
                             <label>
-                                Repeticiones Mínimas{" "}
+                                Rango de Repeticiones{" "}
                                 <span className="required">*</span>
                             </label>
-                            <Input
-                                type="number"
-                                value={formData.repsMin || ""}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        repsMin: e.target.value
-                                            ? Number(e.target.value)
-                                            : 0,
-                                    })
-                                }
-                                min="1"
-                                max="1000"
-                                placeholder="Ej: 6"
-                                required
-                            />
+                            <div className="reps-range-inputs">
+                                <Input
+                                    type="number"
+                                    value={formData.repsMin || ""}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            repsMin: e.target.value
+                                                ? Number(e.target.value)
+                                                : 0,
+                                        })
+                                    }
+                                    min="1"
+                                    max="1000"
+                                    placeholder="Mín"
+                                    required
+                                />
+                                <span className="reps-separator">-</span>
+                                <Input
+                                    type="number"
+                                    value={formData.repsMax || ""}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            repsMax: e.target.value
+                                                ? Number(e.target.value)
+                                                : 0,
+                                        })
+                                    }
+                                    min="1"
+                                    max="1000"
+                                    placeholder="Máx"
+                                    required
+                                />
+                            </div>
                         </div>
                     </div>
 
                     <div className="form-row">
-                        <div className="form-group">
-                            <label>
-                                Repeticiones Máximas{" "}
-                                <span className="required">*</span>
-                            </label>
-                            <Input
-                                type="number"
-                                value={formData.repsMax || ""}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        repsMax: e.target.value
-                                            ? Number(e.target.value)
-                                            : 0,
-                                    })
-                                }
-                                min="1"
-                                max="1000"
-                                placeholder="Ej: 8"
-                                required
-                            />
-                        </div>
-
                         <div className="form-group">
                             <label>Peso ({unit})</label>
                             <Input

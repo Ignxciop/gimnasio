@@ -1,3 +1,22 @@
+.reps-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.reps-range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.reps-separator {
+    color: var(--text-secondary);
+    font-size: 1.2em;
+    margin: 0 0.25em;
+}
 .modal-overlay {
     position: fixed;
     top: 0;
