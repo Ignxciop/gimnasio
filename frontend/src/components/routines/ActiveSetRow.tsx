@@ -20,6 +20,7 @@ interface ActiveSetRowProps {
     weightInput: string | undefined;
     isDragging: boolean;
     isLongPressActive: boolean;
+    previousKgReps?: string;
     onWeightChange: (value: string) => void;
     onWeightBlur: () => void;
     onRepsChange: (value: string) => void;
@@ -42,6 +43,7 @@ export function ActiveSetRow({
     weightInput,
     isDragging,
     isLongPressActive,
+    previousKgReps,
     onWeightChange,
     onWeightBlur,
     onRepsChange,
@@ -74,11 +76,7 @@ export function ActiveSetRow({
     return (
         <div
             data-set-id={set.id}
-            className={`set-row ${set.completed ? "completed" : ""} ${
-                set.isPR ? "pr" : ""
-            } ${isDragging ? "dragging" : ""} ${
-                isLongPressActive ? "long-press-active" : ""
-            }`}
+            className={`set-row ${set.completed ? "completed" : ""} ${set.isPR ? "pr" : ""} ${isDragging ? "dragging" : ""} ${isLongPressActive ? "long-press-active" : ""}`}
             draggable
             onDragStart={onDragStart}
             onDragOver={onDragOver}
@@ -91,6 +89,23 @@ export function ActiveSetRow({
         >
             <GripVertical size={14} className="drag-handle" />
             <span className="set-number">{index + 1}</span>
+            {/* Input ANTERIOR KG x REPS */}
+            <div className="input-wrapper">
+                <input
+                    type="text"
+                    className="set-input previous-input"
+                    value={previousKgReps || ""}
+                    disabled
+                    placeholder="ANTERIOR"
+                    style={{
+                        background: "#222",
+                        color: "#f36d21",
+                        fontWeight: 500,
+                        opacity: 0.7,
+                    }}
+                />
+                <label className="input-label">ANTERIOR</label>
+            </div>
             <div className="input-wrapper">
                 <input
                     type="text"
@@ -100,6 +115,7 @@ export function ActiveSetRow({
                     onBlur={onWeightBlur}
                     disabled={set.completed}
                     placeholder={getWeightPlaceholder()}
+                    onFocus={(e) => e.target.select()}
                 />
                 <label className="input-label">{unit.toUpperCase()}</label>
             </div>
@@ -112,6 +128,7 @@ export function ActiveSetRow({
                     onChange={(e) => onRepsChange(e.target.value)}
                     disabled={set.completed}
                     placeholder={`${set.targetRepsMin}-${set.targetRepsMax}`}
+                    onFocus={(e) => e.target.select()}
                 />
                 <label className="input-label">REPS</label>
             </div>

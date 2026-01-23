@@ -11,6 +11,7 @@ import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { VideoThumbnail } from "../components/ui/VideoThumbnail";
 import ActiveSetRow from "../components/routines/ActiveSetRow";
 import { activeRoutineService } from "../services/activeRoutineService";
+import { profileService } from "../services/profileService";
 import { authService } from "../services/authService";
 import { getVideoUrl } from "../config/constants";
 import { formatTime } from "../utils/dateHelpers";
@@ -88,6 +89,10 @@ export default function ActiveRoutine() {
     const [weightInputs, setWeightInputs] = useState<Record<number, string>>(
         {},
     );
+    // Mapa para KG x REPS anterior
+    const [previousSetsMap, setPreviousSetsMap] = useState<
+        Record<string, { kg: number | null; reps: number | null }>
+    >({});
     const {
         restTimer,
         startRestTimer,
@@ -190,6 +195,56 @@ export default function ActiveRoutine() {
         if (!token) return;
 
         fetchActiveRoutine.execute(token);
+
+        // Obtener el último registro de cada ejercicio/serie del usuario (sin importar rutina)
+        (async () => {
+            try {
+                const profile = await profileService.getProfile();
+                const userId = profile.id;
+                // Obtener todas las rutinas completadas del usuario
+                const response = await fetch(
+                    `${import.meta.env.VITE_API_URL}/statistics/all-completed-routines?userId=${userId}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    },
+                );
+                if (!response.ok)
+                    throw new Error("No se pudo obtener historial");
+                const data = await response.json();
+                // Recorrer todos los sets de todas las rutinas y quedarnos con el set más reciente por ejercicioId-setNumber
+                const allSets = [];
+                for (const routine of data.data) {
+                    for (const set of routine.sets) {
+                        allSets.push({
+                            ...set,
+                            endTime: routine.endTime,
+                        });
+                    }
+                }
+                // Mapear: clave = ejercicioId-setNumber, valor = set más reciente
+                const map = {};
+                allSets.forEach((set) => {
+                    const key = `${set.exerciseId}-${set.setNumber}`;
+                    if (
+                        !map[key] ||
+                        new Date(set.endTime) > new Date(map[key].endTime)
+                    ) {
+                        map[key] = set;
+                    }
+                });
+                // Formatear para el input
+                const result = {};
+                Object.entries(map).forEach(([key, set]) => {
+                    result[key] = {
+                        kg: set.actualWeight,
+                        reps: set.actualReps,
+                    };
+                });
+                setPreviousSetsMap(result);
+            } catch (err) {
+                setPreviousSetsMap({});
+            }
+        })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeId, routineId]);
 
@@ -750,85 +805,115 @@ export default function ActiveRoutine() {
                                 <div className="sets-list-container">
                                     {sets
                                         .sort((a, b) => a.order - b.order)
-                                        .map((set, index) => (
-                                            <ActiveSetRow
-                                                key={set.id}
-                                                set={set}
-                                                index={index}
-                                                unit={unit}
-                                                weightInput={
-                                                    weightInputs[set.id]
-                                                }
-                                                isDragging={
-                                                    draggedSet?.id === set.id
-                                                }
-                                                isLongPressActive={
-                                                    longPressTarget?.id ===
-                                                    set.id
-                                                }
-                                                onWeightChange={(value) =>
-                                                    handleWeightChange(
-                                                        set.id,
-                                                        value,
-                                                    )
-                                                }
-                                                onWeightBlur={() => {
-                                                    if (
-                                                        weightInputs[set.id] !==
-                                                            undefined &&
-                                                        set.actualWeight !==
-                                                            null
-                                                    ) {
-                                                        const formatted =
-                                                            formatWeight(
-                                                                unit === "lbs"
-                                                                    ? kgToLbs(
-                                                                          set.actualWeight,
-                                                                      )
-                                                                    : set.actualWeight,
-                                                            ).toString();
-                                                        setWeightInputs(
-                                                            (prev) => ({
-                                                                ...prev,
-                                                                [set.id]:
-                                                                    formatted,
-                                                            }),
-                                                        );
+                                        .map((set, index) => {
+                                            const prevKey = `${set.exerciseId}-${set.setNumber}`;
+                                            const previous =
+                                                previousSetsMap[prevKey];
+                                            let previousDisplay = "";
+                                            if (
+                                                previous &&
+                                                previous.kg != null &&
+                                                previous.reps != null
+                                            ) {
+                                                const kg =
+                                                    unit === "lbs"
+                                                        ? kgToLbs(previous.kg)
+                                                        : previous.kg;
+                                                previousDisplay = `${formatWeight(kg)} × ${previous.reps}`;
+                                            }
+                                            return (
+                                                <ActiveSetRow
+                                                    key={set.id}
+                                                    set={set}
+                                                    index={index}
+                                                    unit={unit}
+                                                    weightInput={
+                                                        weightInputs[set.id]
                                                     }
-                                                }}
-                                                onRepsChange={(value) =>
-                                                    handleRepsChange(
-                                                        set.id,
-                                                        value,
-                                                    )
-                                                }
-                                                onComplete={() =>
-                                                    handleCompleteSet(set.id)
-                                                }
-                                                onRemove={() =>
-                                                    handleRemoveSet(
-                                                        set.id,
-                                                        set.exerciseId,
-                                                    )
-                                                }
-                                                onDragStart={(e) =>
-                                                    handleDragStart(e, set)
-                                                }
-                                                onDragOver={handleDragOver}
-                                                onDrop={(e) =>
-                                                    handleDrop(e, set)
-                                                }
-                                                onMouseDown={(e) =>
-                                                    handleSetMouseDown(e, set)
-                                                }
-                                                onMouseUp={handleSetMouseUp}
-                                                onTouchStart={(e) =>
-                                                    handleTouchStart(e, set)
-                                                }
-                                                onTouchMove={handleTouchMove}
-                                                onTouchEnd={handleTouchEnd}
-                                            />
-                                        ))}
+                                                    previousKgReps={
+                                                        previousDisplay
+                                                    }
+                                                    isDragging={
+                                                        draggedSet?.id ===
+                                                        set.id
+                                                    }
+                                                    isLongPressActive={
+                                                        longPressTarget?.id ===
+                                                        set.id
+                                                    }
+                                                    onWeightChange={(value) =>
+                                                        handleWeightChange(
+                                                            set.id,
+                                                            value,
+                                                        )
+                                                    }
+                                                    onWeightBlur={() => {
+                                                        if (
+                                                            weightInputs[
+                                                                set.id
+                                                            ] !== undefined &&
+                                                            set.actualWeight !==
+                                                                null
+                                                        ) {
+                                                            const formatted =
+                                                                formatWeight(
+                                                                    unit ===
+                                                                        "lbs"
+                                                                        ? kgToLbs(
+                                                                              set.actualWeight,
+                                                                          )
+                                                                        : set.actualWeight,
+                                                                ).toString();
+                                                            setWeightInputs(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    [set.id]:
+                                                                        formatted,
+                                                                }),
+                                                            );
+                                                        }
+                                                    }}
+                                                    onRepsChange={(value) =>
+                                                        handleRepsChange(
+                                                            set.id,
+                                                            value,
+                                                        )
+                                                    }
+                                                    onComplete={() =>
+                                                        handleCompleteSet(
+                                                            set.id,
+                                                        )
+                                                    }
+                                                    onRemove={() =>
+                                                        handleRemoveSet(
+                                                            set.id,
+                                                            set.exerciseId,
+                                                        )
+                                                    }
+                                                    onDragStart={(e) =>
+                                                        handleDragStart(e, set)
+                                                    }
+                                                    onDragOver={handleDragOver}
+                                                    onDrop={(e) =>
+                                                        handleDrop(e, set)
+                                                    }
+                                                    onMouseDown={(e) =>
+                                                        handleSetMouseDown(
+                                                            e,
+                                                            set,
+                                                        )
+                                                    }
+                                                    onMouseUp={handleSetMouseUp}
+                                                    onTouchStart={(e) =>
+                                                        handleTouchStart(e, set)
+                                                    }
+                                                    onTouchMove={
+                                                        handleTouchMove
+                                                    }
+                                                    onTouchEnd={handleTouchEnd}
+                                                />
+                                            );
+                                        })}
                                 </div>
                                 {restTimer &&
                                     restTimer.exerciseId ===
