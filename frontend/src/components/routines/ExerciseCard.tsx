@@ -1,4 +1,5 @@
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { ActionMenu } from "../ui/ActionMenu";
 import { VideoThumbnail } from "../ui/VideoThumbnail";
 import { getVideoUrl } from "../../config/constants";
 import type { RoutineExercise } from "../../types/routineExercise";
@@ -130,50 +131,52 @@ export function ExerciseCard({
             </div>
 
             <div className="exercise-card-actions">
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        if (!isEditingDisabled) {
-                            onEdit();
+                <ActionMenu menuId={`exercise-${exercise.id}`}>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isEditingDisabled) {
+                                onEdit();
+                            }
+                        }}
+                        className={isEditingDisabled ? "disabled" : ""}
+                        disabled={isEditingDisabled}
+                        aria-label={
+                            isEditingDisabled
+                                ? "No se puede editar mientras hay una rutina activa"
+                                : "Editar ejercicio"
                         }
-                    }}
-                    className={`action-btn ${isEditingDisabled ? "disabled" : ""}`}
-                    disabled={isEditingDisabled}
-                    aria-label={
-                        isEditingDisabled
-                            ? "No se puede editar mientras hay una rutina activa"
-                            : "Editar ejercicio"
-                    }
-                    title={
-                        isEditingDisabled
-                            ? "Finaliza o cancela la rutina activa para poder editar"
-                            : "Editar ejercicio"
-                    }
-                >
-                    <Pencil size={16} />
-                </button>
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        if (!isEditingDisabled) {
-                            onDelete();
+                        title={
+                            isEditingDisabled
+                                ? "Finaliza o cancela la rutina activa para poder editar"
+                                : "Editar ejercicio"
                         }
-                    }}
-                    className={`action-btn danger ${isEditingDisabled ? "disabled" : ""}`}
-                    disabled={isEditingDisabled}
-                    aria-label={
-                        isEditingDisabled
-                            ? "No se puede eliminar mientras hay una rutina activa"
-                            : "Eliminar ejercicio"
-                    }
-                    title={
-                        isEditingDisabled
-                            ? "Finaliza o cancela la rutina activa para poder eliminar"
-                            : "Eliminar ejercicio"
-                    }
-                >
-                    <Trash2 size={16} />
-                </button>
+                    >
+                        <Pencil size={16} /> Editar
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isEditingDisabled) {
+                                onDelete();
+                            }
+                        }}
+                        className={`danger ${isEditingDisabled ? "disabled" : ""}`}
+                        disabled={isEditingDisabled}
+                        aria-label={
+                            isEditingDisabled
+                                ? "No se puede eliminar mientras hay una rutina activa"
+                                : "Eliminar ejercicio"
+                        }
+                        title={
+                            isEditingDisabled
+                                ? "Finaliza o cancela la rutina activa para poder eliminar"
+                                : "Eliminar ejercicio"
+                        }
+                    >
+                        <Trash2 size={16} /> Eliminar
+                    </button>
+                </ActionMenu>
             </div>
         </div>
     );
