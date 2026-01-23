@@ -15,9 +15,32 @@ class UserService {
             where: { email },
         });
         if (existingEmail) {
-            const error = new Error("El email ya está registrado");
-            error.statusCode = 409;
-            throw error;
+            // Si el usuario NO está verificado y NO tiene código activo, eliminarlo y permitir registro
+            if (!existingEmail.isEmailVerified) {
+                const now = new Date();
+                const activeCode = await prisma.emailVerification.findFirst({
+                    where: {
+                        userId: existingEmail.id,
+                        expiresAt: { gt: now },
+                    },
+                });
+                if (!activeCode) {
+                    // Eliminar usuario no verificado y sin código activo
+                    await prisma.user.delete({
+                        where: { id: existingEmail.id },
+                    });
+                } else {
+                    const error = new Error(
+                        "Ya existe un código de verificación pendiente para este usuario. Debes esperar a que expire antes de volver a registrarte.",
+                    );
+                    error.statusCode = 429;
+                    throw error;
+                }
+            } else {
+                const error = new Error("El email ya está registrado");
+                error.statusCode = 409;
+                throw error;
+            }
         }
 
         const existingUsername = await prisma.user.findUnique({
