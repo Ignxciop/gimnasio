@@ -222,22 +222,27 @@ export default function ActiveRoutine() {
                     }
                 }
                 // Mapear: clave = ejercicioId-setNumber, valor = set más reciente
-                const map = {};
+                type CompletedSet = (typeof allSets)[number];
+                const map: Record<string, CompletedSet> = {};
                 allSets.forEach((set) => {
                     const key = `${set.exerciseId}-${set.setNumber}`;
                     if (
                         !map[key] ||
-                        new Date(set.endTime) > new Date(map[key].endTime)
+                        new Date((set as any).endTime) >
+                            new Date((map[key] as any).endTime)
                     ) {
                         map[key] = set;
                     }
                 });
                 // Formatear para el input
-                const result = {};
+                const result: Record<
+                    string,
+                    { kg: number | null; reps: number | null }
+                > = {};
                 Object.entries(map).forEach(([key, set]) => {
                     result[key] = {
-                        kg: set.actualWeight,
-                        reps: set.actualReps,
+                        kg: (set as any).actualWeight ?? null,
+                        reps: (set as any).actualReps ?? null,
                     };
                 });
                 setPreviousSetsMap(result);
@@ -799,6 +804,7 @@ export default function ActiveRoutine() {
                                         }
                                         className="input-rest-time"
                                         min="0"
+                                        onFocus={(e) => e.target.select()}
                                     />
                                     <span className="rest-label">s</span>
                                 </div>

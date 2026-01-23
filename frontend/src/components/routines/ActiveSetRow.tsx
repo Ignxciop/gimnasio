@@ -132,6 +132,8 @@ export function ActiveSetRow({
                 />
                 <label className="input-label">REPS</label>
             </div>
+            {/* Espacio vacío para alinear los botones con los inputs */}
+            <div className="input-wrapper empty-reps"></div>
             <button onClick={onComplete} className="btn-complete-set">
                 <Check size={16} />
             </button>
