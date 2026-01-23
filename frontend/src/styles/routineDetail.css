@@ -1,3 +1,51 @@
+.routine-detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+}
+
+body .routine-detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+}
+
+body .routine-detail-header ~ * .drag-handle,
+body .routine-detail-header + * .drag-handle,
+.routine-detail-header ~ .drag-handle,
+.routine-detail-header + .drag-handle {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}
+.routine-detail-header {
+    z-index: 200;
+}
+
+.routine-detail-header ~ .exercises-list .drag-handle,
+.routine-detail-header ~ .exercise-card .drag-handle {
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+.routine-detail-header {
+    z-index: 200;
+}
+
+.routine-detail-header {
+    position: sticky;
+}
+
+.routine-detail-header + .exercises-list .drag-handle,
+.routine-detail-header ~ .exercises-list .drag-handle,
+.routine-detail-header ~ .exercise-card .drag-handle {
+    z-index: 1 !important;
+    pointer-events: none !important;
+}
+
+.routine-detail-header ~ .exercises-list .drag-handle {
+    z-index: 1;
+    pointer-events: none;
+}
 .routine-detail-container {
     padding: 1rem;
     width: 100%;
@@ -62,6 +110,16 @@
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(
+        145deg,
+        rgba(20, 20, 20, 0.97),
+        rgba(15, 15, 15, 0.97)
+    );
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(8px);
 }
 
 .routine-title-section {

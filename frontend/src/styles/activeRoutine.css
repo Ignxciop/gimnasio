@@ -609,6 +609,12 @@
     justify-content: center;
     background-color: transparent;
     border: 1px solid transparent;
+    z-index: 1;
+}
+
+.routine-detail-header + .set-row .drag-handle {
+    z-index: 0;
+    pointer-events: none;
 }
 
 .drag-handle svg {
