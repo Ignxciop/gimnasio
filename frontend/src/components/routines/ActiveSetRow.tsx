@@ -94,7 +94,7 @@ export function ActiveSetRow({
                 <input
                     type="text"
                     className="set-input previous-input"
-                    value={previousKgReps || ""}
+                    value={previousKgReps || "-"}
                     disabled
                     placeholder="ANTERIOR"
                     style={{
