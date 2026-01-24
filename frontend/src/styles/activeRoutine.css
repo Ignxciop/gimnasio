@@ -1,3 +1,23 @@
+@media (max-width: 480px) {
+    .active-routine-header {
+        flex-direction: column !important;
+        height: auto !important;
+        gap: 0.5rem !important;
+        align-items: stretch !important;
+        padding-bottom: 0.5rem !important;
+    }
+    .active-routine-header .header-title-section {
+        order: 2;
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 0.25rem;
+    }
+    .active-routine-header .header-actions {
+        order: 1;
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
 .header-buttons-row {
     display: flex;
     gap: 0.25rem;
