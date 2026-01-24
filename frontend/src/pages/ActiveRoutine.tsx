@@ -389,13 +389,22 @@ export default function ActiveRoutine() {
         setRestTimes((prev) => ({ ...prev, [exerciseId]: time }));
     };
 
-    const handleDragStart = (_e: React.DragEvent, set: ActiveRoutineSet) => {
-        if (longPressTarget?.id === set.id) {
+    const handleDragStart = (e: React.DragEvent, set: ActiveRoutineSet) => {
+        // En desktop (mouse), drag instantáneo; en mobile, solo si longpress
+        const isTouch = e.nativeEvent instanceof TouchEvent;
+        if (!isTouch) {
             setDraggedSet(set);
             draggedSetRef.current = set;
-            if (_e.dataTransfer) {
-                _e.dataTransfer.effectAllowed = "move";
-                _e.dataTransfer.setData("text/plain", set.id.toString());
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", set.id.toString());
+            }
+        } else if (longPressTarget?.id === set.id) {
+            setDraggedSet(set);
+            draggedSetRef.current = set;
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", set.id.toString());
             }
         }
     };
@@ -403,14 +412,9 @@ export default function ActiveRoutine() {
     const handleSetMouseDown = (e: React.MouseEvent, set: ActiveRoutineSet) => {
         const target = e.target as HTMLElement;
         if (!target.closest(".drag-handle")) return;
-
-        if (longPressTimer) {
-            return;
-        }
-        const timer = window.setTimeout(() => {
-            setLongPressTarget({ id: set.id });
-        }, 500);
-        setLongPressTimer(timer);
+        if (longPressTimer) return;
+        // No longpress en desktop, drag instantáneo
+        // Nada que hacer aquí
     };
 
     const handleSetMouseUp = () => {
@@ -418,9 +422,7 @@ export default function ActiveRoutine() {
             clearTimeout(longPressTimer);
             setLongPressTimer(null);
         }
-        if (!draggedSet) {
-            setLongPressTarget(null);
-        }
+        setLongPressTarget(null);
     };
 
     const handleTouchStart = (e: React.TouchEvent, set: ActiveRoutineSet) => {

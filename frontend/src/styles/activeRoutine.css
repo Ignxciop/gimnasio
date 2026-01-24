@@ -407,11 +407,17 @@
 
 .set-row .drag-handle:hover {
     color: var(--accent-mid);
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .set-row.dragging .drag-handle {
     cursor: grabbing;
     color: var(--accent-mid);
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .set-row .set-number {
