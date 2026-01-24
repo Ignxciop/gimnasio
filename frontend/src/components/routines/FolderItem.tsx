@@ -13,17 +13,23 @@ interface FolderItemProps {
     isLifted?: boolean;
     onEdit: () => void;
     onDelete: () => void;
-    onDragStart: (e: React.DragEvent) => void;
-    onDragEnd?: () => void;
-    onDragOver: (e: React.DragEvent) => void;
-    onDragLeave: (e: React.DragEvent) => void;
-    onDrop: (e: React.DragEvent) => void;
-    onMouseDown?: (e: React.MouseEvent) => void;
-    onMouseUp?: () => void;
-    onMouseLeave?: () => void;
-    onTouchStart: (e: React.TouchEvent) => void;
-    onTouchMove: (e: React.TouchEvent) => void;
-    onTouchEnd: (e: React.TouchEvent) => void;
+    dragHandlers: React.HTMLAttributes<HTMLSpanElement>;
+}
+
+interface FolderItemProps {
+    folder: {
+        id: number;
+        name: string;
+        description?: string | null;
+    };
+    children: ReactNode;
+    isDragOver: boolean;
+    isLifted?: boolean;
+    onEdit: () => void;
+    onDelete: () => void;
+    dragHandlers: React.HTMLAttributes<HTMLSpanElement>;
+    onDragOver?: React.DragEventHandler<HTMLDivElement>;
+    onDrop?: React.DragEventHandler<HTMLDivElement>;
 }
 
 export function FolderItem({
@@ -33,40 +39,32 @@ export function FolderItem({
     isLifted = false,
     onEdit,
     onDelete,
-    onDragStart,
-    onDragEnd,
+    dragHandlers,
     onDragOver,
-    onDragLeave,
     onDrop,
-    onMouseDown,
-    onMouseUp,
-    onMouseLeave,
-    onTouchStart,
-    onTouchMove,
-    onTouchEnd,
 }: FolderItemProps) {
     return (
         <div
-            className={`folder-item ${isDragOver ? "drag-over" : ""} ${
-                isLifted ? "lifted" : ""
-            }`}
+            className={`folder-item ${isDragOver ? "drag-over" : ""} ${isLifted ? "lifted" : ""}`}
             data-folder-id={folder.id}
-            draggable={true}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
             onDragOver={onDragOver}
-            onDragLeave={onDragLeave}
             onDrop={onDrop}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseLeave}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
         >
             <div className="folder-header-row">
                 <div className="folder-left">
-                    <GripVertical size={18} className="drag-icon" />
+                    <span
+                        draggable={true}
+                        {...dragHandlers}
+                        className="drag-icon-wrapper"
+                        tabIndex={0}
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            cursor: "grab",
+                        }}
+                    >
+                        <GripVertical size={18} className="drag-icon" />
+                    </span>
                     <Folder size={20} className="folder-icon" />
                     <h3 className="folder-name" title={folder.name}>
                         {folder.name}

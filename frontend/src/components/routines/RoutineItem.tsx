@@ -10,16 +10,7 @@ interface RoutineItemProps {
     onEdit: () => void;
     onDelete: () => void;
     onOpen: () => void;
-    onDragStart: (e: React.DragEvent) => void;
-    onDragEnd?: () => void;
-    onDragOver: (e: React.DragEvent) => void;
-    onDrop: (e: React.DragEvent) => void;
-    onMouseDown?: (e: React.MouseEvent) => void;
-    onMouseUp?: () => void;
-    onMouseLeave?: () => void;
-    onTouchStart: (e: React.TouchEvent) => void;
-    onTouchMove: (e: React.TouchEvent) => void;
-    onTouchEnd: (e: React.TouchEvent) => void;
+    dragHandlers: React.HTMLAttributes<HTMLSpanElement>;
 }
 
 export function RoutineItem({
@@ -28,35 +19,27 @@ export function RoutineItem({
     onEdit,
     onDelete,
     onOpen,
-    onDragStart,
-    onDragEnd,
-    onDragOver,
-    onDrop,
-    onMouseDown,
-    onMouseUp,
-    onMouseLeave,
-    onTouchStart,
-    onTouchMove,
-    onTouchEnd,
+    dragHandlers,
 }: RoutineItemProps) {
     return (
         <div
             className={`routine-item ${isLifted ? "lifted" : ""}`}
             data-routine-id={routine.id}
-            draggable={true}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onDragOver={onDragOver}
-            onDrop={onDrop}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseLeave}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
         >
             <div className="routine-left">
-                <GripVertical size={16} className="drag-icon" />
+                <span
+                    draggable={true}
+                    {...dragHandlers}
+                    className="drag-icon-wrapper"
+                    tabIndex={0}
+                    style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        cursor: "grab",
+                    }}
+                >
+                    <GripVertical size={16} className="drag-icon" />
+                </span>
                 <FileText size={18} className="routine-icon" />
                 <span
                     className="routine-name"
