@@ -694,8 +694,63 @@ export default function ActiveRoutine() {
     return (
         <MainLayout>
             <div className="active-routine-container">
-                <div className="active-routine-header">
-                    <div className="header-buttons-row">
+                <div
+                    className="active-routine-header"
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        height: "69.19px",
+                        gap: "2rem",
+                        width: "100%",
+                        marginBottom: "1rem",
+                        paddingBottom: "0.75rem",
+                        paddingTop: "0.5rem",
+                        borderBottom: "1px solid rgba(255,255,255,0.06)",
+                        background: "var(--background-primary, #0b0b0b)",
+                        boxShadow: "0 2px 8px 0 rgba(0,0,0,0.08)",
+                        position: "sticky",
+                        top: "env(safe-area-inset-top, 0px)",
+                        left: 0,
+                        zIndex: 220,
+                    }}
+                >
+                    <div
+                        className="header-title-section"
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "1rem",
+                        }}
+                    >
+                        <span
+                            className="timer"
+                            style={{
+                                fontSize: "1.15rem",
+                                fontWeight: 600,
+                                color: "var(--accent-mid)",
+                                marginRight: "0.5rem",
+                            }}
+                        >
+                            {formatTime(elapsedTime)}
+                        </span>
+                        <h1
+                            style={{
+                                margin: 0,
+                                color: "var(--text-primary)",
+                                fontSize: "1.5rem",
+                                fontWeight: 700,
+                                lineHeight: 1.1,
+                            }}
+                        >
+                            {activeRoutine.routine.name}
+                        </h1>
+                    </div>
+                    <div
+                        className="header-actions"
+                        style={{ display: "flex", gap: "0.5rem" }}
+                    >
                         <button
                             onClick={() => navigate(`/rutinas/${routineId}`)}
                             className="btn-back"
@@ -730,14 +785,6 @@ export default function ActiveRoutine() {
                             <Check size={18} />
                             <span>Finalizar</span>
                         </button>
-                    </div>
-                    <div className="header-info-row">
-                        <div className="header-info-flex">
-                            <div className="timer">
-                                {formatTime(elapsedTime)}
-                            </div>
-                            <h1>{activeRoutine.routine.name}</h1>
-                        </div>
                     </div>
                 </div>
 
