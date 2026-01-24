@@ -57,7 +57,7 @@ class AuthController {
             res.cookie("refreshToken", result.refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                sameSite: "none",
                 path: "/",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
                 // No se setea domain para permitir que el navegador maneje la cookie correctamente cross-origin
@@ -92,7 +92,7 @@ class AuthController {
             res.cookie("refreshToken", result.refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                sameSite: "none",
                 path: "/",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
                 // No se setea domain para permitir que el navegador maneje la cookie correctamente cross-origin
