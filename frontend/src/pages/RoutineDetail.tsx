@@ -179,7 +179,15 @@ export default function RoutineDetail() {
     };
 
     const handleDragStart = (e: React.DragEvent, exercise: RoutineExercise) => {
-        if (longPressTarget?.id === exercise.id) {
+        // En desktop (mouse), drag instantáneo; en mobile, solo si longpress
+        const isTouch = e.nativeEvent instanceof TouchEvent;
+        if (!isTouch) {
+            setDraggedExercise(exercise);
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", exercise.id.toString());
+            }
+        } else if (longPressTarget?.id === exercise.id) {
             setDraggedExercise(exercise);
             if (e.dataTransfer) {
                 e.dataTransfer.effectAllowed = "move";

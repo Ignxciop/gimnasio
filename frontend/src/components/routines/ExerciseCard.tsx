@@ -48,12 +48,11 @@ export function ExerciseCard({
         return `${exercise.repsMin}-${exercise.repsMax} reps`;
     };
 
+    const isLifted = isDragging || isLongPressActive;
     return (
         <div
             data-exercise-id={exercise.id}
-            className={`exercise-card ${isDragging ? "dragging" : ""} ${
-                isLongPressActive ? "long-press-active" : ""
-            }`}
+            className={`exercise-card${isLifted ? " lifted" : ""}`}
             draggable
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
