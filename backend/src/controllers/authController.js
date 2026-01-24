@@ -28,7 +28,7 @@ class AuthController {
             await emailVerificationService.createVerification(
                 user.id,
                 user.name,
-                user.email
+                user.email,
             );
 
             res.status(201).json({
@@ -60,6 +60,7 @@ class AuthController {
                 sameSite: "lax",
                 path: "/",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
+                // No se setea domain para permitir que el navegador maneje la cookie correctamente cross-origin
             });
 
             res.status(200).json({
@@ -94,6 +95,7 @@ class AuthController {
                 sameSite: "lax",
                 path: "/",
                 maxAge: 7 * 24 * 60 * 60 * 1000,
+                // No se setea domain para permitir que el navegador maneje la cookie correctamente cross-origin
             });
 
             res.status(200).json({
