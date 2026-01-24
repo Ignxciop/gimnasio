@@ -468,6 +468,61 @@ export default function RoutinesManager() {
                                                     );
                                                 },
                                             )}
+                                            {getRoutinesByFolder(folder.id)
+                                                .length === 0 && (
+                                                <div
+                                                    className="empty-folder-dropzone"
+                                                    style={{
+                                                        minHeight: 40,
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent:
+                                                            "center",
+                                                        border: "1.5px dashed #d1d5db", // gris claro
+                                                        borderRadius: 8,
+                                                        margin: 8,
+                                                        background:
+                                                            "rgba(220,220,220,0.08)",
+                                                        color: "#888",
+                                                        fontSize: 13,
+                                                        transition:
+                                                            "border-color 0.2s, background 0.2s",
+                                                    }}
+                                                    onDragOver={(e) => {
+                                                        e.preventDefault();
+                                                        e.currentTarget.style.borderColor =
+                                                            "#ffb347"; // acento suave solo al arrastrar
+                                                        e.currentTarget.style.background =
+                                                            "rgba(255,179,71,0.08)";
+                                                    }}
+                                                    onDragLeave={(e) => {
+                                                        e.currentTarget.style.borderColor =
+                                                            "#d1d5db";
+                                                        e.currentTarget.style.background =
+                                                            "rgba(220,220,220,0.08)";
+                                                    }}
+                                                    onDrop={(e) => {
+                                                        handleRoutineDropInFolder(
+                                                            e,
+                                                            folder.id,
+                                                        );
+                                                        e.currentTarget.style.borderColor =
+                                                            "#d1d5db";
+                                                        e.currentTarget.style.background =
+                                                            "rgba(220,220,220,0.08)";
+                                                    }}
+                                                >
+                                                    <span
+                                                        style={{
+                                                            color: "#aaa",
+                                                            fontSize: 13,
+                                                        }}
+                                                    >
+                                                        Suelta aquí para mover
+                                                        rutina
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     </FolderItem>
                                 );
