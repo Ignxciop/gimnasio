@@ -101,6 +101,12 @@
     font-size: 0.875rem;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 2.75rem;
+    min-height: 2.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .btn-create-folder {
@@ -466,6 +472,13 @@
     .btn-create-routine {
         padding: 0.65rem 1rem;
         font-size: 0.9rem;
+        height: 2.75rem;
+        min-height: 2.75rem;
+        border-radius: 10px;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
     }
 
     .folder-name {
