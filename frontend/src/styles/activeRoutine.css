@@ -1,3 +1,59 @@
+.header-buttons-row {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+.header-buttons-row .btn-back,
+.header-buttons-row .btn-cancel,
+.header-buttons-row .btn-complete-workout {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    box-sizing: border-box;
+}
+.header-info-flex {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.header-info-flex .timer {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent-mid);
+    margin-right: 0.5rem;
+}
+.header-info-flex h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+.header-buttons-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.header-info-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+.header-info-row h1 {
+    margin: 0 0 0.15rem 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+.header-info-row .timer {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent-mid);
+}
 @media (max-width: 480px) {
     .set-row {
         padding: 0.35rem 0.1rem;
@@ -61,12 +117,25 @@
 }
 
 .active-routine-header {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    left: 0;
+    width: 100%;
+    z-index: 220;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
+    padding-top: 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(
+        145deg,
+        rgba(20, 20, 20, 0.97),
+        rgba(15, 15, 15, 0.97)
+    );
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(8px);
 }
 
 .header-buttons {
@@ -121,8 +190,8 @@
 }
 
 .btn-complete-workout {
+    margin-top: 0;
     width: 100%;
-    margin-top: 2rem;
     padding: 0.75rem;
     background: var(--gradient-accent);
     border: none;

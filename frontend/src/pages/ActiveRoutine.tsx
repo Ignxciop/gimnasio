@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, X, Plus, Clock } from "lucide-react";
+import { ArrowLeft, X, Plus, Clock, Check } from "lucide-react";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
@@ -694,7 +694,7 @@ export default function ActiveRoutine() {
         <MainLayout>
             <div className="active-routine-container">
                 <div className="active-routine-header">
-                    <div className="header-buttons">
+                    <div className="header-buttons-row">
                         <button
                             onClick={() => navigate(`/rutinas/${routineId}`)}
                             className="btn-back"
@@ -709,10 +709,34 @@ export default function ActiveRoutine() {
                             <X size={18} />
                             Cancelar
                         </button>
+                        <button
+                            onClick={handleCompleteWorkout}
+                            className="btn-complete-workout"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "0.5rem",
+                                padding: "0.5rem 1rem",
+                                borderRadius: "8px",
+                                fontSize: "0.875rem",
+                                fontWeight: 600,
+                                height: "2.5rem",
+                                minHeight: "2.5rem",
+                                boxSizing: "border-box",
+                            }}
+                        >
+                            <Check size={18} />
+                            <span>Finalizar</span>
+                        </button>
                     </div>
-                    <div className="routine-info">
-                        <h1>{activeRoutine.routine.name}</h1>
-                        <div className="timer">{formatTime(elapsedTime)}</div>
+                    <div className="header-info-row">
+                        <div className="header-info-flex">
+                            <div className="timer">
+                                {formatTime(elapsedTime)}
+                            </div>
+                            <h1>{activeRoutine.routine.name}</h1>
+                        </div>
                     </div>
                 </div>
 
@@ -942,7 +966,7 @@ export default function ActiveRoutine() {
                                                         restTimer.timeLeft / 60,
                                                     )}
                                                     :
-                                                    {(restTimer.timeLeft % 60)
+                                                    {(restTimer.timeLeft % 66)
                                                         .toString()
                                                         .padStart(2, "0")}
                                                 </div>
@@ -960,12 +984,7 @@ export default function ActiveRoutine() {
                             </div>
                         ))}
                 </div>
-                <button
-                    onClick={handleCompleteWorkout}
-                    className="btn-complete-workout"
-                >
-                    Finalizar entrenamiento
-                </button>
+                {/* El botón de finalizar entrenamiento ahora está en el header sticky */}
 
                 <ConfirmDialog
                     isOpen={cancelModal.isOpen}
