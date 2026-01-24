@@ -165,7 +165,9 @@
     pointer-events: auto;
     touch-action: none;
     background: rgba(255, 255, 255, 0.08);
-    border-color: var(--accent-start);
+    border-radius: 8px;
+    border-left: 2px solid var(--accent-start);
+    border-bottom: 1px solid transparent;
 }
 
 .folder-item.drag-over {
