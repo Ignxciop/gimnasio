@@ -352,15 +352,7 @@ export default function RoutineDetail() {
                 )}
 
                 <div className="routine-detail-header">
-                    <div className="routine-title-section">
-                        <h1>{routine.name}</h1>
-                        {routine.description && (
-                            <p className="routine-description">
-                                {routine.description}
-                            </p>
-                        )}
-                    </div>
-                    <div className="routine-actions-section">
+                    <div className="header-buttons-row">
                         <button
                             onClick={() => navigate("/rutinas")}
                             className="btn-back"
@@ -381,6 +373,14 @@ export default function RoutineDetail() {
                             <Plus size={20} />
                             Agregar Ejercicio
                         </button>
+                    </div>
+                    <div className="routine-title-section">
+                        <h1>{routine.name}</h1>
+                        {routine.description && (
+                            <p className="routine-description">
+                                {routine.description}
+                            </p>
+                        )}
                     </div>
                 </div>
 

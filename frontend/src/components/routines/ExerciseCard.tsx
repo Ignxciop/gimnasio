@@ -65,28 +65,82 @@ export function ExerciseCard({
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
         >
-            <div className="exercise-card-drag">
-                <GripVertical size={20} className="drag-icon" />
-            </div>
-
             <div className="exercise-card-main">
                 {exercise.exercise?.videoPath && (
-                    <div className="exercise-card-thumbnail">
-                        <VideoThumbnail
-                            src={getVideoUrl(exercise.exercise.videoPath) || ""}
-                            className="exercise-thumbnail-img"
-                        />
+                    <div className="exercise-card-thumbnail-wrapper">
+                        <div className="exercise-card-drag">
+                            <GripVertical size={20} className="drag-icon" />
+                        </div>
+                        <div className="exercise-card-thumbnail">
+                            <VideoThumbnail
+                                src={
+                                    getVideoUrl(exercise.exercise.videoPath) ||
+                                    ""
+                                }
+                                className="exercise-thumbnail-img"
+                            />
+                        </div>
                     </div>
                 )}
-
                 <div className="exercise-card-info">
-                    <h3
-                        className="exercise-card-name"
-                        title={exercise.exercise?.name}
-                    >
-                        {exercise.exercise?.name}
-                    </h3>
-
+                    <div className="exercise-card-info-header">
+                        <h3
+                            className="exercise-card-name"
+                            title={exercise.exercise?.name}
+                        >
+                            {exercise.exercise?.name}
+                        </h3>
+                        <div className="exercise-card-actions">
+                            <ActionMenu menuId={`exercise-${exercise.id}`}>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!isEditingDisabled) {
+                                            onEdit();
+                                        }
+                                    }}
+                                    className={
+                                        isEditingDisabled ? "disabled" : ""
+                                    }
+                                    disabled={isEditingDisabled}
+                                    aria-label={
+                                        isEditingDisabled
+                                            ? "No se puede editar mientras hay una rutina activa"
+                                            : "Editar ejercicio"
+                                    }
+                                    title={
+                                        isEditingDisabled
+                                            ? "Finaliza o cancela la rutina activa para poder editar"
+                                            : "Editar ejercicio"
+                                    }
+                                >
+                                    <Pencil size={16} /> Editar
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!isEditingDisabled) {
+                                            onDelete();
+                                        }
+                                    }}
+                                    className={`danger ${isEditingDisabled ? "disabled" : ""}`}
+                                    disabled={isEditingDisabled}
+                                    aria-label={
+                                        isEditingDisabled
+                                            ? "No se puede eliminar mientras hay una rutina activa"
+                                            : "Eliminar ejercicio"
+                                    }
+                                    title={
+                                        isEditingDisabled
+                                            ? "Finaliza o cancela la rutina activa para poder eliminar"
+                                            : "Eliminar ejercicio"
+                                    }
+                                >
+                                    <Trash2 size={16} /> Eliminar
+                                </button>
+                            </ActionMenu>
+                        </div>
+                    </div>
                     <div className="exercise-card-stats">
                         <div className="stat-item">
                             <span className="stat-value">{exercise.sets}</span>
@@ -109,7 +163,6 @@ export function ExerciseCard({
                             </>
                         )}
                     </div>
-
                     <div className="exercise-card-meta">
                         <span className="meta-badge rest-badge">
                             {exercise.restTime}s descanso
@@ -128,55 +181,6 @@ export function ExerciseCard({
                         </span>
                     </div>
                 </div>
-            </div>
-
-            <div className="exercise-card-actions">
-                <ActionMenu menuId={`exercise-${exercise.id}`}>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isEditingDisabled) {
-                                onEdit();
-                            }
-                        }}
-                        className={isEditingDisabled ? "disabled" : ""}
-                        disabled={isEditingDisabled}
-                        aria-label={
-                            isEditingDisabled
-                                ? "No se puede editar mientras hay una rutina activa"
-                                : "Editar ejercicio"
-                        }
-                        title={
-                            isEditingDisabled
-                                ? "Finaliza o cancela la rutina activa para poder editar"
-                                : "Editar ejercicio"
-                        }
-                    >
-                        <Pencil size={16} /> Editar
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (!isEditingDisabled) {
-                                onDelete();
-                            }
-                        }}
-                        className={`danger ${isEditingDisabled ? "disabled" : ""}`}
-                        disabled={isEditingDisabled}
-                        aria-label={
-                            isEditingDisabled
-                                ? "No se puede eliminar mientras hay una rutina activa"
-                                : "Eliminar ejercicio"
-                        }
-                        title={
-                            isEditingDisabled
-                                ? "Finaliza o cancela la rutina activa para poder eliminar"
-                                : "Eliminar ejercicio"
-                        }
-                    >
-                        <Trash2 size={16} /> Eliminar
-                    </button>
-                </ActionMenu>
             </div>
         </div>
     );
