@@ -228,8 +228,7 @@ export default function ActiveRoutine() {
                     const key = `${set.exerciseId}-${set.setNumber}`;
                     if (
                         !map[key] ||
-                        new Date((set as any).endTime) >
-                            new Date((map[key] as any).endTime)
+                        new Date(set.endTime) > new Date(map[key].endTime)
                     ) {
                         map[key] = set;
                     }
@@ -241,8 +240,8 @@ export default function ActiveRoutine() {
                 > = {};
                 Object.entries(map).forEach(([key, set]) => {
                     result[key] = {
-                        kg: (set as any).actualWeight ?? null,
-                        reps: (set as any).actualReps ?? null,
+                        kg: set.actualWeight ?? null,
+                        reps: set.actualReps ?? null,
                     };
                 });
                 setPreviousSetsMap(result);
@@ -409,7 +408,7 @@ export default function ActiveRoutine() {
         }
     };
 
-    const handleSetMouseDown = (e: React.MouseEvent, set: ActiveRoutineSet) => {
+    const handleSetMouseDown = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
         if (!target.closest(".drag-handle")) return;
         if (longPressTimer) return;
@@ -929,11 +928,8 @@ export default function ActiveRoutine() {
                                                     onDrop={(e) =>
                                                         handleDrop(e, set)
                                                     }
-                                                    onMouseDown={(e) =>
-                                                        handleSetMouseDown(
-                                                            e,
-                                                            set,
-                                                        )
+                                                    onMouseDown={
+                                                        handleSetMouseDown
                                                     }
                                                     onMouseUp={handleSetMouseUp}
                                                     onTouchStart={(e) =>

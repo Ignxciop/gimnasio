@@ -360,17 +360,17 @@ export default function RoutineDetail() {
                 )}
 
                 <div className="routine-detail-header">
-                    <div className="header-buttons-row">
+                    <h1>{routine.name}</h1>
+                    <div className="header-actions">
                         <button
                             onClick={() => navigate("/rutinas")}
-                            className="btn-back"
+                            className="btn-create-folder"
                         >
-                            <ArrowLeft size={20} />
-                            Volver
+                            <ArrowLeft size={20} /> Volver
                         </button>
                         <button
                             onClick={() => addExerciseModal.openModal()}
-                            className={`btn-add-exercise ${activeRoutineId ? "disabled" : ""}`}
+                            className={`btn-create-routine${activeRoutineId ? " disabled" : ""}`}
                             disabled={!!activeRoutineId}
                             title={
                                 activeRoutineId
@@ -378,18 +378,14 @@ export default function RoutineDetail() {
                                     : "Agregar ejercicio"
                             }
                         >
-                            <Plus size={20} />
-                            Agregar Ejercicio
+                            <Plus size={20} /> Agregar Ejercicio
                         </button>
                     </div>
-                    <div className="routine-title-section">
-                        <h1>{routine.name}</h1>
-                        {routine.description && (
-                            <p className="routine-description">
-                                {routine.description}
-                            </p>
-                        )}
-                    </div>
+                    {routine.description && (
+                        <p className="routine-description">
+                            {routine.description}
+                        </p>
+                    )}
                 </div>
 
                 <div className="exercises-list">
@@ -405,7 +401,6 @@ export default function RoutineDetail() {
                                           : routineExercise.weight,
                                   )} ${unit}`
                                 : undefined;
-
                             return (
                                 <ExerciseCard
                                     key={routineExercise.id}
