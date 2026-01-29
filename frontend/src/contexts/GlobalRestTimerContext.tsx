@@ -420,20 +420,19 @@ export function GlobalRestTimerProvider({
             if (!restTimer) return;
 
             const newTime = Math.max(0, restTimer.timeLeft + delta);
-            const adjustedTimer = {
-                ...restTimer,
-                timeLeft: newTime,
-                savedAt: Date.now(),
-            };
-
-            setRestTimer(adjustedTimer);
-
             if (newTime > 0) {
+                const adjustedTimer = {
+                    ...restTimer,
+                    timeLeft: newTime,
+                    savedAt: Date.now(),
+                };
+                setRestTimer(adjustedTimer);
                 localStorage.setItem(
                     REST_TIMER_KEY,
                     JSON.stringify(adjustedTimer),
                 );
             } else {
+                setRestTimer(null);
                 localStorage.removeItem(REST_TIMER_KEY);
                 if (intervalRef.current) {
                     clearInterval(intervalRef.current);
