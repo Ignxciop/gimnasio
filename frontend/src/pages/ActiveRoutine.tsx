@@ -993,7 +993,14 @@ export default function ActiveRoutine() {
                                 {restTimer &&
                                     restTimer.exerciseId ===
                                         Number(exerciseId) && (
-                                        <div className="rest-timer">
+                                        <div className="rest-timer rest-timer-row">
+                                            <button
+                                                onClick={stopRestTimer}
+                                                className="btn-remove-timer"
+                                                title="Quitar timer"
+                                            >
+                                                <X size={20} />
+                                            </button>
                                             <button
                                                 onClick={() =>
                                                     adjustRestTime(-15)
@@ -1002,7 +1009,7 @@ export default function ActiveRoutine() {
                                             >
                                                 -15
                                             </button>
-                                            <div className="rest-timer-display">
+                                            <div className="rest-timer-display rest-timer-center">
                                                 <div className="rest-timer-label">
                                                     Descanso
                                                 </div>
