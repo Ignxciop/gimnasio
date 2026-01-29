@@ -148,22 +148,43 @@
 }
 
 .active-routine-header .btn-back,
-.active-routine-header .btn-back,
-.active-routine-header .btn-cancel {
+.active-routine-header .btn-cancel,
+.active-routine-header .btn-complete-workout {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.875rem;
     height: 2.5rem;
     min-height: 2.5rem;
     box-sizing: border-box;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.active-routine-header .btn-back {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.active-routine-header .btn-cancel {
+    background-color: rgba(220, 20, 60, 0.1);
+    border: 1px solid rgba(220, 20, 60, 0.3);
+    color: var(--accent-mid);
+}
+
+.active-routine-header .btn-complete-workout {
+    background: var(--gradient-accent);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    margin-top: 0;
+    width: 100%;
+    padding: 0.75rem;
 }
 
 .active-routine-header .btn-cancel {
