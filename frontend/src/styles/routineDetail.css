@@ -492,10 +492,6 @@
 }
 
 @media (max-width: 768px) {
-    .routine-detail-container {
-        padding: 1rem;
-    }
-
     .routine-detail-header {
         flex-direction: column;
         align-items: flex-start;
