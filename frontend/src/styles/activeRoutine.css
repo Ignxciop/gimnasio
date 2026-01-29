@@ -947,7 +947,6 @@
 @media (max-width: 768px) {
     .set-row {
         display: grid;
-        grid-template-columns: 24px 18px 1fr 1fr 18px 1fr 28px 28px;
         grid-template-rows: 1fr;
         gap: 0.18rem 0.18rem;
         align-items: center;
