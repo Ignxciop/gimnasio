@@ -338,10 +338,6 @@
 }
 
 @media (max-width: 768px) {
-    .rutinas-container {
-        padding: 1rem;
-    }
-
     .rutinas-header {
         flex-direction: column;
         align-items: flex-start;
