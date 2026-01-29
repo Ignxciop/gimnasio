@@ -1011,7 +1011,7 @@ export default function ActiveRoutine() {
                                                         restTimer.timeLeft / 60,
                                                     )}
                                                     :
-                                                    {(restTimer.timeLeft % 66)
+                                                    {(restTimer.timeLeft % 60)
                                                         .toString()
                                                         .padStart(2, "0")}
                                                 </div>
