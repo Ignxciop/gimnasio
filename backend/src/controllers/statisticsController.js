@@ -25,7 +25,43 @@ class StatisticsController {
             const sets = await statisticsService.getMonthlySets(
                 userId,
                 parseInt(year),
-                parseInt(month)
+                parseInt(month),
+            );
+
+            res.status(200).json({
+                success: true,
+                data: sets,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getLastCompletedSets(req, res, next) {
+        try {
+            const { userId, exerciseIds } = req.query;
+            if (!userId || !exerciseIds) {
+                const error = new Error("userId y exerciseIds son requeridos");
+                error.statusCode = 400;
+                throw error;
+            }
+            const ids = exerciseIds
+                .split(",")
+                .map((id) => parseInt(id))
+                .filter(Boolean);
+
+            const user = await profileService.getUserProfileById(userId);
+            const requesterId = req.user ? req.user.userId : null;
+            const isOwnProfile = requesterId && requesterId === user.id;
+
+            if (!user.isProfilePublic && !isOwnProfile) {
+                const error = new Error("Este perfil es privado");
+                error.statusCode = 403;
+                throw error;
+            }
+
+            const sets = await statisticsService.getLastCompletedSets(
+                userId,
+                ids,
             );
 
             res.status(200).json({
@@ -57,9 +93,8 @@ class StatisticsController {
                 throw error;
             }
 
-            const months = await statisticsService.getMonthsWithWorkouts(
-                userId
-            );
+            const months =
+                await statisticsService.getMonthsWithWorkouts(userId);
 
             res.status(200).json({
                 success: true,
@@ -90,9 +125,8 @@ class StatisticsController {
                 throw error;
             }
 
-            const routines = await statisticsService.getAllCompletedRoutines(
-                userId
-            );
+            const routines =
+                await statisticsService.getAllCompletedRoutines(userId);
 
             res.status(200).json({
                 success: true,

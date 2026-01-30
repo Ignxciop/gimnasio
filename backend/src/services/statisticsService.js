@@ -53,7 +53,7 @@ class StatisticsService {
             if (workout.endTime) {
                 const date = new Date(workout.endTime);
                 const monthKey = `${date.getFullYear()}-${String(
-                    date.getMonth() + 1
+                    date.getMonth() + 1,
                 ).padStart(2, "0")}`;
                 monthsSet.add(monthKey);
             }
@@ -124,7 +124,7 @@ class StatisticsService {
                     ? Math.floor(
                           (new Date(routine.endTime).getTime() -
                               new Date(routine.startTime).getTime()) /
-                              1000
+                              1000,
                       )
                     : 0;
 
@@ -162,6 +162,41 @@ class StatisticsService {
         });
 
         return exercises;
+    }
+
+    async getLastCompletedSets(userId, exerciseIds) {
+        const sets = await prisma.activeRoutineSet.findMany({
+            where: {
+                exerciseId: { in: exerciseIds },
+                completed: true,
+                activeRoutine: {
+                    userId: userId,
+                    endTime: { not: null },
+                },
+            },
+            orderBy: [
+                { exerciseId: "asc" },
+                { setNumber: "asc" },
+                { updatedAt: "desc" },
+            ],
+            select: {
+                exerciseId: true,
+                setNumber: true,
+                actualWeight: true,
+                actualReps: true,
+                updatedAt: true,
+            },
+        });
+
+        // Agrupar en memoria: solo el set más reciente por exerciseId-setNumber
+        const lastSetsMap = {};
+        for (const set of sets) {
+            const key = `${set.exerciseId}-${set.setNumber}`;
+            if (!lastSetsMap[key]) {
+                lastSetsMap[key] = set;
+            }
+        }
+        return Object.values(lastSetsMap);
     }
 }
 

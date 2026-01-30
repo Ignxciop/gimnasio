@@ -9,25 +9,32 @@ router.get(
     "/monthly-sets",
     readLimiter,
     optionalAuth,
-    statisticsController.getMonthlySets
+    statisticsController.getMonthlySets,
 );
 router.get(
     "/months-with-workouts",
     readLimiter,
     optionalAuth,
-    statisticsController.getMonthsWithWorkouts
+    statisticsController.getMonthsWithWorkouts,
 );
 router.get(
     "/all-completed-routines",
     readLimiter,
     optionalAuth,
-    statisticsController.getAllCompletedRoutines
+    statisticsController.getAllCompletedRoutines,
+);
+
+router.get(
+    "/last-completed-sets",
+    readLimiter,
+    optionalAuth,
+    statisticsController.getLastCompletedSets,
 );
 router.get(
     "/exercises",
     readLimiter,
     authenticate,
-    statisticsController.getAllExercises
+    statisticsController.getAllExercises,
 );
 
 export default router;

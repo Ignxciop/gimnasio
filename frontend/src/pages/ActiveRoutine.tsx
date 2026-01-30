@@ -190,67 +190,63 @@ export default function ActiveRoutine() {
         onSuccess: () => navigate(`/rutinas/${routineId}`),
     });
 
+    // 1. Solo obtener la rutina activa cuando cambian los IDs
     useEffect(() => {
         const token = authService.getToken();
         if (!token) return;
-
         fetchActiveRoutine.execute(token);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeId, routineId]);
 
-        // Obtener el último registro de cada ejercicio/serie del usuario (sin importar rutina)
-        (async () => {
+    // 2. Solo obtener sets previos cuando la rutina activa cambia (y solo una vez por rutina)
+    useEffect(() => {
+        const fetchPreviousSets = async () => {
+            const token = authService.getToken();
+            if (!token || !activeRoutine) return;
             try {
                 const profile = await profileService.getProfile();
                 const userId = profile.id;
-                // Obtener todas las rutinas completadas del usuario
+                const exerciseIds = Array.from(
+                    new Set(activeRoutine.sets.map((s) => s.exerciseId)),
+                );
+                if (exerciseIds.length === 0) {
+                    setPreviousSetsMap({});
+                    return;
+                }
+                const params = new URLSearchParams({
+                    userId,
+                    exerciseIds: exerciseIds.join(","),
+                });
                 const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/statistics/all-completed-routines?userId=${userId}`,
+                    `${import.meta.env.VITE_API_URL}/statistics/last-completed-sets?${params.toString()}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     },
                 );
                 if (!response.ok)
-                    throw new Error("No se pudo obtener historial");
+                    throw new Error("No se pudo obtener sets previos");
                 const data = await response.json();
-                // Recorrer todos los sets de todas las rutinas y quedarnos con el set más reciente por ejercicioId-setNumber
-                const allSets = [];
-                for (const routine of data.data) {
-                    for (const set of routine.sets) {
-                        allSets.push({
-                            ...set,
-                            endTime: routine.endTime,
-                        });
-                    }
-                }
-                // Mapear: clave = ejercicioId-setNumber, valor = set más reciente
-                type CompletedSet = (typeof allSets)[number];
-                const map: Record<string, CompletedSet> = {};
-                allSets.forEach((set) => {
-                    const key = `${set.exerciseId}-${set.setNumber}`;
-                    if (
-                        !map[key] ||
-                        new Date(set.endTime) > new Date(map[key].endTime)
-                    ) {
-                        map[key] = set;
-                    }
-                });
-                // Formatear para el input
                 const result: Record<
                     string,
                     { kg: number | null; reps: number | null }
                 > = {};
-                Object.entries(map).forEach(([key, set]) => {
+                for (const set of data.data) {
+                    const key = `${set.exerciseId}-${set.setNumber}`;
                     result[key] = {
                         kg: set.actualWeight ?? null,
                         reps: set.actualReps ?? null,
                     };
-                });
+                }
                 setPreviousSetsMap(result);
             } catch (err) {
                 setPreviousSetsMap({});
             }
-        })();
+        };
+        if (activeRoutine) {
+            fetchPreviousSets();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeId, routineId]);
+    }, [activeRoutine]);
 
     useEffect(() => {
         if (!activeRoutine) return;
