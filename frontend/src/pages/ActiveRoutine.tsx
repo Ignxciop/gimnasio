@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Plus, Clock, Check } from "lucide-react";
+import { API_BASE_URL } from "../config/constants";
 import MainLayout from "../layouts/MainLayout";
 import { useToast } from "../hooks/useToast";
 import { useModal } from "../hooks/useModal";
@@ -218,7 +219,7 @@ export default function ActiveRoutine() {
                     exerciseIds: exerciseIds.join(","),
                 });
                 const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/statistics/last-completed-sets?${params.toString()}`,
+                    `${API_BASE_URL}/statistics/last-completed-sets?${params.toString()}`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     },
