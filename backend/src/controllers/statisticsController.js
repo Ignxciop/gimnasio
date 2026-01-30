@@ -49,15 +49,7 @@ class StatisticsController {
                 .map((id) => parseInt(id))
                 .filter(Boolean);
 
-            const user = await profileService.getUserProfileById(userId);
-            const requesterId = req.user ? req.user.userId : null;
-            const isOwnProfile = requesterId && requesterId === user.id;
-
-            if (!user.isProfilePublic && !isOwnProfile) {
-                const error = new Error("Este perfil es privado");
-                error.statusCode = 403;
-                throw error;
-            }
+            // El endpoint de sets previos no requiere validación de privacidad de perfil
 
             const sets = await statisticsService.getLastCompletedSets(
                 userId,
