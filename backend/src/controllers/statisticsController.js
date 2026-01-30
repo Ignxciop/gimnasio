@@ -12,12 +12,11 @@ class StatisticsController {
                 throw error;
             }
 
-            const user = await profileService.getUserProfileById(userId);
             const requesterId = req.user ? req.user.userId : null;
-            const isOwnProfile = requesterId && requesterId === user.id;
-
-            if (!user.isProfilePublic && !isOwnProfile) {
-                const error = new Error("Este perfil es privado");
+            if (userId !== requesterId) {
+                const error = new Error(
+                    "No tienes permiso para consultar estos datos",
+                );
                 error.statusCode = 403;
                 throw error;
             }
@@ -49,7 +48,14 @@ class StatisticsController {
                 .map((id) => parseInt(id))
                 .filter(Boolean);
 
-            // El endpoint de sets previos no requiere validación de privacidad de perfil
+            const requesterId = req.user ? req.user.userId : null;
+            if (userId !== requesterId) {
+                const error = new Error(
+                    "No tienes permiso para consultar estos sets previos",
+                );
+                error.statusCode = 403;
+                throw error;
+            }
 
             const sets = await statisticsService.getLastCompletedSets(
                 userId,
@@ -75,12 +81,11 @@ class StatisticsController {
                 throw error;
             }
 
-            const user = await profileService.getUserProfileById(userId);
             const requesterId = req.user ? req.user.userId : null;
-            const isOwnProfile = requesterId && requesterId === user.id;
-
-            if (!user.isProfilePublic && !isOwnProfile) {
-                const error = new Error("Este perfil es privado");
+            if (userId !== requesterId) {
+                const error = new Error(
+                    "No tienes permiso para consultar estos datos",
+                );
                 error.statusCode = 403;
                 throw error;
             }
@@ -107,12 +112,11 @@ class StatisticsController {
                 throw error;
             }
 
-            const user = await profileService.getUserProfileById(userId);
             const requesterId = req.user ? req.user.userId : null;
-            const isOwnProfile = requesterId && requesterId === user.id;
-
-            if (!user.isProfilePublic && !isOwnProfile) {
-                const error = new Error("Este perfil es privado");
+            if (userId !== requesterId) {
+                const error = new Error(
+                    "No tienes permiso para consultar estos datos",
+                );
                 error.statusCode = 403;
                 throw error;
             }
